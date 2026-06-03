@@ -4,7 +4,14 @@ A scholarly **commentary corpus** on the biblical text, from an Eastern Orthodox
 perspective — a static site (Astro) over the Septuagint (OT) and the Text-Critical
 English New Testament, with Orthodox lectionary awareness and client-side search.
 
-Current status: the whole Bible is browsable as static pages (Phase 1); commentary,
+> ### 🚧 Under active development — not ready yet
+> This is an early work in progress. The whole Bible is browsable, but **most books
+> have no commentary yet**, and **search and the lectionary are not built**. Expect
+> rough edges, gaps, and breaking changes. Nothing here is final.
+>
+> **Live preview:** <https://byzantique.pages.dev>
+
+**Current status:** the whole Bible is browsable as static pages (Phase 1); commentary,
 lectionary, and client-side search are in progress.
 
 **Docs** (in [`docs/`](./docs)): [`EDITING-CONTENT.md`](./docs/EDITING-CONTENT.md)
@@ -67,7 +74,7 @@ The site is a static Astro build (`dist/`). To deploy:
    - Framework preset: **Astro**
    - Build command: **`npm run build`**
    - Build output directory: **`dist`**
-   - Environment variable: **`NODE_VERSION = 24`**
+   - Environment variable: **`NODE_VERSION = 22`**
 3. **Custom domain** — Pages project → *Custom domains* → add **`byzantique.com`**
    (and `www`). If the domain's DNS is on Cloudflare, records are added automatically.
 
