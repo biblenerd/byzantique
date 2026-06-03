@@ -50,9 +50,15 @@ function parseFrontmatter(raw) {
   return { data, body: m[2] };
 }
 
-// Parse "GEN 1:1", "GEN 1:1-13", "GEN 1:1-2:3", "GEN 1" (whole chapter).
+// Parse "GEN" (whole book), "GEN 1" (whole chapter), "GEN 1:1", "GEN 1:1-13",
+// "GEN 1:1-2:3".
 function parseRef(str) {
-  const m = String(str).trim().match(/^([0-9A-Za-z]+)\s+(\d+)(?::(\d+))?(?:[-–](?:(\d+):)?(\d+))?$/);
+  str = String(str).trim();
+  if (/^[0-9A-Za-z]+$/.test(str)) {
+    // bare book code → whole book
+    return { book: str.toUpperCase(), sc: 1, sv: 1, ec: 999, ev: WHOLE_CHAPTER_END, scope: 'book' };
+  }
+  const m = str.match(/^([0-9A-Za-z]+)\s+(\d+)(?::(\d+))?(?:[-–](?:(\d+):)?(\d+))?$/);
   if (!m) return null;
   const [, book, c1, v1, c2, v2] = m;
   const sc = +c1;
@@ -60,11 +66,13 @@ function parseRef(str) {
   let ec = sc, ev = v1 ? +v1 : WHOLE_CHAPTER_END;
   if (v2 && c2) { ec = +c2; ev = +v2; }
   else if (v2) { ec = sc; ev = +v2; }
-  return { book, sc, sv, ec, ev };
+  return { book: book.toUpperCase(), sc, sv, ec, ev };
 }
 
 function anchorType(a) {
-  if (a.ev === WHOLE_CHAPTER_END || a.sc !== a.ec) return a.ev === WHOLE_CHAPTER_END ? 'book' : 'range';
+  if (a.scope === 'book') return 'book';
+  if (a.ev === WHOLE_CHAPTER_END) return a.sc === a.ec ? 'chapter' : 'range';
+  if (a.sc !== a.ec) return 'range';
   return a.sv === a.ev ? 'verse' : 'range';
 }
 

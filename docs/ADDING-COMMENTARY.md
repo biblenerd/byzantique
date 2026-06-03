@@ -54,10 +54,12 @@ The anchor is `BOOK CHAPTER:VERSE`, using the **USFM book code** (see
 | `GEN 1:14-19` | a verse range within one chapter |
 | `GEN 1:1-2:3` | a range spanning chapters |
 | `GEN 3` | a whole chapter |
+| `GEN` | the **whole book** → shows on the book landing page (see below) |
 
 A note appears on **every chapter page its anchor touches**. When several notes apply to the
-same passage they are ordered **broad → narrow** (book/section essays first, then ranges,
-then single verses).
+same passage they are ordered **broad → narrow** (section essays first, then ranges, then
+single verses). The one exception is a **whole-book** note (`anchor: GEN`): it renders on the
+book landing page only, not on every chapter.
 
 ## Quoting scripture — `{{ … }}`
 
@@ -140,3 +142,22 @@ Section headings above the text come from two places (REQUIREMENTS §5.3):
    renders as a heading just before that verse. An author title **takes precedence**
    over a USFM `\s` heading at the same spot. `<CODE>` is the USFM book code
    (see [USFM-BOOK-NAMES.md](./USFM-BOOK-NAMES.md)). Re-run `npm run dev`/`build` to see changes.
+
+## Book introductions & book-level commentary
+
+The **book landing page** (`/{testament}/{book}/`) shows two optional things above
+the chapter grid:
+
+- **Introduction** — `data/book-intros/<CODE>.md`. Plain Markdown (supports the
+  `{{ ref }}` scripture-quote convention). Renders at the top of the book page.
+- **Book-level commentary** — a normal note whose `anchor` is a **bare book code**
+  (e.g. `anchor: GEN`). It appears under "Book commentary" on the book page and is
+  **not** repeated on every chapter page (nor counted in the coverage bar).
+
+```markdown
+---
+anchor: GEN
+title: Reading Genesis as a whole
+---
+Genesis is structured around a series of *toledot* formulas …
+```

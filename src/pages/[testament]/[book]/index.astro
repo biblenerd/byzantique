@@ -2,6 +2,8 @@
 import Base from '../../../layouts/Base.astro';
 import { BOOKS, bookLabel } from '../../../lib/canon';
 import { builtCodes, loadBook } from '../../../lib/texts';
+import { bookNotes, refRange, anchorBadge } from '../../../lib/commentary';
+import { loadBookIntro } from '../../../lib/bookintro';
 
 export function getStaticPaths() {
   const built = builtCodes();
@@ -15,6 +17,13 @@ const { book } = Astro.props;
 const text = loadBook(book.code)!;
 const heading = book.testament === 'ot' ? 'Old Testament' : 'New Testament';
 const label = bookLabel(book);
+const textName =
+  book.testament === 'ot'
+    ? 'Updated Brenton Septuagint (ENGLXXUP)'
+    : 'Text-Critical English New Testament (TCENT)';
+
+const intro = loadBookIntro(book.code);
+const notes = bookNotes(book.code);
 ---
 
 <Base title={label} description={`${label} — read the text with commentary.`}>
@@ -23,12 +32,28 @@ const label = bookLabel(book);
     <a href={`/${book.testament}/`}>{heading}</a><span class="sep">›</span>{label}
   </nav>
   <h1>{book.name}{book.paren && <span class="paren ui"> ({book.paren})</span>}</h1>
-  <p class="subtitle">{text.chapters.length} chapters · Updated Brenton Septuagint (ENGLXXUP)</p>
+  <p class="subtitle">{text.chapters.length} chapters · {textName}</p>
 
-  <p>Book introduction and book-level commentary will live here (Phase 2).</p>
+  {intro && <div class="book-intro" set:html={intro} />}
 
-  <div class="col-label ui">Chapters</div>
-  <ul class="grid">
+  {notes.length > 0 && (
+    <section class="commentary">
+      <div class="col-label ui">Book commentary</div>
+      {notes.map((n) => (
+        <article class="note">
+          <span class="note-anchor ui">
+            <span class="badge">{anchorBadge(n.anchor.type)}</span>
+            {book.name}
+          </span>
+          {n.title && <h3 class="note-title">{n.title}</h3>}
+          <div class="note-body" set:html={n.html} />
+        </article>
+      ))}
+    </section>
+  )}
+
+  <div class="col-label ui" data-pagefind-ignore>Chapters</div>
+  <ul class="grid" data-pagefind-ignore>
     {text.chapters.map((c) => (
       <li><a href={`/${book.testament}/${book.slug}/${c.number}`}>{c.number}</a></li>
     ))}

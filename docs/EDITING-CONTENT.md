@@ -126,9 +126,12 @@ To quote scripture, put a reference in double braces on its own line:
 {{ JHN 1:1 }}
 ```
 
-- The note appears on every chapter page its anchor touches.
+- The note appears on every chapter page its anchor touches (a bare book code like
+  `anchor: GEN` is a whole-book note and shows on the book landing page instead).
 - `{{ JHN 1:1 }}` → the same styled scripture blockquote as `<Scripture>` (this is the
   Markdown equivalent; it only works in commentary `.md`, not in `.astro`).
+- **Book introductions** (`data/book-intros/<CODE>.md`) and **section/pericope titles**
+  (`data/pericopes/<CODE>.json`) are covered in [`ADDING-COMMENTARY.md`](./ADDING-COMMENTARY.md).
 - Source-citation footnotes are Phase 2; for now keep notes self-contained.
 
 ---

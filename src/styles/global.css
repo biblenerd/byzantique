@@ -342,6 +342,13 @@ h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
 .booklist .status--homologoumena { color: #2f6b46; border-color: #bcdcc6; }
 .booklist .todo { color: var(--ink-soft); }
 
+/* ---- book landing: introduction ---- */
+.book-intro { font-size: 17px; line-height: 1.7; margin: 10px 0 8px; }
+.book-intro p { margin: 0 0 1em; }
+.book-intro h2 { font-size: 20px; color: var(--accent); margin: 24px 0 6px; }
+.book-intro h3 { font-size: 17px; margin: 18px 0 4px; }
+.book-intro blockquote.scripture-quote { font-size: 16px; }
+
 /* ---- commentary notes ---- */
 .commentary { margin-top: 30px; }
 .note {

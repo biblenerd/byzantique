@@ -64,19 +64,29 @@ deployable site. (REQUIREMENTS.md §9 — static-first.)
 
 (Full-canon vendoring is Phase 1.)
 
-## Adding commentary
+## Adding commentary & structure
 
-See [`ADDING-COMMENTARY.md`](./ADDING-COMMENTARY.md). In short: add a Markdown file under
-`data/commentary/` with an `anchor:` in its frontmatter, then `npm run dev`.
+See [`ADDING-COMMENTARY.md`](./ADDING-COMMENTARY.md). In short:
+
+- **Notes** — a Markdown file under `data/commentary/` with an `anchor:` in its frontmatter.
+- **Book introductions** — `data/book-intros/<CODE>.md` (renders atop the book page).
+- **Book-level commentary** — a note whose `anchor` is a bare book code (e.g. `GEN`).
+- **Section / pericope titles** — `data/pericopes/<CODE>.json` (`[{ start, title }]`); USFM
+  `\s` headings in the source text (NT) are also picked up automatically.
+
+After any edit, run `npm run dev` (or `npm run build`) to regenerate.
 
 ## Project layout
 
 ```
-data/            source content (vendored USFM, your commentary, chip definitions)
-scripts/         build-texts.mjs, build-commentary.mjs  (the data build)
-src/lib/         canon registry + data loaders (texts, commentary, chips, nav)
-src/pages/       Astro routes (home, [testament]/[book]/[chapter], about/, license, privacy)
+data/texts/{englxxup,engtcent}/   vendored USFM (source of truth)
+data/commentary/                  your notes (Markdown + anchor frontmatter)
+data/book-intros/<CODE>.md        per-book introductions
+data/pericopes/<CODE>.json        author section/pericope titles
+data/intro/engtcent.usfm          the TCENT translator's introduction
+scripts/         build-texts.mjs, build-commentary.mjs, build-intro.mjs  (the data build)
+src/lib/         canon registry + loaders (texts, commentary, pericopes, bookintro, chips, nav)
+src/pages/       Astro routes (home, [testament]/[book]/[chapter], about/, search, license, privacy)
 src/layouts/ , src/components/ , src/styles/
 public/          static assets (favicon, fonts) + generated public/data/ (git-ignored)
-prototypes/      standalone HTML mockups (not part of the site)
 ```
