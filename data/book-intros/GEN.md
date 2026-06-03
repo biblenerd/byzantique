@@ -8,3 +8,5 @@ In the Orthodox tradition Genesis is read liturgically and Christologically. Its
 opening is appointed for the Vespers of Holy Saturday, and the Fathers hear the
 "beginning" of Genesis in light of the "beginning" of John's Gospel, the same Word
 through Whom all things were made.
+
+In general, the LXX follows the Hebrew closely for the book of Genesis. However, there are some notable differences at times (although this perhaps represents an earlier Hebrew manuscript tradition than the MT, as the DSS have revealed in certain places).

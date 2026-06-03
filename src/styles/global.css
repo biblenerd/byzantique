@@ -519,7 +519,10 @@ blockquote.creed p.creed-attr {
 
 /* ---- footer ---- */
 footer.site { border-top: 1px solid var(--rule); margin-top: 40px; padding: 20px; font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); text-align: center; }
+footer.site p { margin: 0; }
 footer.site a { color: var(--link); }
+.footer-gh { display: inline-flex; margin-top: 10px; color: var(--ink-soft); }
+.footer-gh:hover { color: var(--accent); }
 
 /* ---- multilingual (REQUIREMENTS.md §12) — placeholder; fonts wired in Phase 1 ---- */
 [lang="grc"] { font-family: "Gentium Plus", var(--serif); }
