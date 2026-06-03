@@ -12,10 +12,8 @@ Dan's **commentary / notes** on the biblical text. A static site (Astro) over th
 **Current status:** the whole Bible is browsable as static pages (Phase 1); commentary and
 lectionary are in progress.
 
-**Docs** (in [`docs/`](./docs)): [`EDITING-CONTENT.md`](./docs/EDITING-CONTENT.md)
-(edit pages & commentary) · [`DEVELOPMENT.md`](./docs/DEVELOPMENT.md) (build & preview
-locally) · [`ADDING-COMMENTARY.md`](./docs/ADDING-COMMENTARY.md) (write notes) ·
-[`USFM-BOOK-NAMES.md`](./docs/USFM-BOOK-NAMES.md) (book codes ↔ source files).
+**Docs:** see [`docs/`](./docs/) — editing pages & commentary, local development, and
+USFM book codes. (Start at the [docs index](./docs/README.md).)
 
 ## Quick start
 
