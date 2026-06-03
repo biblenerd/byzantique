@@ -39,6 +39,12 @@ const snippet = chapter.blocks
 const notes = notesForChapter(book.code, chapterNumber);
 const hasNotes = notes.length > 0;
 const vnum = (c: number, v: number) => c * 1000 + v;
+
+// Scripture attribution for this chapter's testament (TCENT is CC BY 4.0 — credit required).
+const credit =
+  book.testament === 'ot'
+    ? { testament: 'Old Testament', title: 'Updated Brenton Septuagint', abbr: 'ENGLXXUP', anchor: 'englxxup', license: 'public domain' }
+    : { testament: 'New Testament', title: 'Text-Critical English New Testament', abbr: 'TCENT', anchor: 'tcent', license: '© Robert Adam Boyd, CC BY 4.0' };
 ---
 
 <Base title={`${label} ${chapterNumber}`} description={snippet} wide={hasNotes}>
@@ -96,6 +102,11 @@ const vnum = (c: number, v: number) => c * 1000 + v;
     <a href={`${base}/`}>{book.name}</a>
     {next ? <a href={`${base}/${next}`}>{chapterNumber + 1} →</a> : <span class="disabled">→</span>}
   </nav>
+
+  <p class="text-credit ui" data-pagefind-ignore>
+    {credit.testament} text: <em>{credit.title}</em> ({credit.abbr}) — {credit.license}.
+    {' '}<a href={`/about/texts-and-translations/#${credit.anchor}`}>Texts &amp; Translations →</a>
+  </p>
 </Base>
 
 <script>
