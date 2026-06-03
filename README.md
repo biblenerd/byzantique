@@ -17,51 +17,57 @@ locally) · [`ADDING-COMMENTARY.md`](./docs/ADDING-COMMENTARY.md) (write notes) 
 ```bash
 npm install
 npm run dev        # runs the data build, then the Astro dev server
-# open http://localhost:4321/ot/genesis/1
+# open http://localhost:4321/
 ```
 
 Other scripts:
 
 ```bash
-npm run data       # build-texts: vendored USFM → public/data/texts/*.json
+npm run data       # texts + commentary + intro builds → public/data/
 npm run build      # data build + static site → dist/
 npm run preview    # serve the built dist/ locally
 ```
 
-## How it works (Phase 0)
+## How it works
 
 ```
-data/texts/englxxup/   vendored USFM (source of truth)  ──┐
-                                                          │  scripts/build-texts.mjs
-public/data/texts/*.json  generated, per-book  ◄──────────┘  (usfm-grammar + paragraph scan)
-src/lib/canon.ts          canon registry (Appendix A: names, order, slugs, USFM codes)
-src/pages/[testament]/[book]/[chapter].astro   static chapter pages (read the JSON at build)
+data/texts/{englxxup,engtcent}/*.usfm   vendored USFM — the whole canon (source of truth)
+data/commentary/**/*.md                 author notes (Markdown + frontmatter anchors)
+data/intro/engtcent.usfm                the TCENT translator's introduction
+        │
+        │   npm run data  →  scripts/build-{texts,commentary,intro}.mjs
+        ▼
+public/data/**                          generated JSON (gitignored)
+src/lib/canon.ts                        canon registry (names, order, slugs, USFM codes)
+src/pages/[testament]/[book]/[chapter].astro   static pages read the JSON at build time
 ```
 
-- **Static-first** (REQUIREMENTS.md §9, Option C): every chapter is pre-rendered to HTML;
-  the per-chapter JSON is also served for later client-side features.
-- **Texts:** Updated Brenton Septuagint (`englxxup`, CC0) and TCENT (`engtcent`, CC BY 4.0).
-  Genesis is vendored under `data/texts/englxxup/`; the rest of the canon follows in Phase 1.
-
-> Note: `usfm-grammar` is pinned to **v2** (pure JS). v3 pulls in native `tree-sitter`,
-> which does not compile on current Node. v2's npm-audit warnings are build-time only and
-> never ship to the static site.
+- **Static-first (Option C hybrid):** every book and chapter is pre-rendered to HTML
+  (~1,450 routes; full build ≈ 5s), so the entire Bible reads with no JavaScript. The
+  per-chapter JSON is also served for client-side features (search, cross-ref previews).
+- **Texts:** Updated Brenton Septuagint (`englxxup`, CC0 — LXX versification, incl. the
+  Anagignoskomena) and the Text-Critical English NT / Byzantine Text Version (`engtcent`,
+  CC BY 4.0). All 79 books are vendored as USFM under `data/texts/`.
+- **Custom USFM parser:** `build-texts.mjs` parses USFM into a block model — paragraphs,
+  poetry lines with indent levels, stanza breaks, Psalm titles — so scripture renders
+  faithfully (no `usfm-grammar` dependency). It also extracts the TCENT textual apparatus
+  (`\f…\f*`) into a separate **lettered** footnote stream shown beneath the text.
+- **Commentary:** Markdown notes anchored to a reference (`GEN 1:1`, ranges, cross-chapter)
+  via frontmatter, compiled by `build-commentary.mjs`; a `{{ REF }}` convention pulls live
+  scripture into a note. See [`docs/ADDING-COMMENTARY.md`](./docs/ADDING-COMMENTARY.md).
 
 ## Deployment (Cloudflare Pages)
 
 The site is a static Astro build (`dist/`). To deploy:
 
-1. **GitHub** — create a new empty repo and push:
-   ```bash
-   git remote add origin git@github.com:<you>/byzantique.git
-   git push -u origin main
-   ```
+1. **GitHub** — the repo lives at [`biblenerd/byzantique`](https://github.com/biblenerd/byzantique)
+   (pushed over SSH via the `github.com-biblenerd` host alias).
 2. **Cloudflare Pages** — dashboard → *Workers & Pages* → *Create* → *Pages* →
    *Connect to Git* → select the repo. Build settings:
    - Framework preset: **Astro**
    - Build command: **`npm run build`**
    - Build output directory: **`dist`**
-   - Environment variable: **`NODE_VERSION = 22`**
+   - Environment variable: **`NODE_VERSION = 24`**
 3. **Custom domain** — Pages project → *Custom domains* → add **`byzantique.com`**
    (and `www`). If the domain's DNS is on Cloudflare, records are added automatically.
 
