@@ -91,6 +91,12 @@ main.wide { max-width: 60rem; }
 h1 { font-size: 30px; margin: 8px 0 2px; }
 h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
 .subtitle { color: var(--ink-soft); font-style: italic; margin: 0 0 8px; }
+.dev-banner {
+  margin: 14px 0 18px; padding: 10px 14px; border-radius: 8px;
+  background: var(--gold-soft); border: 1px solid #e6d6a8; border-left: 3px solid var(--gold);
+  font-family: var(--sans); font-size: 13px; line-height: 1.5; color: var(--ink);
+}
+.dev-banner strong { color: #6e560f; font-weight: 700; }
 .col-label {
   font-family: var(--sans); text-transform: uppercase; letter-spacing: .12em;
   font-size: 11px; font-weight: 700; color: var(--gold); margin: 24px 0 8px;
