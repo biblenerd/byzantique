@@ -1,0 +1,19 @@
+---
+// Inline scripture-reference link:  <Ref ref="2CO 3" />  →  2 Corinthians 3 (linked)
+// Optional children override the auto-generated label:  <Ref ref="JHN 5:46">that passage</Ref>
+import { refLink } from '../lib/scripture';
+
+interface Props {
+  ref: string;
+}
+const { ref } = Astro.props;
+const link = refLink(ref);
+const hasLabel = await Astro.slots.has('default');
+if (!link) console.warn(`<Ref>: unresolved reference "${ref}"`);
+---
+
+{link ? (
+  <a href={link.href}>{hasLabel ? <slot /> : link.label}</a>
+) : (
+  <span><slot />{!hasLabel && ref}</span>
+)}

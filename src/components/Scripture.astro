@@ -1,0 +1,14 @@
+---
+// Embed a scripture quotation in an .astro page:  <Scripture ref="JHN 5:39-40" />
+// (In Markdown commentary, use the {{ JHN 5:39-40 }} convention instead.)
+import { scriptureQuote } from '../lib/scripture';
+
+interface Props {
+  ref: string;
+}
+const { ref } = Astro.props;
+const html = scriptureQuote(ref);
+if (!html) console.warn(`<Scripture>: unresolved reference "${ref}"`);
+---
+
+{html ? <Fragment set:html={html} /> : <p class="subtitle">[unresolved scripture: {ref}]</p>}

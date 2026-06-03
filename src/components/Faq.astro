@@ -1,0 +1,14 @@
+---
+// A collapsible FAQ item (native <details>, no JS).
+//   <Faq q="The question?">The answer (HTML).</Faq>
+interface Props {
+  q: string;
+  open?: boolean;
+}
+const { q, open } = Astro.props;
+---
+
+<details class="faq" open={open}>
+  <summary>{q}</summary>
+  <div class="faq-body"><slot /></div>
+</details>

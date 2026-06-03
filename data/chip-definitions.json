@@ -1,0 +1,26 @@
+{
+  "_comment": "Hover-tooltip definitions for the book grouping/status chips. Keys must match the chip labels exactly (see src/lib/canon.ts). Edit freely; the build reads this file as-is.",
+
+  "Pentateuch": "The first five books of the Old Testament (Genesis through Deuteronomy), traditionally ascribed to Moses.",
+  "Law": "The books of the Law (Hebrew: Torah) — the five Mosaic books setting out God's covenant and commandments to Israel.",
+  "Torah": "Hebrew for 'instruction' or 'law'; the five books of Moses, Genesis through Deuteronomy.",
+  "History": "The historical books, recounting Israel's story from the conquest of Canaan through the post-exilic and Maccabean eras.",
+  "Prophecy": "Books counted among the prophets (Hebrew: Nevi'im) — from the 'Former Prophets' (Joshua–Kingdoms) to the major and minor prophetic books.",
+  "Former Prophet": "The 'Former Prophets' (Hebrew: Nevi'im Rishonim) of the Hebrew canon — Joshua, Judges, and the four Kingdoms (Samuel–Kings) — narrating Israel's history through a prophetic lens.",
+  "Latter Prophet": "The 'Latter Prophets' (Hebrew: Nevi'im Aharonim) — the major prophetic books of Isaiah, Jeremiah, and Ezekiel.",
+  "12 Prophets": "The Twelve (the 'Minor Prophets,' Hebrew: Tere Asar), counted as a single book in the Hebrew and Greek tradition — Hosea through Malachi.",
+  "Writing": "The 'Writings' (Hebrew: Ketuvim) — the third division of the Hebrew Bible, gathering poetry, wisdom, and later historical books.",
+  "Poetic": "The poetic and wisdom books — Psalms, Proverbs, Job, and the wisdom literature.",
+  "5 Scrolls (Megillot)": "The Five Scrolls (Hebrew: Megillot) read at Jewish festivals — Song of Songs, Ruth, Lamentations, Ecclesiastes, and Esther.",
+
+  "Gospel": "An account of the life, death, and resurrection of Jesus Christ — from the Holy Apostles and Evangelists Matthew, Mark, Luke, and John. Greek for 'good news.'",
+  "Letter / Epistle": "A letter written to a church or an individual; the epistles make up much of the New Testament.",
+  "Pauline": "Letters attributed to the Holy Apostle Paul.",
+  "General (Catholic)": "The 'catholic' (universal) epistles, addressed to the Church at large rather than to one congregation — James, Peter, John, Jude (and Hebrews here).",
+  "Petrine": "Letters attributed to the Holy Apostle Peter — 1 and 2 Peter.",
+  "Johannine": "Books associated with the Holy Apostle and Evangelist John the Theologian — his Gospel, the three Johannine epistles, and Revelation.",
+
+  "Anagignoskomenon": "'To be read' — a book of the wider Orthodox Old Testament received for reading and edification, beyond the shorter Hebrew canon (the Anagignoskomena / Readables).",
+  "Homologoumenon": "'Acknowledged' — a New Testament book accepted as canonical without dispute from early times.",
+  "Antilegomenon": "'Spoken against' — a New Testament book whose canonicity was disputed in the early Church before being received."
+}

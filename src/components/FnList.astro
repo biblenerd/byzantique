@@ -1,0 +1,12 @@
+---
+// The footnotes list for a page. Place once, at the bottom, after all <Fn> markers.
+import type { FootnoteCollector } from '../lib/footnotes';
+
+interface Props {
+  fn: FootnoteCollector;
+  title?: string;
+}
+const { fn, title } = Astro.props;
+---
+
+<Fragment set:html={fn.list(title)} />

@@ -1,0 +1,146 @@
+---
+import Base from '../../layouts/Base.astro';
+import AboutNav from '../../components/AboutNav.astro';
+import Faq from '../../components/Faq.astro';
+---
+
+<Base title="FAQs" description="Frequently asked questions about Byzantique.">
+  <AboutNav current="faqs" />
+  <h1>FAQs</h1>
+  <p class="subtitle">Frequently asked questions (and answers, if you click).</p>
+
+  <Faq q="Which Bible translation is this?">
+    <p>
+      The Old Testament is the Septuagint (Updated Brenton: ENGLXXUP); the New Testament is the
+      Text-Critical English New Testament (TCENT / BTV). Details in
+      <a href="/about/texts-and-translations/">Texts and Translations</a>.
+    </p>
+  </Faq>
+
+  <Faq q="Why the Septuagint and not the Hebrew?">
+    <p>
+      Because it's the Old Testament the Church has primarily prayed and read from since the
+      beginning. The Apostles quote it, and the Orthodox lectionary follows its numbering.
+      The Hebrew tradition is fascinating and shows up often in the notes; it just isn't the
+      base text here.
+    </p>
+  </Faq>
+
+  <Faq q="What does the site name mean?">
+    <p>
+      It's a portmanteau of "Byzantine," "antique," and "mozzarella stick." Pick two.
+    </p>
+    <p><em>Hint:</em> I can't eat the wrong answer most Wednesdays and Fridays. Pardon the cheesy humor.</p>
+  </Faq>
+
+  <Faq q="How do I contact you?">
+    <p>
+      Why would you want to? Just kidding: feel free to reach out&mdash;unless you're a jerk. My email address is <code>qohelet_dot_dan_at_pm_dot_me</code>. There's no underscores in my actual email address, nor the word "dot."
+    </p>
+    <p><strong>Why did you write your email address like that?</strong></p>
+    <p>
+      Because jerks write spam bots that troll the Internet looking for email addresses to send junk mail to. It also thwarts people who can't figure out how to swap out 'at' with '@' and 'dot' with a period, but I'm not so sure that's a bad thing.
+    </p>
+  </Faq>
+
+  <Faq q="Are you a priest, a scholar, or some kind of expert?">
+    <p>
+      No, no, and emphatically no. I'm a dude with a notebook and too many tabs open. See
+      <a href="/about/approach/">Approach</a> for the longer disclosure.
+    </p>
+  </Faq>
+
+  <Faq q="Do you agree with everything posted here?">
+    <p>
+      Not even close. A lot of this is an object of study, not an article of faith, including
+      scholarship I find interesting and don't believe a word of. Sharing isn't endorsing.
+    </p>
+  </Faq>
+
+  <Faq q="Is this the official position of the Orthodox Church?">
+    <p>
+      It is not. These notes don't speak for the Church, my diocese, my parish, or my boss &mdash;
+      only for me, and even then provisionally.
+    </p>
+  </Faq>
+
+  <Faq q="Can I quote or reuse this?">
+    <p>
+      The commentary is licensed under <a href="/license/">CC BY-SA 4.0</a> (credit Byzantique, share
+      alike). The biblical texts carry their own licenses: see
+      <a href="/about/texts-and-translations/">Texts and Translations</a>.
+    </p>
+  </Faq>
+
+  <Faq q="Why did you make this website?">
+    <p>
+      Why not? I have been using Evernote, Obsidian, and documents saved on my computer for a long time to keep track of various notes, but it's getting harder to find things, so I figured a more organized approach is in order. Also, posting it publicly allows me to more easily share my notes with others when referencing them in discussions. Hence this site.
+    </p>
+    <p>
+      Inspiration for this site includes:
+    </p>
+    <ul>
+      <li><a href="http://pericope.org/buls-notes/index.html" target="_blank">Buls' Notes</a></li>
+      <li><a href="https://orthodoxbiblestudy.info" target="_blank">Search The Scriptures</a></li>
+      <li><a href="https://www.ancientfaith.com/podcasts/lordofspirits" target="_blank">Lord of Spirits podcast</a></li>
+      <li><a href="https://blogs.ancientfaith.com/wholecounsel/" target="_blank">The Whole Counsel of God blog</a></li>
+      <li><a href="https://bibleproject.com" target="_blank">BibleProject</a></li>
+    </ul>
+  </Faq>
+
+  <Faq q="Why is there a weird letter 'ʋ' in NT passages?">
+    <p>
+      This is a distinctive feature of the TCENT / BTV translation which indicates the singular second-person pronoun. Details in <a href="/about/texts-and-translations/">Texts and Translations</a> and the translation's <a href="/nt/introduction/">Introduction</a>.
+    </p>
+  </Faq>
+
+  <Faq q="What does this abbreviation mean?">
+    <p>
+      Check out the <a href="/about/abbreviations/">Abbreviations page.</a>
+    </p>
+  </Faq>
+
+  <Faq q="What do you believe?">
+    <p>
+      Among other things:
+    </p>
+    <blockquote class="creed">
+      <p>
+        I believe in one God,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;the Father, the Almighty,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;maker of heaven and earth,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;of all things visible and invisible.
+      </p>
+      <p>
+        I believe in one Lord, Jesus Christ,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;the Son of God, the only-begotten,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;begotten of the Father before all ages.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;Light of Light, true God of true God,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;begotten, not made,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;of one essence with the Father,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;by whom all things were made.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;For us and for our salvation he came down from heaven,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;was incarnate of the Holy Spirit and the Virgin Mary,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;and became man.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;And he was crucified for us under Pontius Pilate,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;and suffered, and was buried.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;On the third day he rose again, according to the Scriptures,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;and ascended into heaven,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;and sits at the right hand of the Father.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;He will come again in glory to judge the living and the dead,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;and his kingdom shall have no end.
+      </p>
+      <p>
+        I believe in the Holy Spirit, the Lord, the giver of life,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;who proceeds from the Father,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;who with the Father and the Son together is worshiped and glorified,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;who has spoken by the prophets.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;I believe in one holy catholic and apostolic Church.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;I acknowledge one Baptism for the forgiveness of sins.<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;I look for the resurrection of the dead,<br />
+        &nbsp;&nbsp;&nbsp;&nbsp;and the life of the age to come.
+      </p>
+      <p class="creed-attr">— The Nicene Creed</p>
+    </blockquote>
+  </Faq>
+</Base>

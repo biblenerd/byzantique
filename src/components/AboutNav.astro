@@ -1,0 +1,21 @@
+---
+import { ABOUT_PAGES } from '../lib/nav';
+interface Props {
+  current?: string; // slug of the active subpage, if any
+}
+const { current } = Astro.props;
+const active = ABOUT_PAGES.find((p) => p.slug === current);
+---
+
+<nav class="crumbs ui">
+  <a href="/">Byzantique</a><span class="sep">›</span>
+  {active ? <a href="/about/">About</a> : <span>About</span>}
+  {active && <><span class="sep">›</span>{active.title}</>}
+</nav>
+<ul class="subnav ui">
+  {ABOUT_PAGES.map((p) => (
+    <li>
+      <a href={`/about/${p.slug}/`} aria-current={current === p.slug ? 'page' : undefined}>{p.title}</a>
+    </li>
+  ))}
+</ul>

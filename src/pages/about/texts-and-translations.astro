@@ -1,0 +1,194 @@
+---
+import Base from '../../layouts/Base.astro';
+import AboutNav from '../../components/AboutNav.astro';
+
+interface Row {
+  lang: string;
+  text: string;
+  abbr: string;
+  id: string;
+  basis: string;
+  license: string;
+}
+
+const sections: { heading: string; rows: Row[] }[] = [
+  {
+    heading: 'Old Testament',
+    rows: [
+      { lang: 'English', text: 'Updated Brenton English Septuagint', abbr: 'ENGLXXUP', id: 'englxxup', basis: 'Septuagint · default', license: 'Public Domain (CC0)' },
+      { lang: 'English', text: 'World English Bible', abbr: 'WEB', id: 'web', basis: 'Masoretic · alternative', license: 'Public Domain' },
+      { lang: 'Greek', text: 'Brenton Septuagint', abbr: 'GRCBRENT', id: 'grcbrent', basis: 'Septuagint', license: 'Public Domain' },
+      { lang: 'Hebrew', text: 'Westminster Leningrad Codex', abbr: 'HEBWLC', id: 'hebwlc', basis: 'Masoretic', license: 'Public Domain' },
+    ],
+  },
+  {
+    heading: 'New Testament',
+    rows: [
+      { lang: 'English', text: 'Text-Critical English New Testament / BTV', abbr: 'TCENT', id: 'tcent', basis: 'Byzantine · default', license: 'CC BY 4.0' },
+      { lang: 'English', text: 'World English Bible', abbr: 'WEB', id: 'web', basis: 'Byzantine Majority · alternative', license: 'Public Domain' },
+      { lang: 'Greek', text: 'Η Καινή Διαθήκη — Byzantine Greek NT', abbr: 'GRCBYZ', id: 'grcbyz', basis: 'Patriarchal, 1904', license: 'Public Domain' },
+    ],
+  },
+];
+---
+
+<Base title="Texts and Translations" description="The scripture texts, lectionary data, and licenses used by Byzantique." wide>
+  <AboutNav current="texts-and-translations" />
+  <h1>Texts and Translations</h1>
+  <p class="subtitle">The sources behind the biblical texts on this site, and their licenses.</p>
+
+  <p>
+    Scripture is displayed in English: the <strong>default</strong> translation for each Testament is
+    marked below, and any other translation is cited explicitly by abbreviation wherever it is used.
+    The Greek and Hebrew rows document the underlying <em>source texts</em> (what the English renders
+    or can be compared against) rather than texts currently shown on the page. The main sources were
+    drawn from <a href="https://ebible.org" target="_blank">ebible.org</a>, a free catalog of
+    public-domain and openly licensed Bibles; each entry below notes its eBible.org identifier.
+  </p>
+
+  {sections.map((s) => (
+    <>
+      <h2>{s.heading}</h2>
+      <table class="source-table">
+        <thead>
+          <tr>
+            <th scope="col">Language</th>
+            <th scope="col">Source text</th>
+            <th scope="col">Textual basis</th>
+            <th scope="col">License</th>
+          </tr>
+        </thead>
+        <tbody>
+          {s.rows.map((r) => (
+            <tr>
+              <td class="lang">{r.lang}</td>
+              <td><a href={`#${r.id}`}>{r.text}</a> <span class="abbr-inline">({r.abbr})</span></td>
+              <td class="basis">{r.basis}</td>
+              <td class="lic">{r.license}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </>
+  ))}
+
+  <h2>Texts in detail</h2>
+
+  <section class="text-entry" id="englxxup">
+    <h3>Updated Brenton English Septuagint <span class="abbr">ENGLXXUP</span></h3>
+    <p>
+      Adam Boyd's spelling-and-formatting update of Sir Lancelot C.&nbsp;L.&nbsp;Brenton's 1851
+      English translation of the Greek Septuagint. This is the <strong>default Old Testament text</strong>
+      on the site. Chapter and verse numbering follows the Septuagint, consistent with the Orthodox
+      lectionary.
+    </p>
+    <p class="meta">
+      <strong>Language:</strong> English ·
+      <strong>Basis:</strong> Septuagint ·
+      <strong>License:</strong> Public Domain (CC0) ·
+      <strong>eBible:</strong> <a href="https://ebible.org/find/details.php?id=englxxup" target="_blank"><code>englxxup</code></a>
+    </p>
+  </section>
+
+  <section class="text-entry" id="grcbrent">
+    <h3>Brenton Septuagint <span class="abbr">GRCBRENT</span></h3>
+    <p>
+      The Koine Greek Septuagint — <em>μετάφραση τῶν ἑβδομήκοντα</em>, including the Anagignoskomena —
+      compiled by Sir Lancelot C.&nbsp;L.&nbsp;Brenton. This is the Greek underlying the English
+      <a href="#englxxup">ENGLXXUP</a>, cited here as the source text for the Old Testament in Greek.
+    </p>
+    <p class="meta">
+      <strong>Language:</strong> Greek (Koine) ·
+      <strong>Basis:</strong> Septuagint ·
+      <strong>License:</strong> Public Domain ·
+      <strong>eBible:</strong> <a href="https://ebible.org/find/details.php?id=grcbrent" target="_blank"><code>grcbrent</code></a>
+    </p>
+  </section>
+
+  <section class="text-entry" id="hebwlc">
+    <h3>Westminster Leningrad Codex <span class="abbr">HEBWLC</span></h3>
+    <p>
+      The Hebrew text of the Masoretic tradition, transcribed from the Leningrad Codex by the
+      Westminster Hebrew Institute, Philadelphia, and maintained by the United Bible Societies.
+      Cited as the source text for the Old Testament in Hebrew, for comparison with the Masoretic Text.
+    </p>
+    <p class="meta">
+      <strong>Language:</strong> Hebrew ·
+      <strong>Basis:</strong> Masoretic Text ·
+      <strong>License:</strong> Public Domain ·
+      <strong>eBible:</strong> <a href="https://ebible.org/find/details.php?id=hebwlc" target="_blank"><code>hebwlc</code></a>
+    </p>
+  </section>
+
+  <section class="text-entry" id="tcent">
+    <h3>Text-Critical English New Testament / Byzantine Text Version <span class="abbr">TCENT / BTV</span></h3>
+    <p>
+      © Robert Adam Boyd, 2022. This is the <strong>default New Testament text</strong> on the site.
+      It is reformatted from USFM for display here, but its wording is unaltered. The translator's own
+      <a href="/nt/introduction/">Introduction to the New Testament</a> is included for reference, explaining
+      the Byzantine text, translation philosophy, and the textual notes (and their sigla). Notably:
+    </p>
+    <blockquote>
+      The <em>Byzantine Text Version</em> differentiates between second person singular and plural by
+      using an alternate letter (ʋ) in singular pronouns. Thus <em>yoʋ</em>, <em>yoʋr</em>, and
+      <em>yoʋrs</em> indicate the singular; <em>you</em>, <em>your</em>, and <em>yours</em> indicate
+      the plural.
+    </blockquote>
+    <p class="meta">
+      <strong>Language:</strong> English ·
+      <strong>Basis:</strong> Byzantine ·
+      <strong>License:</strong> <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC&nbsp;BY&nbsp;4.0</a> ·
+      <strong>eBible:</strong> <a href="https://ebible.org/find/details.php?id=engtcent" target="_blank"><code>engtcent</code></a>
+    </p>
+  </section>
+
+  <section class="text-entry" id="grcbyz">
+    <h3>Η Καινή Διαθήκη — Byzantine Greek New Testament <span class="abbr">GRCBYZ</span></h3>
+    <p>
+      The 1904 Patriarchal Greek New Testament of the Ecumenical Patriarchate, with 20 corrections from
+      later editions — the ecclesiastical Byzantine text. Cited as the Greek source text behind the
+      English <a href="#tcent">TCENT / BTV</a>.
+    </p>
+    <p class="meta">
+      <strong>Language:</strong> Greek (Koine) ·
+      <strong>Basis:</strong> Patriarchal / Byzantine ·
+      <strong>License:</strong> Public Domain ·
+      <strong>eBible:</strong> <a href="https://ebible.org/find/details.php?id=grcbyz" target="_blank"><code>grcbyz</code></a>
+    </p>
+  </section>
+
+  <section class="text-entry" id="web">
+    <h3>World English Bible <span class="abbr">WEB</span></h3>
+    <p>
+      A modern public-domain English translation by M.&nbsp;P.&nbsp;Johnson (2020). For the Old Testament
+      it follows the Hebrew Masoretic Text; for the New Testament a Byzantine Majority Text reconstruction.
+      It is the <strong>alternative English translation</strong> here, cited explicitly whenever used.
+    </p>
+    <p class="meta">
+      <strong>Language:</strong> English ·
+      <strong>Basis:</strong> Masoretic (OT) / Byzantine Majority (NT) ·
+      <strong>License:</strong> Public Domain ·
+      <strong>eBible:</strong> <a href="https://ebible.org/find/details.php?id=eng-web" target="_blank"><code>eng-web</code></a>
+    </p>
+  </section>
+
+  <h2>Lectionary</h2>
+  <p>
+    Orthodox calendar and lectionary data are derived from
+    <a href="https://github.com/brianglass/orthocal-python">orthocal-python</a> by Brian
+    Glass (MIT License), recomputed locally (Byzantique makes no live calls to any external
+    service).
+  </p>
+
+  <h2>This site's commentary</h2>
+  <p>
+    All commentary and notes are © Byzantique, licensed
+    <a href="/license/" rel="license">CC&nbsp;BY-SA&nbsp;4.0</a>.
+  </p>
+
+  <h2>Use of copyrighted material</h2>
+  <p>
+    I may use copyrighted material which has not always been specifically authorized by the copyright owner. I am making such material available for criticism, comment, news reporting, teaching, scholarship, or research. I believe this constitutes a "fair use" of any such copyrighted material as provided for in section 107 of the United States Copyright law.
+  </p>
+  <p>Please note that this is a nonprofit website. I do not sell nor knowingly use advertising nor any other means of earning income from this website.</p>
+</Base>

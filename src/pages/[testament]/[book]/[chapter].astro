@@ -1,0 +1,113 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { BOOKS, bookLabel } from '../../../lib/canon';
+import { builtCodes, loadBook, isVerse, isFootnote, letter } from '../../../lib/texts';
+import { notesForChapter, refRange, anchorBadge } from '../../../lib/commentary';
+
+export function getStaticPaths() {
+  const built = builtCodes();
+  const paths = [];
+  for (const b of BOOKS.filter((bk) => built.has(bk.code))) {
+    const text = loadBook(b.code)!;
+    for (const c of text.chapters) {
+      paths.push({
+        params: { testament: b.testament, book: b.slug, chapter: String(c.number) },
+        props: { book: b, chapterNumber: c.number, total: text.chapters.length },
+      });
+    }
+  }
+  return paths;
+}
+
+const { book, chapterNumber, total } = Astro.props;
+const text = loadBook(book.code)!;
+const chapter = text.chapters.find((c) => c.number === chapterNumber)!;
+const label = bookLabel(book);
+const heading = book.testament === 'ot' ? 'Old Testament' : 'New Testament';
+const base = `/${book.testament}/${book.slug}`;
+
+const blockClass = (b: { kind: string; level?: number }) =>
+  b.kind === 'q' ? `poetry q${b.level ?? 1}` : b.kind === 'd' ? 'psalm-title' : undefined;
+
+const prev = chapterNumber > 1 ? chapterNumber - 1 : null;
+const next = chapterNumber < total ? chapterNumber + 1 : null;
+const snippet = chapter.blocks
+  .flatMap((b) => b.segments ?? [])
+  .filter((s) => !isVerse(s))
+  .map((s: any) => s.t)
+  .join(' ')
+  .slice(0, 150);
+
+const notes = notesForChapter(book.code, chapterNumber);
+---
+
+<Base title={`${label} ${chapterNumber}`} description={snippet}>
+  <nav class="crumbs ui">
+    <a href="/">Byzantique</a><span class="sep">›</span>
+    <a href={`/${book.testament}/`}>{heading}</a><span class="sep">›</span>
+    <a href={`${base}/`}>{book.name}</a><span class="sep">›</span>Chapter {chapterNumber}
+  </nav>
+
+  <h1>{book.name}{book.paren && <span class="paren ui"> ({book.paren})</span>} {chapterNumber}</h1>
+
+  <div class="chips ui">
+    <span class="chip lect">📖 Lectionary chips — Phase 3</span>
+  </div>
+
+  <div class="scripture">
+    {chapter.blocks.map((b) =>
+      b.kind === 'b' ? (
+        <div class="stanza"></div>
+      ) : (
+        <p class={blockClass(b)}>
+          {b.segments!.map((s) =>
+            isVerse(s) ? (
+              <span class="vn" id={`v${s.n}`}>{s.v}</span>
+            ) : isFootnote(s) ? (
+              <a class="fn-ref" id={`fnref-${letter(s.f)}`} href={`#fn-${letter(s.f)}`}>{letter(s.f)}</a>
+            ) : (
+              <Fragment>{s.t}{' '}</Fragment>
+            ),
+          )}
+        </p>
+      ),
+    )}
+  </div>
+
+  {chapter.footnotes && chapter.footnotes.length > 0 && (
+    <section class="textual-notes ui">
+      <div class="col-label">Textual notes</div>
+      <ul class="tn-list">
+        {chapter.footnotes.map((fn, i) => (
+          <li id={`fn-${letter(i)}`}>
+            <a class="tn-letter" href={`#fnref-${letter(i)}`}>{letter(i)}</a>
+            {fn.ref && <span class="tn-ref">{fn.ref}</span>}
+            <span class="tn-body" set:html={fn.html} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  {notes.length > 0 && (
+    <section class="commentary">
+      <div class="col-label ui">Commentary</div>
+      {notes.map((n) => (
+        <article class="note">
+          <span class="note-anchor ui">
+            <span class="badge">{anchorBadge(n.anchor.type)}</span>
+            {book.name} {refRange(n.anchor)}
+          </span>
+          {n.title && <h3 class="note-title">{n.title}</h3>}
+          <div class="note-body" set:html={n.html} />
+        </article>
+      ))}
+    </section>
+  )}
+
+  <nav class="chapnav ui">
+    {prev ? <a href={`${base}/${prev}`}>← {chapterNumber - 1}</a> : <span class="disabled">←</span>}
+    <a href={`${base}/`}>{book.name}</a>
+    {next ? <a href={`${base}/${next}`}>{chapterNumber + 1} →</a> : <span class="disabled">→</span>}
+  </nav>
+</Base>

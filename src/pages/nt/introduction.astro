@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import { loadIntro } from '../../lib/texts';
+const intro = loadIntro('engtcent');
+---
+
+<Base
+  title="Introduction to the New Testament"
+  description="The introduction to the Text-Critical English New Testament (TCENT) — the Byzantine text, translation philosophy, and the textual apparatus."
+>
+  <nav class="crumbs ui">
+    <a href="/">Byzantique</a><span class="sep">›</span>
+    <a href="/nt/">New Testament</a><span class="sep">›</span>Introduction
+  </nav>
+  <h1>Introduction to the New Testament</h1>
+  <p class="subtitle">
+    From the <em>Text-Critical English New Testament</em> (TCENT), © Robert Adam Boyd —
+    used by permission (CC&nbsp;BY&nbsp;4.0).
+  </p>
+
+  {intro ? (
+    <div class="intro-body" set:html={intro.html} />
+  ) : (
+    <p>Introduction not available.</p>
+  )}
+</Base>

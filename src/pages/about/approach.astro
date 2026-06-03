@@ -1,0 +1,56 @@
+---
+import Base from '../../layouts/Base.astro';
+import AboutNav from '../../components/AboutNav.astro';
+import Scripture from '../../components/Scripture.astro';
+import Ref from '../../components/Ref.astro';
+import Fn from '../../components/Fn.astro';
+import FnList from '../../components/FnList.astro';
+import { footnotes } from '../../lib/footnotes';
+const fn = footnotes();
+---
+
+<Base title="Approach" description="How I read the Scriptures: from a Byzantine Christian vantage, on a workbench, not a pulpit.">
+  <AboutNav current="approach" />
+  <h1>Approach</h1>
+  <p class="subtitle">Byzantique is an exegetical workbench.</p>
+
+  <p>
+    I'm a Protestant convert to Eastern Orthodox Christianity and a perpetual student of Scripture. While I have some background in biblical studies and languages, I’m definitely <em>not</em> an expert. Think of this site as my personal notebook: one person's thoughts and study notes open for you to read.
+  </p>
+
+  <p><strong>This site is a workbench, not a pulpit.</strong> The goal here isn't to deliver polished doctrines or final answers, but to tinker with ideas, dig into the languages, and wrestle with critical theories. But there is a trap in treating Scripture purely as an academic playground or a puzzle to be solved, a trap that Christ explicitly warned against. He pointed out that it's entirely possible to master the text while completely missing its point:</p>
+
+  <Scripture ref="JHN 5:39-40" />
+
+  <p>
+    That reframes everything. The Bible, on its own terms, isn't the
+    destination, it's the signpost. It testifies to a Person. So the question I keep coming
+    back to is less <em>what does this text mean?</em> and more <em>Whom does it reveal?</em> It's important
+    to be transformed by the Word (Jesus Himself) in order to perceive Him more clearly (<em>cf., e.g.,</em>
+    <Ref ref="MAT 5:8" />, <Ref ref="LUK 24:44-48" />, <Ref ref="ROM 12:1-2" />, <Ref ref="1CO 13:12" />).
+  </p>
+
+  <blockquote>
+  Spiritually ill theologians produce sick theology…. The fathers affirmed a deep connection between the spiritual health of biblical interpreters and their ability to read the Bible well…. The fathers argue that any divorce between personal character, Christian community and the study of Scripture will be fatal for any attempt to understand the Bible.<Fn
+      fn={fn}
+      note="Christopher A. Hall, <em>Reading Scripture with the Church Fathers</em> (Downers Grove, IL: InterVarsity Press, 1998), 20, 41, 42."
+    />
+  </blockquote>
+
+  <p>
+    So why is this bench littered with source criticism, ancient Near Eastern parallels,
+    documentary hypotheses, and a fair amount of scholarship I don't even buy? Because tools
+    are tools, and I'd rather read with the academy's instruments in one hand and <em>hermeneutic of love</em> in the other.<Fn
+      fn={fn}
+      note="St. Augustine, <em>On Christian Doctrine</em> 1.36-39: 533-34."
+    /> Critical theories are objects of study here, not articles of faith: grist, not gospel. (And most of these notes are academic insight more than practical counsel; the praying tends to happen
+    off-page.)
+  </p>
+
+  <p>
+    None of this is a method I'm prescribing; it's just where I happen to be standing. I'm a
+    reader with notes. If something here helps you dig, wonderful.
+  </p>
+
+  <FnList fn={fn} />
+</Base>

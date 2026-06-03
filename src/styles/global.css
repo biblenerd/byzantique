@@ -1,0 +1,360 @@
+/* Byzantique global styles — Phase 0.
+   Palette/typography carried from prototypes/side-by-side.html.
+   Built with CSS variables so dark mode is a later drop-in (REQUIREMENTS.md §7). */
+
+:root {
+  --bg: #faf8f3;
+  --panel: #fffdf8;
+  --ink: #2b2722;
+  --ink-soft: #5c554b;
+  --rule: #e7e0d2;
+  --accent: #7c2128; /* Byzantine red */
+  --accent-soft: #f3e6e2;
+  --gold: #b08d3a;
+  --gold-soft: #f7eccb;
+  --link: #355c7d;
+  --hl: #fbeec2;
+
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+  --measure: 42rem;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 17px/1.65 var(--serif);
+  -webkit-font-smoothing: antialiased;
+}
+.ui { font-family: var(--sans); }
+a { color: var(--link); }
+
+/* skip link (a11y) */
+.skip {
+  position: absolute; left: -999px; top: 0;
+  background: var(--accent); color: #fff; padding: 8px 14px; z-index: 100;
+}
+.skip:focus { left: 8px; top: 8px; }
+
+/* ---- top bar ---- */
+header.topbar {
+  position: sticky; top: 0; z-index: 30;
+  background: var(--panel);
+  border-bottom: 1px solid var(--rule);
+  padding: 10px 20px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  font-family: var(--sans);
+}
+.brand { display: inline-flex; align-items: center; gap: 7px; font-weight: 700; letter-spacing: .03em; color: var(--accent); font-size: 18px; text-decoration: none; }
+.brand .glyph { flex: none; }
+.topbar nav { font-size: 14px; display: flex; gap: 16px; align-items: center; }
+.topbar .spacer { flex: 1; }
+
+/* ---- About dropdown ---- */
+.has-sub { position: relative; }
+.has-sub > a { white-space: nowrap; }
+.has-sub > .submenu {
+  position: absolute; left: 0; top: 100%; margin-top: 6px; min-width: 210px;
+  background: var(--panel); border: 1px solid var(--rule); border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(43, 39, 34, .12);
+  padding: 6px; display: none; flex-direction: column; z-index: 40;
+}
+.has-sub:hover > .submenu,
+.has-sub:focus-within > .submenu { display: flex; }
+.has-sub > .submenu a {
+  padding: 7px 10px; border-radius: 5px; text-decoration: none; color: var(--ink); font-size: 14px;
+}
+.has-sub > .submenu a:hover { background: var(--accent-soft); color: var(--accent); }
+
+/* ---- About section subnav ---- */
+.subnav { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 24px; padding: 0; list-style: none; }
+.subnav a {
+  font-family: var(--sans); font-size: 13.5px; padding: 5px 12px; border-radius: 999px;
+  border: 1px solid var(--rule); background: var(--panel); text-decoration: none; color: var(--ink);
+}
+.subnav a:hover { border-color: var(--accent); color: var(--accent); }
+.subnav a[aria-current="page"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* ---- breadcrumbs ---- */
+nav.crumbs { font-size: 13px; color: var(--ink-soft); font-family: var(--sans); margin: 18px 0 0; }
+nav.crumbs a { color: var(--link); text-decoration: none; }
+nav.crumbs a:hover { text-decoration: underline; }
+nav.crumbs .sep { opacity: .5; margin: 0 6px; }
+
+/* ---- layout ---- */
+main { max-width: var(--measure); margin: 0 auto; padding: 0 20px 80px; }
+main.wide { max-width: 60rem; }
+h1 { font-size: 30px; margin: 8px 0 2px; }
+h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
+.subtitle { color: var(--ink-soft); font-style: italic; margin: 0 0 8px; }
+.col-label {
+  font-family: var(--sans); text-transform: uppercase; letter-spacing: .12em;
+  font-size: 11px; font-weight: 700; color: var(--gold); margin: 24px 0 8px;
+}
+
+/* ---- chips ---- */
+.chips { margin: 14px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  font-family: var(--sans); font-size: 12.5px; padding: 5px 11px; border-radius: 999px;
+  background: var(--gold-soft); color: #6b531a; border: 1px solid #e7d39a;
+  display: inline-flex; gap: 6px; align-items: center; text-decoration: none;
+}
+.chip.lect { background: var(--accent-soft); color: var(--accent); border-color: #e6cac6; }
+
+/* ---- scripture ---- */
+.scripture { font-size: 19px; line-height: 1.85; }
+.scripture p { margin: 0 0 1em; }
+.scripture p.poetry,
+.scripture-quote p.poetry { margin: 0; line-height: 1.5; padding-left: 1.3em; text-indent: -1.3em; }
+.scripture p.poetry.q2,
+.scripture-quote p.poetry.q2 { margin-left: 1.4em; }
+.scripture p.poetry.q3,
+.scripture-quote p.poetry.q3 { margin-left: 2.8em; }
+.scripture p.poetry.q4,
+.scripture-quote p.poetry.q4 { margin-left: 4.2em; }
+.scripture p.psalm-title,
+.scripture-quote p.psalm-title { font-style: italic; color: var(--ink-soft); margin: 0 0 .35em; }
+.scripture .stanza,
+.scripture-quote .stanza { height: .75em; }
+.vn {
+  font-family: var(--sans); font-size: 11px; font-weight: 700; color: var(--accent);
+  vertical-align: super; margin-right: 2px; user-select: none; scroll-margin-top: 72px;
+}
+.vn:target { background: var(--hl); border-radius: 3px; }
+
+/* textual-note callers (lettered, inline) */
+.fn-ref {
+  font-family: var(--sans); font-size: 10.5px; font-weight: 600; vertical-align: super;
+  color: var(--link); text-decoration: none; padding: 0 1px; scroll-margin-top: 72px;
+}
+.fn-ref:hover { text-decoration: underline; }
+.fn-ref:target { background: var(--hl); border-radius: 3px; }
+.fn-ref a { color: var(--link); text-decoration: none; } /* intro callers wrap an <a> in <sup> */
+.fn-ref a:hover { text-decoration: underline; }
+
+/* footnote hover popover */
+.fn-pop {
+  position: fixed; z-index: 60; max-width: 330px;
+  background: var(--ink); color: #f6f1e7;
+  font-family: var(--sans); font-size: 13px; line-height: 1.5;
+  padding: 9px 12px; border-radius: 8px; box-shadow: 0 10px 34px rgba(43, 39, 34, .3);
+  opacity: 0; transform: translateY(4px); transition: opacity .12s, transform .12s; pointer-events: none;
+}
+.fn-pop.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.fn-pop em { font-style: italic; }
+.fn-pop strong { font-weight: 700; }
+/* keep all popover text light (override the dark .tn-body em used in the bottom list) */
+.fn-pop .tn-body,
+.fn-pop .tn-body em,
+.fn-pop em { color: #f6f1e7; }
+.fn-pop .tn-ref { color: #d8c594; margin-right: 6px; font-weight: 600; }
+
+/* textual notes list (under the text, before commentary) */
+.textual-notes {
+  margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--rule);
+  font-size: 14px; color: var(--ink-soft);
+}
+.tn-list { list-style: none; padding: 0; margin: 6px 0 0; }
+.tn-list li { display: flex; gap: 8px; margin: 0 0 5px; scroll-margin-top: 72px; line-height: 1.5; }
+.tn-list li:target { background: var(--hl); border-radius: 4px; }
+.tn-letter { font-weight: 700; color: var(--accent); text-decoration: none; min-width: 1.1em; flex: none; }
+.tn-letter:hover { text-decoration: underline; }
+.tn-ref { color: var(--ink-soft); flex: none; font-variant-numeric: tabular-nums; }
+.tn-body em { font-style: italic; color: var(--ink); }
+
+/* FAQ accordion (native <details>) */
+.faq { border-bottom: 1px solid var(--rule); }
+.faq:first-of-type { border-top: 1px solid var(--rule); }
+.faq summary {
+  cursor: pointer; list-style: none; padding: 15px 32px 15px 0; position: relative;
+  font-size: 18px; font-weight: 600; color: var(--ink);
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: '+'; position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  color: var(--accent); font-size: 22px; font-weight: 400; line-height: 1;
+}
+.faq[open] summary::after { content: '–'; }
+.faq summary:hover { color: var(--accent); }
+.faq summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.faq-body { padding: 0 0 16px; color: var(--ink-soft); }
+.faq-body p { margin: 0 0 10px; }
+.faq-body p:last-child { margin-bottom: 0; }
+
+/* translation introduction page */
+.intro-body { font-size: 17px; }
+.intro-body h2 { font-size: 22px; color: var(--accent); margin: 30px 0 4px; }
+.intro-body h3 { font-size: 18px; margin: 22px 0 2px; }
+.intro-body p { margin: 0 0 1em; }
+.intro-body p.eg {
+  margin: 0 0 1em 1.4em; padding-left: 12px; border-left: 2px solid var(--rule);
+  color: var(--ink-soft); font-size: 16px;
+}
+.intro-body table.sigla {
+  border-collapse: collapse; width: 100%; margin: 14px 0 18px; font-size: 14.5px;
+  border: 1px solid var(--rule); border-radius: 8px; overflow: hidden;
+}
+.intro-body table.sigla th {
+  text-align: left; vertical-align: top; white-space: nowrap; padding: 9px 16px;
+  color: var(--accent); font-family: var(--sans); font-weight: 700; font-size: 14px;
+}
+.intro-body table.sigla td { vertical-align: top; padding: 9px 16px; line-height: 1.5; }
+.intro-body table.sigla tr:nth-child(even) { background: #f5f0e6; }
+.intro-body table.sigla tr:hover { background: var(--hl); }
+.intro-body sup.fn-ref { font-size: .7em; }
+
+/* Abbreviations page */
+.abbrev-table {
+  border-collapse: collapse; width: 100%; margin: 18px 0 8px; font-size: 15px;
+  border: 1px solid var(--rule); border-radius: 8px; overflow: hidden;
+}
+.abbrev-table thead th {
+  font-family: var(--sans); font-size: 11.5px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-soft); text-align: left;
+  background: var(--accent-soft); padding: 9px 16px; border-bottom: 1px solid var(--rule);
+}
+.abbrev-table tbody th {
+  text-align: left; vertical-align: top; white-space: nowrap; padding: 9px 16px;
+  color: var(--accent); font-family: var(--sans); font-weight: 700; font-size: 14px;
+  scroll-margin-top: 72px;
+}
+.abbrev-table tbody td { vertical-align: top; padding: 9px 16px; line-height: 1.5; }
+.abbrev-table tbody tr:nth-child(even) { background: #f5f0e6; }
+.abbrev-table tbody tr:hover { background: var(--hl); }
+.abbrev-table tbody tr:target { background: var(--hl); box-shadow: inset 3px 0 0 var(--accent); }
+.abbrev-table .tt-link {
+  display: block; margin-top: 4px; font-family: var(--sans); font-size: 11.5px;
+  font-weight: 700; letter-spacing: .02em; color: var(--accent); text-decoration: none;
+}
+.abbrev-table .tt-link:hover { text-decoration: underline; }
+
+/* Texts and Translations — per-Testament source tables */
+.source-table {
+  border-collapse: collapse; width: 100%; margin: 12px 0 22px; font-size: 14.5px;
+  border: 1px solid var(--rule); border-radius: 8px; overflow: hidden;
+}
+.source-table thead th {
+  font-family: var(--sans); font-size: 11.5px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-soft); text-align: left;
+  background: var(--accent-soft); padding: 9px 14px; border-bottom: 1px solid var(--rule);
+}
+.source-table td { vertical-align: top; padding: 9px 14px; line-height: 1.45; }
+.source-table tbody tr:nth-child(even) { background: #f5f0e6; }
+.source-table tbody tr:hover { background: var(--hl); }
+.source-table .lang { font-family: var(--sans); font-weight: 700; font-size: 13px; color: var(--accent); white-space: nowrap; }
+.source-table .basis, .source-table .lic { font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); }
+.source-table .lic { white-space: nowrap; }
+.source-table .abbr-inline { font-family: var(--sans); font-size: 12px; color: var(--ink-soft); }
+
+/* Texts and Translations — detail cards */
+.text-entry {
+  background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+  border-radius: 6px; padding: 14px 18px; margin: 14px 0; scroll-margin-top: 72px;
+}
+.text-entry:target { box-shadow: 0 0 0 2px var(--gold); }
+.text-entry h3 { margin: 0 0 8px; font-size: 17px; line-height: 1.3; }
+.text-entry h3 .abbr {
+  font-family: var(--sans); font-size: 11.5px; font-weight: 700; letter-spacing: .03em;
+  color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 10px;
+  vertical-align: middle; margin-left: 4px; white-space: nowrap;
+}
+.text-entry p { margin: 0; }
+.text-entry blockquote { margin: 10px 0 0; }
+.text-entry .meta { font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); margin-top: 10px; line-height: 1.7; }
+.text-entry .meta strong { color: var(--ink); font-weight: 600; }
+.text-entry .meta code { font-size: 12px; }
+
+/* ---- book / chapter grids ---- */
+.grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; padding: 0; list-style: none; }
+.grid a {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 2.4em; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 6px;
+  background: var(--panel); text-decoration: none; color: var(--ink); font-family: var(--sans); font-size: 14px;
+}
+.grid a:hover { border-color: var(--accent); color: var(--accent); }
+
+.booklist { list-style: none; padding: 0; margin: 10px 0; }
+.booklist li { display: flex; align-items: center; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--rule); }
+.booklist .bk-main { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
+.booklist a { text-decoration: none; }
+.booklist .paren { color: var(--ink-soft); }
+
+/* commentary-coverage progress track (right-aligned) */
+.booklist .cov { flex: none; }
+.booklist .cov-track { display: block; width: 84px; height: 6px; border-radius: 999px; background: var(--off, #dcd5c5); overflow: hidden; }
+.booklist .cov-fill { display: block; height: 100%; min-width: 4px; background: var(--accent); border-radius: 999px; }
+.booklist .booktag,
+.booklist .status {
+  font-family: var(--sans); font-size: 10.5px; border-radius: 999px; padding: 1px 7px;
+  vertical-align: middle; border: 1px solid var(--rule); color: var(--ink-soft);
+  cursor: help;
+}
+/* canonical-status chips: OT Anagignoskomena + NT Antilegomena = amber; Homologoumena = green */
+.booklist .status--anag,
+.booklist .status--antilegomena { color: var(--gold); border-color: #e7d39a; }
+.booklist .status--homologoumena { color: #2f6b46; border-color: #bcdcc6; }
+.booklist .todo { color: var(--ink-soft); }
+
+/* ---- commentary notes ---- */
+.commentary { margin-top: 30px; }
+.note {
+  background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+  border-radius: 6px; padding: 14px 18px; margin: 0 0 18px;
+}
+.note-anchor {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .03em; color: var(--accent);
+  display: inline-flex; align-items: center; gap: 6px; margin-bottom: 4px;
+}
+.note-anchor .badge {
+  font-weight: 600; color: var(--ink-soft); background: #f1ece1; border: 1px solid var(--rule);
+  border-radius: 999px; padding: 1px 8px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em;
+}
+.note-title { font-size: 19px; margin: 2px 0 8px; }
+.note-body { font-size: 16.5px; }
+.note-body p { margin: 0 0 12px; }
+.note-body blockquote {
+  margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--gold);
+  background: var(--gold-soft); border-radius: 0 6px 6px 0; color: #4a4233; font-style: italic;
+}
+.note-body blockquote p { margin: 0; }
+
+/* embedded scripture quote ( {{ GEN 1:1-3 }} in commentary Markdown ) */
+blockquote.scripture-quote {
+  margin: 14px 0; padding: 12px 18px; border-left: 3px solid var(--accent);
+  background: var(--panel); border-radius: 0 6px 6px 0; font-size: 17px; font-style: normal;
+}
+blockquote.scripture-quote p { margin: 0 0 6px; }
+blockquote.scripture-quote cite {
+  display: block; text-align: right; font-style: normal; font-family: var(--sans);
+  font-size: 13px; color: var(--ink-soft);
+}
+blockquote.scripture-quote cite a { color: var(--ink-soft); text-decoration: none; }
+blockquote.scripture-quote cite a:hover { color: var(--accent); text-decoration: underline; }
+
+/* Nicene Creed (FAQ) */
+blockquote.creed {
+  margin: 12px 0; padding: 4px 0 4px 16px; border-left: 3px solid var(--accent-soft);
+  font-style: normal; line-height: 1.55;
+}
+blockquote.creed p { margin: 0 0 .85em; }
+blockquote.creed p.creed-attr {
+  margin: .5em 0 0; font-family: var(--sans); font-size: 13px; color: var(--ink-soft);
+}
+
+/* ---- chapter nav ---- */
+.chapnav { display: flex; justify-content: space-between; align-items: center; margin: 28px 0 0; font-family: var(--sans); font-size: 14px; }
+.chapnav a { text-decoration: none; padding: 6px 12px; border: 1px solid var(--rule); border-radius: 6px; }
+.chapnav a:hover { border-color: var(--accent); color: var(--accent); }
+.chapnav .disabled { opacity: .35; pointer-events: none; }
+
+/* ---- footer ---- */
+footer.site { border-top: 1px solid var(--rule); margin-top: 40px; padding: 20px; font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); text-align: center; }
+footer.site a { color: var(--link); }
+
+/* ---- multilingual (REQUIREMENTS.md §12) — placeholder; fonts wired in Phase 1 ---- */
+[lang="grc"] { font-family: "Gentium Plus", var(--serif); }
+[lang="he"] { font-family: "Ezra SIL", "Taamey Frank CLM", serif; font-size: 1.15em; direction: rtl; unicode-bidi: isolate; }

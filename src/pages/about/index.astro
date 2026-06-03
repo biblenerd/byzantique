@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import AboutNav from '../../components/AboutNav.astro';
+import { ABOUT_PAGES } from '../../lib/nav';
+---
+
+<Base title="About" description="About Byzantique — its texts, approach, abbreviations, and FAQs.">
+  <AboutNav />
+  <h1>About</h1>
+  <p class="subtitle">What this site is, and how to read it.</p>
+
+  <p>
+    Byzantique is a commentary corpus on the biblical text, displayed alongside the rhythm of the Eastern Orthodox lectionary. The pages below explain the texts and translations used, the general approach of this site, abbreviations you'll encounter, and answers to common questions.
+  </p>
+
+  <p class="subtitle">
+    <strong>Please don't blame my boss or my bishop:</strong> 
+    The thoughts, musings, and occasional architectural ruins of arguments found on this site belong 
+    solely to me. They absolutely do not speak for my day-job employer, nor do they represent the 
+    official voice of the Orthodox Church, my diocese, or my parish. In fact, <strong>I</strong> don't even 
+    agree with everything posted here. Sharing a text or a quote is an act of curiosity, not an 
+    endorsement. I comment on things because they make me think, not because I agree with the premise, but 
+    because I found them worth chewing on.
+  </p>
+
+  <div class="col-label ui">In this section</div>
+  <ul class="booklist">
+    {ABOUT_PAGES.map((p) => (
+      <li><a href={`/about/${p.slug}/`}>{p.title}</a></li>
+    ))}
+  </ul>
+</Base>

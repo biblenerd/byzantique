@@ -1,0 +1,49 @@
+---
+import Base from '../layouts/Base.astro';
+import { loadManifest } from '../lib/texts';
+import Scripture from '../components/Scripture.astro';
+const manifest = loadManifest();
+const books = manifest.length;
+const verses = manifest.reduce((a, m) => a + m.verses, 0);
+---
+
+<Base title="Byzantique" description="Dan's notes on the Scriptures.">
+  <h1>Byzantique</h1>
+  <p class="subtitle">Dan's notes on the Scriptures.</p>
+
+  <div class="chips ui">
+    <span class="chip lect">📖 Today's readings — coming in Phase 3</span>
+  </div>
+
+  <p>
+    Welcome to <strong>Byzantique!</strong> I'm Dan. I'm a reader, thinker, geek, and Eastern Orthodox Christian. (And yes, that sentence was intentionally written with an Oxford comma; I have standards).
+  </p>
+
+  <p>
+    Frankly, my notes were buried in too many platforms and documents, and I wantd to consolidate them 
+    for my own reference. If they help you out, <em>cool beans</em>. If they don't, the internet is vast and full of cats.
+  </p>
+
+  <p>
+    Herein you'll find a growing commentary corpus, presenting the Scriptures alongside notes and woven through 
+    with the rhythm of the Eastern Orthodox lectionary.
+  </p>
+
+  <p>
+    This is explicitly <em>not</em> an introductory resource. The approach here balances traditional inheritance with general academic biblical studies, so you will encounter non-Orthodox scholarship and critical theories. <strong>This is an exegetical sandbox for notes.</strong> If you find something controversial here, assume it's an object of study, not an article of faith.
+  </p>
+
+  <div class="col-label ui">Browse</div>
+  <ul class="grid">
+    <li><a href="/ot/">Old Testament</a></li>
+    <li><a href="/nt/">New Testament</a></li>
+  </ul>
+
+  <p class="subtitle">
+    The full text of both Testaments is browsable — {books} books,
+    {' '}{verses.toLocaleString()} verses. The
+    coverage bar on each Testament page shows where notes exist.
+  </p>
+
+  <Scripture ref="ECC 12:10-14" />
+</Base>

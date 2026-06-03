@@ -1,0 +1,81 @@
+---
+import Base from '../../layouts/Base.astro';
+import AboutNav from '../../components/AboutNav.astro';
+
+// [abbreviation, meaning (HTML allowed), optional Texts-and-Translations anchor id].
+// Cross-references between rows link by #ab-<abbr>; the 3rd element links back to
+// /about/texts-and-translations/#<id> for texts documented there.
+const abbrevs: [string, string, string?][] = [
+  ['ANE', 'Ancient Near East(ern)'],
+  ['ANT', 'Greek New Testament of the Ecumenical Patriarchate of Constantinople, edited by Basileios Antoniades (1904); see <a href="#ab-GRCBYZ">GRCBYZ</a>.'],
+  ['BDAG', 'Arndt, William, Frederick W. Danker, Walter Bauer, and F. Wilbur Gingrich. <em>A Greek-English Lexicon of the New Testament and Other Early Christian Literature.</em> Chicago: University of Chicago Press, 2000.'],
+  ['BHS', '<em>Biblia Hebraica Stuttgartensia.</em> Electronic ed. Stuttgart: German Bible Society, 2003.'],
+  ['BHQ', 'Schenker, Adrian, et al. <em>Biblia Hebraica Quinta.</em> Stuttgart: Deutsche Bibelgesellschaft, 2011.'],
+  ['BTV', 'Robert Adam Boyd, <em>Byzantine Text Version.</em> See <a href="#ab-TCENT">TCENT</a>.', 'tcent'],
+  ['CT', 'Critical Text (general term for critical editions of the Greek New Testament). In <a href="#ab-TCENT">TCENT</a> footnotes, this designation is used when NA, SBL, TH, and WH are all in agreement.'],
+  ['DSS', 'Dead Sea Scrolls.'],
+  ['ENGLXXUP', 'Sir Lancelot C. L. Brenton, Robert Adam Boyd, ed., <em>Updated Brenton English Septuagint (ENGLXXUP)</em>, 1851 / 2020.', 'englxxup'],
+  ['ECM†', 'Editio Critica Maior (1997–2024) split guiding line alternative readings in <a href="#ab-TCENT">TCENT</a> footnotes.'],
+  ['EOB', 'Laurent Cleenewerck, ed. <em>The Eastern/Greek Orthodox Bible: New Testament.</em> 2011.'],
+  ['GRCBRENT', 'Sir Lancelot C. L. Brenton, comp., <em>Brenton Septuagint</em> (<em>μετάφραση τῶν ἑβδομήκοντα</em>); the Koine Greek Septuagint underlying <a href="#ab-ENGLXXUP">ENGLXXUP</a>.', 'grcbrent'],
+  ['GRCBYZ', '<em>Η Καινή Διαθήκη</em>, Byzantine Greek New Testament; the 1904 Patriarchal text with later corrections.', 'grcbyz'],
+  ['Kr', 'Family 35 NT manuscripts; see <a href="#ab-PCK">PCK</a>.'],
+  ['HALOT', 'Ludwig Koehler, Walter Baumgartner, et al., <em>The Hebrew and Aramaic Lexicon of the Old Testament</em> (Leiden: E. J. Brill, 1994–2000).'],
+  ['HEBWLC', 'Westminster Hebrew Institute, <em>Westminster Leningrad Codex</em>; the Hebrew Masoretic Text.', 'hebwlc'],
+  ['HF', 'Hodges and Farstad, <em>The Greek New Testament According to the Majority Text</em>, 2nd edition (1985).'],
+  ['KNT', 'N. T. Wright. <em>The Bible for Everyone: A New Translation.</em> London: SPCK, 2018 (the NT was originally published as the <em>Kingdom New Testament</em>, hence the acronym; sometimes also <a href="#ab-NTFE">NTFE</a>).'],
+  ['KJV', '<em>The Holy Bible: King James Version.</em> 1611 / 1769.'],
+  ['LES', 'Brannan, Rick, et al. <em>The Lexham English Septuagint (LES).</em> Second Edition. Bellingham, WA: Lexham Press, 2020.'],
+  ['LXX', 'Septuagint (Greek Old Testament).'],
+  ['MSS', 'Manuscripts.'],
+  ['MT', 'The "Masoretic Text" of the Hebrew Bible.'],
+  ['NA', 'Nestle-Aland, <em>Greek New Testament</em>, 29th ed. (2026).'],
+  ['NA27', 'Nestle, Eberhard, et al. <em>The Greek New Testament.</em> 27th ed. Stuttgart: Deutsche Bibelgesellschaft, 1993.'],
+  ['NA28', 'Aland, Kurt, et al. <em>Novum Testamentum Graece.</em> 28th Edition. Stuttgart: Deutsche Bibelgesellschaft, 2012.'],
+  ['NET', '<em>New English Translation</em> / NET Bible®, Biblical Studies Press, L.L.C., 1996, 2019.'],
+  ['NETS', 'Pietersma, Albert, and Benjamin G. Wright, eds. <em>A New English Translation of the Septuagint.</em> Oxford University Press, 2007.'],
+  ['NKJV', '<em>The New King James Version</em>. Nashville: Thomas Nelson, 1982.'],
+  ['NT', 'New Testament.'],
+  ['NTFE', 'N. T. Wright, <em>New Testament For Everyone</em>. See <a href="#ab-KNT">KNT</a>.'],
+  ['OSB', 'St. Athanasius Orthodox Academy, ed. <em>The Orthodox Study Bible.</em> Nashville: Thomas Nelson, 2008.'],
+  ['OT', 'Old Testament.'],
+  ['PCK', 'Wilbur Pickering, <em>The Greek New Testament According to Family 35</em>, 3rd edition (2020).'],
+  ['RP', 'Robinson and Pierpont, <em>The New Testament in the Original Greek</em>, electronic text (2025).'],
+  ['RSV', '<em>The Revised Standard Version.</em> 1971.'],
+  ['SBL', 'Holmes, Michael W. <em>The Greek New Testament: SBL Edition</em>. Lexham Press; Society of Biblical Literature, 2011–2013.'],
+  ['SCR', 'Scrivener, <em>Textus Receptus</em>, 1st edition (1881).'],
+  ['ST', 'Stephanus, <em>Textus Receptus</em>, 3rd edition (1550).'],
+  ['TCENT', 'Robert Adam Boyd, <em>Text-Critical English New Testament</em>.', 'tcent'],
+  ['TH', '<em>The Greek New Testament</em>, Produced at Tyndale House, Cambridge (2017).'],
+  ['TR', 'Textus Receptus (in <a href="#ab-TCENT">TCENT</a> footnotes, this designation is used when SCR and ST are in agreement).'],
+  ['UBS4', 'Aland, Kurt, et al. <em>The Greek New Testament,</em> Fourth Revised Edition. Deutsche Bibelgesellschaft, 1993; 2006.'],
+  ['UBS5', 'Aland, Barbara, et al. <em>The Greek New Testament.</em> Fifth Revised Edition. Stuttgart: Deutsche Bibelgesellschaft, 2014.'],
+  ['WEB', '<em>World English Bible</em> by M. P. Johnson (2020).', 'web'],
+  ['WH', 'Westcott and Hort, <em>Greek New Testament</em> (1881).'],
+];
+---
+
+<Base title="Abbreviations" description="Sigla and short forms used across Byzantique's notes and commentary." wide>
+  <AboutNav current="abbreviations" />
+  <h1>Common Abbreviations</h1>
+  <p class="subtitle">Sigla and short forms used across the notes and commentary.</p>
+
+  <table class="abbrev-table">
+    <thead>
+      <tr><th scope="col">Abbreviation</th><th scope="col">Citation / Meaning</th></tr>
+    </thead>
+    <tbody>
+      {abbrevs.map(([ab, meaning, src]) => (
+        <tr id={`ab-${ab}`}>
+          <th scope="row">{ab}</th>
+          <td>
+            <Fragment set:html={meaning} />
+            {src && (
+              <a class="tt-link" href={`/about/texts-and-translations/#${src}`}>Texts &amp; Translations →</a>
+            )}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</Base>

@@ -1,0 +1,13 @@
+---
+// Inline footnote marker:  ...text<Fn fn={fn} note="Source, p. 42." />
+// `note` may contain HTML (e.g. <em>…</em> or an <a href>). Pair with <FnList>.
+import type { FootnoteCollector } from '../lib/footnotes';
+
+interface Props {
+  fn: FootnoteCollector;
+  note: string;
+}
+const { fn, note } = Astro.props;
+---
+
+<Fragment set:html={fn.mark(note)} />

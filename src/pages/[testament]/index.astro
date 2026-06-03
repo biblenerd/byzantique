@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import { OT_BOOKS, NT_BOOKS, type Testament } from '../../lib/canon';
+import { builtCodes, loadManifest } from '../../lib/texts';
+import { chipDef } from '../../lib/chips';
+import { bookCoverage } from '../../lib/commentary';
+
+export function getStaticPaths() {
+  return [{ params: { testament: 'ot' } }, { params: { testament: 'nt' } }];
+}
+
+const testament = Astro.params.testament as Testament;
+const books = testament === 'ot' ? OT_BOOKS : NT_BOOKS;
+const heading = testament === 'ot' ? 'Old Testament' : 'New Testament';
+const built = builtCodes();
+const chaptersByCode = new Map(loadManifest().map((m) => [m.code, m.chapters]));
+---
+
+<Base title={heading} description={`Browse the ${heading} in canonical order.`}>
+  <nav class="crumbs ui"><a href="/">Byzantique</a><span class="sep">›</span>{heading}</nav>
+  <h1>{heading}</h1>
+  <p class="subtitle">
+    {testament === 'ot' ? 'The first testament of the Christian Scriptures, following the Septuagint (LXX).' : 'The second testament of the Christian Scriptures.'}
+  </p>
+
+  <ul class="booklist">
+    {books.map((b) => {
+      const isBuilt = built.has(b.code);
+      const cov = bookCoverage(b.code, chaptersByCode.get(b.code) ?? 0);
+      const pct = Math.round(cov.fraction * 100);
+      const covTitle =
+        cov.notes > 0
+          ? `Commentary coverage ≈ ${pct}% (${cov.notes} note${cov.notes === 1 ? '' : 's'})`
+          : 'No commentary yet';
+      return (
+        <li>
+          <span class="bk-main">
+            {isBuilt ? (
+              <a href={`/${testament}/${b.slug}/`}>
+                {b.name}{b.paren && <span class="paren"> ({b.paren})</span>}
+              </a>
+            ) : (
+              <span class="todo">
+                {b.name}{b.paren && <span class="paren"> ({b.paren})</span>}
+              </span>
+            )}
+            {b.chips?.map((c) => <span class="booktag" title={chipDef(c)}>{c}</span>)}
+            {b.status && (
+              <span class={`status status--${b.status.kind}`} title={chipDef(b.status.label)}>{b.status.label}</span>
+            )}
+          </span>
+          <span class="cov" title={covTitle} aria-label={covTitle}>
+            <span class="cov-track">
+              {cov.fraction > 0 && <span class="cov-fill" style={`width:${pct}%`}></span>}
+            </span>
+          </span>
+        </li>
+      );
+    })}
+  </ul>
+</Base>

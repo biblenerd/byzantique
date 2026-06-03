@@ -1,0 +1,36 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { BOOKS, bookLabel } from '../../../lib/canon';
+import { builtCodes, loadBook } from '../../../lib/texts';
+
+export function getStaticPaths() {
+  const built = builtCodes();
+  return BOOKS.filter((b) => built.has(b.code)).map((b) => ({
+    params: { testament: b.testament, book: b.slug },
+    props: { book: b },
+  }));
+}
+
+const { book } = Astro.props;
+const text = loadBook(book.code)!;
+const heading = book.testament === 'ot' ? 'Old Testament' : 'New Testament';
+const label = bookLabel(book);
+---
+
+<Base title={label} description={`${label} — read the text with commentary.`}>
+  <nav class="crumbs ui">
+    <a href="/">Byzantique</a><span class="sep">›</span>
+    <a href={`/${book.testament}/`}>{heading}</a><span class="sep">›</span>{label}
+  </nav>
+  <h1>{book.name}{book.paren && <span class="paren ui"> ({book.paren})</span>}</h1>
+  <p class="subtitle">{text.chapters.length} chapters · Updated Brenton Septuagint (ENGLXXUP)</p>
+
+  <p>Book introduction and book-level commentary will live here (Phase 2).</p>
+
+  <div class="col-label ui">Chapters</div>
+  <ul class="grid">
+    {text.chapters.map((c) => (
+      <li><a href={`/${book.testament}/${book.slug}/${c.number}`}>{c.number}</a></li>
+    ))}
+  </ul>
+</Base>
