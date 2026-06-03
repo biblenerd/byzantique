@@ -10,6 +10,16 @@ interface Props {
 const { title, description, wide } = Astro.props;
 const fullTitle = title === 'Byzantique' ? title : `${title} · Byzantique`;
 const year = new Date().getFullYear();
+
+// Pagefind search filter: which part of the site this page belongs to.
+const path = Astro.url.pathname;
+const section = path.startsWith('/ot/')
+  ? 'Old Testament'
+  : path.startsWith('/nt/')
+    ? 'New Testament'
+    : path.startsWith('/about/')
+      ? 'About'
+      : 'Site';
 ---
 
 <!doctype html>
@@ -49,8 +59,22 @@ const year = new Date().getFullYear();
         </span>
       </nav>
       <span class="spacer"></span>
+      <form class="site-search" action="/search/" role="search">
+        <svg class="search-ic" viewBox="0 0 24 24" width="16" height="16" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" /><line x1="16.5" y1="16.5" x2="21" y2="21" />
+        </svg>
+        <input type="search" name="q" placeholder="Search…" aria-label="Search Byzantique" autocomplete="off" />
+        <div class="search-dropdown" hidden role="listbox" aria-label="Search results"></div>
+      </form>
+      <a class="site-search-icon" href="/search/" aria-label="Search">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" /><line x1="16.5" y1="16.5" x2="21" y2="21" />
+        </svg>
+      </a>
     </header>
-    <main id="main" class={wide ? 'wide' : undefined}>
+    <main id="main" class={wide ? 'wide' : undefined} data-pagefind-body data-pagefind-filter={`Section:${section}`}>
       <slot />
     </main>
     <footer class="site">
@@ -106,6 +130,84 @@ const year = new Date().getFullYear();
         pop.addEventListener('mouseleave', hide);
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') pop.classList.remove('show');
+        });
+      })();
+    </script>
+
+    <script is:inline>
+      // Header search: live dropdown of top results via the Pagefind JS API.
+      // Enter submits the form to /search/?q=… (also the no-JS fallback).
+      // The Pagefind index only exists on the built site, so this no-ops in dev.
+      (() => {
+        const form = document.querySelector('.site-search');
+        if (!form) return;
+        const input = form.querySelector('input[name="q"]');
+        const panel = form.querySelector('.search-dropdown');
+        let pf = null;
+        let failed = false;
+        let timer;
+
+        const load = async () => {
+          if (pf || failed) return pf;
+          try {
+            pf = await import('/pagefind/pagefind.js');
+            await pf.init?.();
+          } catch {
+            failed = true;
+          }
+          return pf;
+        };
+
+        const render = (items, q) => {
+          if (!items.length) {
+            panel.innerHTML = '<div class="sr-empty">No matches.</div>';
+          } else {
+            panel.innerHTML =
+              items
+                .map(
+                  (d) =>
+                    `<a class="sr" href="${d.url}"><span class="sr-title">${
+                      (d.meta && d.meta.title) || 'Result'
+                    }</span><span class="sr-ex">${d.excerpt}</span></a>`,
+                )
+                .join('') +
+              `<a class="sr-more" href="/search/?q=${encodeURIComponent(q)}">See all results →</a>`;
+          }
+          panel.hidden = false;
+        };
+
+        const run = async () => {
+          const q = input.value.trim();
+          if (q.length < 2) {
+            panel.hidden = true;
+            return;
+          }
+          const p = await load();
+          if (!p) {
+            panel.hidden = true;
+            return;
+          }
+          const res = await p.search(q);
+          if (input.value.trim() !== q) return; // a newer query superseded this one
+          const items = await Promise.all(res.results.slice(0, 5).map((r) => r.data()));
+          render(items, q);
+        };
+
+        input.addEventListener('input', () => {
+          clearTimeout(timer);
+          timer = setTimeout(run, 160);
+        });
+        input.addEventListener('focus', () => {
+          if (input.value.trim().length >= 2 && panel.innerHTML) panel.hidden = false;
+        });
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            panel.hidden = true;
+            input.blur();
+          }
+        });
+        document.addEventListener('click', (e) => {
+          if (!form.contains(e.target)) panel.hidden = true;
         });
       })();
     </script>

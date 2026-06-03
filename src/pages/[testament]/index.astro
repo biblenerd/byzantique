@@ -17,7 +17,7 @@ const chaptersByCode = new Map(loadManifest().map((m) => [m.code, m.chapters]));
 ---
 
 <Base title={heading} description={`Browse the ${heading} in canonical order.`}>
-  <nav class="crumbs ui"><a href="/">Byzantique</a><span class="sep">›</span>{heading}</nav>
+  <nav class="crumbs ui" data-pagefind-ignore><a href="/">Byzantique</a><span class="sep">›</span>{heading}</nav>
   <h1>{heading}</h1>
   <p class="subtitle">
     {testament === 'ot' ? 'The first testament of the Christian Scriptures, following the Septuagint (LXX).' : 'The second testament of the Christian Scriptures.'}

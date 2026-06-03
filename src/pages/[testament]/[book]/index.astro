@@ -18,7 +18,7 @@ const label = bookLabel(book);
 ---
 
 <Base title={label} description={`${label} — read the text with commentary.`}>
-  <nav class="crumbs ui">
+  <nav class="crumbs ui" data-pagefind-ignore>
     <a href="/">Byzantique</a><span class="sep">›</span>
     <a href={`/${book.testament}/`}>{heading}</a><span class="sep">›</span>{label}
   </nav>

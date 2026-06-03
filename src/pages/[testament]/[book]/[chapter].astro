@@ -42,7 +42,7 @@ const vnum = (c: number, v: number) => c * 1000 + v;
 ---
 
 <Base title={`${label} ${chapterNumber}`} description={snippet} wide={hasNotes}>
-  <nav class="crumbs ui">
+  <nav class="crumbs ui" data-pagefind-ignore>
     <a href="/">Byzantique</a><span class="sep">›</span>
     <a href={`/${book.testament}/`}>{heading}</a><span class="sep">›</span>
     <a href={`${base}/`}>{book.name}</a><span class="sep">›</span>Chapter {chapterNumber}
@@ -50,13 +50,13 @@ const vnum = (c: number, v: number) => c * 1000 + v;
 
   <h1>{book.name}{book.paren && <span class="paren ui"> ({book.paren})</span>} {chapterNumber}</h1>
 
-  <div class="chips ui">
+  <div class="chips ui" data-pagefind-ignore>
     <span class="chip lect">📖 Lectionary chips — Phase 3</span>
   </div>
 
   {hasNotes ? (
     <div class="reader">
-      <div class="reader-toolbar ui">
+      <div class="reader-toolbar ui" data-pagefind-ignore>
         <span class="reader-count">{notes.length} {notes.length === 1 ? 'note' : 'notes'}</span>
         <div class="layout-toggle" role="tablist" aria-label="Reading layout">
           <button type="button" data-layout="side" class="active" aria-pressed="true">Side&#8209;by&#8209;side</button>
@@ -91,7 +91,7 @@ const vnum = (c: number, v: number) => c * 1000 + v;
     <ChapterText chapter={chapter} chapterNumber={chapterNumber} />
   )}
 
-  <nav class="chapnav ui">
+  <nav class="chapnav ui" data-pagefind-ignore>
     {prev ? <a href={`${base}/${prev}`}>← {chapterNumber - 1}</a> : <span class="disabled">←</span>}
     <a href={`${base}/`}>{book.name}</a>
     {next ? <a href={`${base}/${next}`}>{chapterNumber + 1} →</a> : <span class="disabled">→</span>}

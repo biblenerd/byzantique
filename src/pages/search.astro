@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Search" description="Search across the scripture, commentary, and pages of Byzantique.">
+  <h1>Search</h1>
+  <p class="subtitle">Full-text search across scripture, commentary, and pages.</p>
+
+  <div id="search" data-pagefind-ignore></div>
+  <p id="search-fallback" class="search-note">Loading search…</p>
+
+  <link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <script src="/pagefind/pagefind-ui.js" is:inline></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      const fallback = document.getElementById('search-fallback');
+      if (typeof PagefindUI === 'undefined') {
+        if (fallback)
+          fallback.textContent =
+            'Search runs on the built site — run “npm run build” then “npm run preview” to try it locally.';
+        return;
+      }
+      if (fallback) fallback.remove();
+      const ui = new PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: false,
+        pageSize: 8,
+        resetStyles: false,
+        autofocus: true,
+      });
+      const q = new URLSearchParams(location.search).get('q');
+      if (q) ui.triggerSearch(q);
+    });
+  </script>
+</Base>

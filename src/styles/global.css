@@ -284,6 +284,27 @@ h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
 }
 .grid a:hover { border-color: var(--accent); color: var(--accent); }
 
+/* home-page Browse: large square Testament cards with icons */
+.browse-cards {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px; margin: 14px 0 24px; max-width: 440px;
+}
+.browse-card {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
+  aspect-ratio: 1 / 1; padding: 18px;
+  border: 1px solid var(--rule); border-radius: 12px; background: var(--panel);
+  text-decoration: none; color: var(--ink); text-align: center;
+  font-family: var(--serif); font-size: 19px; font-weight: 600;
+  transition: border-color .15s, box-shadow .15s, transform .15s, color .15s;
+}
+.browse-card svg { color: var(--accent); }
+.browse-card:hover {
+  border-color: var(--accent); color: var(--accent);
+  box-shadow: 0 6px 20px rgba(124, 33, 40, .09); transform: translateY(-2px);
+}
+.browse-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 420px) { .browse-cards { gap: 12px; } .browse-card { gap: 10px; font-size: 17px; } }
+
 .booklist { list-style: none; padding: 0; margin: 10px 0; }
 .booklist li { display: flex; align-items: center; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--rule); }
 .booklist .bk-main { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; flex: 1; min-width: 0; }
@@ -351,6 +372,60 @@ blockquote.creed p { margin: 0 0 .85em; }
 blockquote.creed p.creed-attr {
   margin: .5em 0 0; font-family: var(--sans); font-size: 13px; color: var(--ink-soft);
 }
+
+/* ---- header search box + live dropdown ---- */
+.site-search { position: relative; display: flex; align-items: center; }
+.site-search .search-ic {
+  position: absolute; left: 11px; color: var(--ink-soft); pointer-events: none;
+}
+.site-search input {
+  font-family: var(--sans); font-size: 13.5px; width: 200px; max-width: 38vw;
+  padding: 6px 12px 6px 32px; border: 1px solid var(--rule); border-radius: 999px;
+  background: var(--bg); color: var(--ink);
+}
+.site-search input:focus { outline: none; border-color: var(--accent); background: var(--panel); }
+.site-search input::placeholder { color: var(--ink-soft); }
+
+.search-dropdown {
+  position: absolute; top: calc(100% + 8px); right: 0; width: 340px; max-width: 86vw;
+  background: var(--panel); border: 1px solid var(--rule); border-radius: 10px;
+  box-shadow: 0 12px 36px rgba(43, 39, 34, .18); padding: 6px; z-index: 50;
+}
+.search-dropdown[hidden] { display: none; }
+.search-dropdown a.sr { display: block; padding: 8px 10px; border-radius: 7px; text-decoration: none; }
+.search-dropdown a.sr:hover { background: var(--accent-soft); }
+.search-dropdown .sr-title { display: block; font-family: var(--sans); font-weight: 700; font-size: 13px; color: var(--accent); }
+.search-dropdown .sr-ex { display: block; font-size: 12.5px; color: var(--ink-soft); line-height: 1.4; margin-top: 2px; }
+.search-dropdown .sr-ex mark { background: var(--hl); color: inherit; padding: 0 1px; border-radius: 2px; }
+.search-dropdown .sr-more {
+  display: block; text-align: center; font-family: var(--sans); font-size: 12.5px; font-weight: 700;
+  color: var(--accent); text-decoration: none; padding: 9px; margin-top: 4px; border-top: 1px solid var(--rule);
+}
+.search-dropdown .sr-more:hover { background: var(--accent-soft); border-radius: 0 0 7px 7px; }
+.search-dropdown .sr-empty { padding: 12px; font-family: var(--sans); font-size: 13px; color: var(--ink-soft); }
+
+.site-search-icon { display: none; color: var(--link); padding: 4px; }
+.site-search-icon:hover { color: var(--accent); }
+
+@media (max-width: 720px) {
+  .site-search { display: none; }
+  .site-search-icon { display: inline-flex; align-items: center; }
+}
+
+/* ---- search (Pagefind UI) ---- */
+#search {
+  --pagefind-ui-scale: 0.9;
+  --pagefind-ui-primary: var(--accent);
+  --pagefind-ui-text: var(--ink);
+  --pagefind-ui-background: var(--panel);
+  --pagefind-ui-border: var(--rule);
+  --pagefind-ui-tag: var(--accent-soft);
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-border-radius: 8px;
+  --pagefind-ui-font: var(--sans);
+  margin-top: 14px;
+}
+.search-note { font-family: var(--sans); font-size: 13.5px; color: var(--ink-soft); margin-top: 14px; }
 
 /* ---- side-by-side reader ---- */
 .reader-toolbar {
