@@ -1,7 +1,8 @@
 ---
 import Base from '../../../layouts/Base.astro';
+import ChapterText from '../../../components/ChapterText.astro';
 import { BOOKS, bookLabel } from '../../../lib/canon';
-import { builtCodes, loadBook, isVerse, isFootnote, letter } from '../../../lib/texts';
+import { builtCodes, loadBook, isVerse } from '../../../lib/texts';
 import { notesForChapter, refRange, anchorBadge } from '../../../lib/commentary';
 
 export function getStaticPaths() {
@@ -26,9 +27,6 @@ const label = bookLabel(book);
 const heading = book.testament === 'ot' ? 'Old Testament' : 'New Testament';
 const base = `/${book.testament}/${book.slug}`;
 
-const blockClass = (b: { kind: string; level?: number }) =>
-  b.kind === 'q' ? `poetry q${b.level ?? 1}` : b.kind === 'd' ? 'psalm-title' : undefined;
-
 const prev = chapterNumber > 1 ? chapterNumber - 1 : null;
 const next = chapterNumber < total ? chapterNumber + 1 : null;
 const snippet = chapter.blocks
@@ -39,9 +37,11 @@ const snippet = chapter.blocks
   .slice(0, 150);
 
 const notes = notesForChapter(book.code, chapterNumber);
+const hasNotes = notes.length > 0;
+const vnum = (c: number, v: number) => c * 1000 + v;
 ---
 
-<Base title={`${label} ${chapterNumber}`} description={snippet}>
+<Base title={`${label} ${chapterNumber}`} description={snippet} wide={hasNotes}>
   <nav class="crumbs ui">
     <a href="/">Byzantique</a><span class="sep">›</span>
     <a href={`/${book.testament}/`}>{heading}</a><span class="sep">›</span>
@@ -54,55 +54,41 @@ const notes = notesForChapter(book.code, chapterNumber);
     <span class="chip lect">📖 Lectionary chips — Phase 3</span>
   </div>
 
-  <div class="scripture">
-    {chapter.blocks.map((b) =>
-      b.kind === 'b' ? (
-        <div class="stanza"></div>
-      ) : (
-        <p class={blockClass(b)}>
-          {b.segments!.map((s) =>
-            isVerse(s) ? (
-              <span class="vn" id={`v${s.n}`}>{s.v}</span>
-            ) : isFootnote(s) ? (
-              <a class="fn-ref" id={`fnref-${letter(s.f)}`} href={`#fn-${letter(s.f)}`}>{letter(s.f)}</a>
-            ) : (
-              <Fragment>{s.t}{' '}</Fragment>
-            ),
-          )}
-        </p>
-      ),
-    )}
-  </div>
+  {hasNotes ? (
+    <div class="reader">
+      <div class="reader-toolbar ui">
+        <span class="reader-count">{notes.length} {notes.length === 1 ? 'note' : 'notes'}</span>
+        <div class="layout-toggle" role="tablist" aria-label="Reading layout">
+          <button type="button" data-layout="side" class="active" aria-pressed="true">Side&#8209;by&#8209;side</button>
+          <button type="button" data-layout="stacked" aria-pressed="false">Stacked</button>
+        </div>
+      </div>
 
-  {chapter.footnotes && chapter.footnotes.length > 0 && (
-    <section class="textual-notes ui">
-      <div class="col-label">Textual notes</div>
-      <ul class="tn-list">
-        {chapter.footnotes.map((fn, i) => (
-          <li id={`fn-${letter(i)}`}>
-            <a class="tn-letter" href={`#fnref-${letter(i)}`}>{letter(i)}</a>
-            {fn.ref && <span class="tn-ref">{fn.ref}</span>}
-            <span class="tn-body" set:html={fn.html} />
-          </li>
-        ))}
-      </ul>
-    </section>
-  )}
+      <div class="reader-grid">
+        <section class="col col-text">
+          <div class="col-text-inner">
+            <div class="col-label ui">Text · {book.name} {chapterNumber}</div>
+            <ChapterText chapter={chapter} chapterNumber={chapterNumber} />
+          </div>
+        </section>
 
-  {notes.length > 0 && (
-    <section class="commentary">
-      <div class="col-label ui">Commentary</div>
-      {notes.map((n) => (
-        <article class="note">
-          <span class="note-anchor ui">
-            <span class="badge">{anchorBadge(n.anchor.type)}</span>
-            {book.name} {refRange(n.anchor)}
-          </span>
-          {n.title && <h3 class="note-title">{n.title}</h3>}
-          <div class="note-body" set:html={n.html} />
-        </article>
-      ))}
-    </section>
+        <section class="col col-notes">
+          <div class="col-label ui">Commentary</div>
+          {notes.map((n) => (
+            <article class="note" data-from={vnum(n.anchor.sc, n.anchor.sv)} data-to={vnum(n.anchor.ec, n.anchor.ev)}>
+              <span class="note-anchor ui">
+                <span class="badge">{anchorBadge(n.anchor.type)}</span>
+                {book.name} {refRange(n.anchor)}
+              </span>
+              {n.title && <h3 class="note-title">{n.title}</h3>}
+              <div class="note-body" set:html={n.html} />
+            </article>
+          ))}
+        </section>
+      </div>
+    </div>
+  ) : (
+    <ChapterText chapter={chapter} chapterNumber={chapterNumber} />
   )}
 
   <nav class="chapnav ui">
@@ -111,3 +97,57 @@ const notes = notesForChapter(book.code, chapterNumber);
     {next ? <a href={`${base}/${next}`}>{chapterNumber + 1} →</a> : <span class="disabled">→</span>}
   </nav>
 </Base>
+
+<script>
+  // Side-by-side reader: layout toggle (persisted) + note↔verse highlight linking.
+  // Text "holds still" (sticky) in side-by-side; no auto-scroll in v1.
+  (() => {
+    const reader = document.querySelector<HTMLElement>('.reader');
+    if (!reader) return;
+
+    const grid = reader.querySelector<HTMLElement>('.reader-grid')!;
+    const verses = [...reader.querySelectorAll<HTMLElement>('.v[data-v]')];
+    const notes = [...reader.querySelectorAll<HTMLElement>('.note')];
+
+    // Hover a note → highlight its verses.
+    notes.forEach((note) => {
+      const from = +note.dataset.from!;
+      const to = +note.dataset.to!;
+      const set = (on: boolean) =>
+        verses.forEach((v) => {
+          const x = +v.dataset.v!;
+          if (x >= from && x <= to) v.classList.toggle('hl', on);
+        });
+      note.addEventListener('mouseenter', () => set(true));
+      note.addEventListener('mouseleave', () => set(false));
+    });
+
+    // Hover a verse → highlight the notes that cover it.
+    verses.forEach((v) => {
+      const x = +v.dataset.v!;
+      const covering = notes.filter((n) => x >= +n.dataset.from! && x <= +n.dataset.to!);
+      if (!covering.length) return;
+      v.addEventListener('mouseenter', () => covering.forEach((n) => n.classList.add('nhl')));
+      v.addEventListener('mouseleave', () => covering.forEach((n) => n.classList.remove('nhl')));
+    });
+
+    // Layout toggle, remembered across pages.
+    const KEY = 'byz-layout';
+    const buttons = [...reader.querySelectorAll<HTMLButtonElement>('.layout-toggle button')];
+    const apply = (mode: string) => {
+      grid.classList.toggle('stacked', mode === 'stacked');
+      buttons.forEach((b) => {
+        const on = b.dataset.layout === mode;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+    };
+    apply(localStorage.getItem(KEY) || 'side');
+    reader.querySelector('.layout-toggle')!.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>('button');
+      if (!b) return;
+      localStorage.setItem(KEY, b.dataset.layout!);
+      apply(b.dataset.layout!);
+    });
+  })();
+</script>

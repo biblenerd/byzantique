@@ -1,0 +1,76 @@
+---
+// Renders a chapter's scripture (block model) + its lettered textual notes.
+// Each verse run is wrapped in <span class="v" data-v="…"> so the side-by-side
+// reader can highlight a note's verses (and vice-versa). Verses can continue
+// across block boundaries, so the current verse is tracked across blocks.
+import { isVerse, isFootnote, letter } from '../lib/texts';
+
+interface Props {
+  chapter: any;
+  chapterNumber: number;
+}
+const { chapter, chapterNumber } = Astro.props;
+
+const blockClass = (b: { kind: string; level?: number }) =>
+  b.kind === 'q' ? `poetry q${b.level ?? 1}` : b.kind === 'd' ? 'psalm-title' : undefined;
+
+let curV: number | null = null;
+const rendered = chapter.blocks.map((b: any) => {
+  if (b.kind === 'b') return { kind: 'b' as const };
+  const runs: { key: number | null; segs: any[] }[] = [];
+  let run: { key: number | null; segs: any[] } | null = null;
+  for (const s of b.segments ?? []) {
+    if (isVerse(s)) {
+      curV = s.n;
+      run = { key: chapterNumber * 1000 + s.n, segs: [s] };
+      runs.push(run);
+    } else {
+      if (!run) {
+        run = { key: curV != null ? chapterNumber * 1000 + curV : null, segs: [] };
+        runs.push(run);
+      }
+      run.segs.push(s);
+    }
+  }
+  return { kind: b.kind, level: b.level, runs };
+});
+---
+
+<div class="scripture">
+  {rendered.map((b: any) =>
+    b.kind === 'b' ? (
+      <div class="stanza"></div>
+    ) : (
+      <p class={blockClass(b)}>
+        {b.runs.map((run: any) => (
+          <span class="v" data-v={run.key ?? undefined}>
+            {run.segs.map((s: any) =>
+              isVerse(s) ? (
+                <span class="vn" id={`v${s.n}`}>{s.v}</span>
+              ) : isFootnote(s) ? (
+                <a class="fn-ref" id={`fnref-${letter(s.f)}`} href={`#fn-${letter(s.f)}`}>{letter(s.f)}</a>
+              ) : (
+                <Fragment>{s.t}{' '}</Fragment>
+              ),
+            )}
+          </span>
+        ))}
+      </p>
+    ),
+  )}
+</div>
+
+{chapter.footnotes && chapter.footnotes.length > 0 && (
+  <section class="textual-notes ui">
+    <div class="col-label">Textual notes</div>
+    <ul class="tn-list">
+      {chapter.footnotes.map((fn: any, i: number) => (
+        <li id={`fn-${letter(i)}`}>
+          <a class="tn-letter" href={`#fnref-${letter(i)}`}>{letter(i)}</a>
+          {fn.ref && <span class="tn-ref">{fn.ref}</span>}
+          <span class="tn-body" set:html={fn.html} />
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
