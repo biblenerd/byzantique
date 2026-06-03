@@ -1,18 +1,16 @@
 # Byzantique
 
-A scholarly **commentary corpus** on the biblical text, from an Eastern Orthodox
-perspective — a static site (Astro) over the Septuagint (OT) and the Text-Critical
-English New Testament, with Orthodox lectionary awareness and client-side search.
+Dan's **commentary / notes** on the biblical text. A static site (Astro) over the Septuagint (Brenton's LXX for Old Testament) and the Text-Critical English New Testament (TCENT / BTV), with Orthodox lectionary awareness and client-side search.
 
 > ### 🚧 Under active development — not ready yet
 > This is an early work in progress. The whole Bible is browsable, but **most books
-> have no commentary yet**, and **search and the lectionary are not built**. Expect
+> have no commentary yet**, and **the lectionary is not built**. Expect
 > rough edges, gaps, and breaking changes. Nothing here is final.
 >
-> **Live preview:** <https://byzantique.pages.dev>
+> **Live preview:** <https://byzantique.pages.dev> (will soon live at [byzantique.com](https://byzantique.com) once existing notes are migrated)
 
-**Current status:** the whole Bible is browsable as static pages (Phase 1); commentary,
-lectionary, and client-side search are in progress.
+**Current status:** the whole Bible is browsable as static pages (Phase 1); commentary and
+lectionary are in progress.
 
 **Docs** (in [`docs/`](./docs)): [`EDITING-CONTENT.md`](./docs/EDITING-CONTENT.md)
 (edit pages & commentary) · [`DEVELOPMENT.md`](./docs/DEVELOPMENT.md) (build & preview
@@ -67,8 +65,7 @@ src/pages/[testament]/[book]/[chapter].astro   static pages read the JSON at bui
 
 The site is a static Astro build (`dist/`). To deploy:
 
-1. **GitHub** — the repo lives at [`biblenerd/byzantique`](https://github.com/biblenerd/byzantique)
-   (pushed over SSH via the `github.com-biblenerd` host alias).
+1. **GitHub** — the repo lives at [`biblenerd/byzantique`](https://github.com/biblenerd/byzantique).
 2. **Cloudflare Pages** — dashboard → *Workers & Pages* → *Create* → *Pages* →
    *Connect to Git* → select the repo. Build settings:
    - Framework preset: **Astro**
@@ -92,4 +89,9 @@ This repo mixes three licenses — see [`LICENSING.md`](./LICENSING.md) for deta
 Byzantique is built with [Astro](https://astro.build). Much of the engineering —
 the build pipeline, components, and styling — was done in collaboration with
 [Claude Code](https://claude.com/claude-code), Anthropic's agentic coding tool.
-The biblical scholarship, commentary, and editorial judgments are the author's own.
+The biblical scholarship, commentary, notes, and editorial judgments are the author's own.
+
+This project:
+- began as a [GitHub Pages site](https://github.com/biblenerd/biblenerd.github.io) (deprecated in 2024), 
+- evolved into a [Hugo static site hosted via Netlify](https://github.com/biblenerd/byzantique-hugo-site-files) (deprecated in 2026), and 
+- is now an [Astro static site hosted via Cloudflare Pages](https://github.com/biblenerd/byzantique).
