@@ -68,7 +68,7 @@ const vnum = (c: number, v: number) => c * 1000 + v;
         <section class="col col-text">
           <div class="col-text-inner">
             <div class="col-label ui">Text · {book.name} {chapterNumber}</div>
-            <ChapterText chapter={chapter} chapterNumber={chapterNumber} />
+            <ChapterText chapter={chapter} chapterNumber={chapterNumber} code={book.code} />
           </div>
         </section>
 
@@ -88,7 +88,7 @@ const vnum = (c: number, v: number) => c * 1000 + v;
       </div>
     </div>
   ) : (
-    <ChapterText chapter={chapter} chapterNumber={chapterNumber} />
+    <ChapterText chapter={chapter} chapterNumber={chapterNumber} code={book.code} />
   )}
 
   <nav class="chapnav ui" data-pagefind-ignore>

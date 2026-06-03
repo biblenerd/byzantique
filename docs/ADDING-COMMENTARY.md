@@ -118,3 +118,25 @@ The Septuagint opens with **ἐν ἀρχῇ** (*en archē*), "in the beginning.
 > The Fathers do not read "beginning" as a bare point in time, but as the
 > source and rationale of created things.
 ```
+
+## Section / pericope titles
+
+Section headings above the text come from two places (REQUIREMENTS §5.3):
+
+1. **USFM `\s` headings** — already in the source text (the NT/TCENT has these,
+   e.g. "The Birth of Jesus"). They render automatically; nothing to do.
+2. **Author pericope titles** — your own headings, defined per book in
+   `data/pericopes/<CODE>.json`. Useful for the OT (ENGLXXUP has no `\s`):
+
+   ```json
+   [
+     { "start": "1:1", "title": "The Creation" },
+     { "start": "2:4", "title": "Adam and Eve in the Garden" },
+     { "start": "3:1", "title": "The Fall" }
+   ]
+   ```
+
+   `start` is the book-relative `chapter:verse` where the section begins; the title
+   renders as a heading just before that verse. An author title **takes precedence**
+   over a USFM `\s` heading at the same spot. `<CODE>` is the USFM book code
+   (see [USFM-BOOK-NAMES.md](./USFM-BOOK-NAMES.md)). Re-run `npm run dev`/`build` to see changes.

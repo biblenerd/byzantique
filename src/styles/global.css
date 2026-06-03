@@ -124,6 +124,12 @@ h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
 /* ---- scripture ---- */
 .scripture { font-size: 19px; line-height: 1.85; }
 .scripture p { margin: 0 0 1em; }
+.scripture .pericope-head {
+  font-family: var(--sans); font-size: 12.5px; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--ink-soft); margin: 28px 0 10px;
+}
+.scripture .pericope-head:first-child { margin-top: 0; }
+.scripture .pericope-head.major { color: var(--accent); font-size: 13px; }
 .scripture p.poetry,
 .scripture-quote p.poetry { margin: 0; line-height: 1.5; padding-left: 1.3em; text-indent: -1.3em; }
 .scripture p.poetry.q2,

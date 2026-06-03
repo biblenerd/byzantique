@@ -9,6 +9,7 @@
 //   { code, name, chapters: [ { number, blocks: [ Block ] } ] }
 //   Block = { kind, level?, segments?: Segment[] }
 //     kind: 'p' prose paragraph | 'q' poetry line | 'd' Hebrew/Psalm title | 'b' stanza break
+//         | 's' section heading ({ text, level, major? })
 //     Segment = { v: <label>, n: <numeric start> }  (a verse marker)
 //             | { t: <text> }                        (a run of text)
 
@@ -23,8 +24,10 @@ const OUT_DIR = path.join(ROOT, 'public/data/texts');
 // Reconcile ENGLXXUP source ids with our canon codes (see USFM-BOOK-NAMES.md).
 const CODE_REMAP = { ESG: 'EST', DAG: 'DAN' };
 
-// Markers we skip entirely (identification, intro, headings, references).
-const SKIP = /^(ide|usfm|h|toc\d?|toca\d?|mt\d?|mte\d?|ms\d?|mr|sr|sd\d?|r|rem|sts|cl|cp|periph|ms|imt\d?|is\d?|ip|ipi|im|imi|ipq|imq|ipr|iq\d?|ib|ili\d?|iot|io\d?|iex|imte\d?|ie|s\d?|sp)$/;
+// Markers we skip entirely (identification, intro, reference lines). Section
+// headings (\s#, \ms#) are captured below; \sr/\mr/\r reference lines and \sp
+// speaker labels stay skipped.
+const SKIP = /^(ide|usfm|h|toc\d?|toca\d?|mt\d?|mte\d?|mr|sr|sd\d?|r|rem|sts|cl|cp|periph|imt\d?|is\d?|ip|ipi|im|imi|ipq|imq|ipr|iq\d?|ib|ili\d?|iot|io\d?|iex|imte\d?|ie|sp)$/;
 // Prose paragraph markers (verses flow within).
 const PROSE = /^(p|m|pi\d?|pc|pr|pmo|pm|pmc|pmr|nb|cls|mi|po|lh|lf|li\d?|lim\d?|ph\d?|tr)$/;
 
@@ -132,6 +135,19 @@ function parseUsfm(usfm) {
     }
     if (!chapter) continue; // ignore anything before the first \c
 
+    // Section heading (\s, \s1, \s2…, \ms = major). Text follows on the same line.
+    if (/^m?s[0-9]?$/i.test(marker || '')) {
+      const text = cleanInline(rest);
+      if (text) {
+        const digit = (marker.match(/\d/) || [])[0];
+        const blk = { kind: 's', level: digit ? parseInt(digit, 10) : 1, text };
+        if (/^ms/i.test(marker)) blk.major = true;
+        chapter.blocks.push(blk);
+      }
+      block = null;
+      continue;
+    }
+
     if (/^q[0-9]?$/i.test(marker || '')) {
       open('q', marker.length > 1 ? parseInt(marker[1], 10) : 1);
       pushText(rest);
@@ -180,7 +196,9 @@ function build() {
       let verses = 0;
       let notes = 0;
       for (const c of book.chapters) {
-        c.blocks = c.blocks.filter((b) => b.kind === 'b' || (b.segments && b.segments.length));
+        c.blocks = c.blocks.filter(
+          (b) => b.kind === 'b' || b.kind === 's' || (b.segments && b.segments.length),
+        );
         for (const b of c.blocks) for (const s of b.segments ?? []) if ('v' in s) verses++;
         if (c.footnotes && c.footnotes.length) notes += c.footnotes.length;
         else delete c.footnotes; // keep OT (no notes) lean

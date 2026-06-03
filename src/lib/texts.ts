@@ -31,9 +31,11 @@ export interface Footnote {
 }
 
 export interface Block {
-  kind: 'p' | 'q' | 'd' | 'b'; // prose paragraph | poetry line | title | stanza break
-  level?: number; // poetry indent level (1–4)
+  kind: 'p' | 'q' | 'd' | 'b' | 's'; // prose | poetry line | Hebrew/Psalm title | stanza break | section heading
+  level?: number; // poetry indent level (1–4), or section-heading level
   segments?: Segment[];
+  text?: string; // section-heading text (kind 's')
+  major?: boolean; // major section heading (\ms)
 }
 export interface Chapter {
   number: number;

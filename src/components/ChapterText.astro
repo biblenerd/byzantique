@@ -4,19 +4,43 @@
 // reader can highlight a note's verses (and vice-versa). Verses can continue
 // across block boundaries, so the current verse is tracked across blocks.
 import { isVerse, isFootnote, letter } from '../lib/texts';
+import { loadPericopes } from '../lib/pericopes';
 
 interface Props {
   chapter: any;
   chapterNumber: number;
+  code?: string; // book code, for author pericope titles
 }
-const { chapter, chapterNumber } = Astro.props;
+const { chapter, chapterNumber, code } = Astro.props;
 
 const blockClass = (b: { kind: string; level?: number }) =>
   b.kind === 'q' ? `poetry q${b.level ?? 1}` : b.kind === 'd' ? 'psalm-title' : undefined;
 
+// Author pericope titles starting in this chapter (verse → title).
+const authorTitles = new Map<number, string>();
+if (code) {
+  for (const p of loadPericopes(code)) if (p.sc === chapterNumber) authorTitles.set(p.sv, p.title);
+}
+
+// Inject author headings before the block where each pericope begins; an author
+// title supersedes a USFM \s heading at the same spot.
+const blocks: any[] = [];
+for (const b of chapter.blocks) {
+  let firstVerse: number | null = null;
+  for (const s of b.segments ?? []) {
+    if (isVerse(s)) { firstVerse = s.n; break; }
+  }
+  if (firstVerse != null && authorTitles.has(firstVerse)) {
+    if (blocks.length && blocks[blocks.length - 1].kind === 's') blocks.pop();
+    blocks.push({ kind: 's', text: authorTitles.get(firstVerse) });
+  }
+  blocks.push(b);
+}
+
 let curV: number | null = null;
-const rendered = chapter.blocks.map((b: any) => {
+const rendered = blocks.map((b: any) => {
   if (b.kind === 'b') return { kind: 'b' as const };
+  if (b.kind === 's') return { kind: 's' as const, text: b.text, level: b.level, major: b.major };
   const runs: { key: number | null; segs: any[] }[] = [];
   let run: { key: number | null; segs: any[] } | null = null;
   for (const s of b.segments ?? []) {
@@ -40,6 +64,8 @@ const rendered = chapter.blocks.map((b: any) => {
   {rendered.map((b: any) =>
     b.kind === 'b' ? (
       <div class="stanza"></div>
+    ) : b.kind === 's' ? (
+      <h2 class={`pericope-head${b.major ? ' major' : ''}`}>{b.text}</h2>
     ) : (
       <p class={blockClass(b)}>
         {b.runs.map((run: any) => (
