@@ -59,13 +59,22 @@ header.topbar {
 .has-sub { position: relative; }
 .has-sub > a { white-space: nowrap; }
 .has-sub > .submenu {
-  position: absolute; left: 0; top: 100%; margin-top: 6px; min-width: 210px;
+  position: absolute; right: 0; left: auto; top: calc(100% + 6px); min-width: 210px;
   background: var(--panel); border: 1px solid var(--rule); border-radius: 8px;
   box-shadow: 0 8px 28px rgba(43, 39, 34, .12);
-  padding: 6px; display: none; flex-direction: column; z-index: 40;
+  padding: 6px; display: flex; flex-direction: column; z-index: 40;
+  visibility: hidden; opacity: 0; transform: translateY(-4px);
+  transition: opacity .14s ease, transform .14s ease, visibility 0s linear .3s;
+}
+/* invisible bridge across the gap so the cursor keeps :hover while moving to the menu */
+.has-sub > .submenu::before {
+  content: ''; position: absolute; left: 0; right: 0; top: -10px; height: 10px;
 }
 .has-sub:hover > .submenu,
-.has-sub:focus-within > .submenu { display: flex; }
+.has-sub:focus-within > .submenu {
+  visibility: visible; opacity: 1; transform: translateY(0);
+  transition: opacity .14s ease, transform .14s ease;
+}
 .has-sub > .submenu a {
   padding: 7px 10px; border-radius: 5px; text-decoration: none; color: var(--ink); font-size: 14px;
 }
