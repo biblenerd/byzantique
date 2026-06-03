@@ -16,6 +16,10 @@ Read in the light of the New Testament, the Church hears this *archē* christolo
 {{ JHN 1:1 }}
 
 "The heaven and the earth," meanwhile, is a Hebrew way of naming **the whole cosmos** — the
-visible and the invisible together — not two items in a list but a totality.
+visible and the invisible together — not two items in a list but a totality.[^merism] The same
+ordering of "heaven and earth" frames the seventh-day rest of [Genesis 2:1–3](ref:GEN 2:1-3).
 
 *This is a sample note added in Phase 0 to demonstrate commentary rendering.*
+
+[^merism]: On "heaven and earth" as a *merism* for the whole created order, see the standard
+    Genesis commentaries; the figure names a totality by naming its extremes.

@@ -134,6 +134,48 @@ const section = path.startsWith('/ot/')
       })();
     </script>
 
+    <script>
+      // Cross-reference previews: hover a [text](ref:…) link to peek at the first verse.
+      (() => {
+        const links = document.querySelectorAll('a.xref[data-ref-preview]');
+        if (!links.length) return;
+        const pop = document.createElement('div');
+        pop.className = 'fn-pop ref-pop';
+        pop.setAttribute('role', 'tooltip');
+        document.body.appendChild(pop);
+        let hideT;
+        const place = (el) => {
+          const r = el.getBoundingClientRect();
+          let left = r.left + r.width / 2 - pop.offsetWidth / 2;
+          left = Math.max(8, Math.min(left, window.innerWidth - pop.offsetWidth - 8));
+          let top = r.top - pop.offsetHeight - 8;
+          if (top < 8) top = r.bottom + 8;
+          pop.style.left = `${left}px`;
+          pop.style.top = `${top}px`;
+        };
+        const show = (el) => {
+          pop.textContent = el.getAttribute('data-ref-preview');
+          pop.classList.add('show');
+          place(el);
+          clearTimeout(hideT);
+        };
+        const hide = () => {
+          hideT = setTimeout(() => pop.classList.remove('show'), 140);
+        };
+        links.forEach((el) => {
+          el.addEventListener('mouseenter', () => show(el));
+          el.addEventListener('mouseleave', hide);
+          el.addEventListener('focus', () => show(el));
+          el.addEventListener('blur', () => pop.classList.remove('show'));
+        });
+        pop.addEventListener('mouseenter', () => clearTimeout(hideT));
+        pop.addEventListener('mouseleave', hide);
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') pop.classList.remove('show');
+        });
+      })();
+    </script>
+
     <script is:inline>
       // Header search: live dropdown of top results via the Pagefind JS API.
       // Enter submits the form to /search/?q=… (also the no-JS fallback).

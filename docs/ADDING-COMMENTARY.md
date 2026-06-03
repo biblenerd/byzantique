@@ -91,9 +91,37 @@ you notice.
 > JavaScript. Use the component instead: `import Scripture from '…/components/Scripture.astro'`
 > then `<Scripture ref="JHN 5:39-40" />`. Same result, same reference grammar.
 
-> Coming later (Phase 2): named pericope titles, book-level intros, inline `ref:` scripture
-> links, footnotes, and build-time validation that rejects a bad anchor. For now an anchor
-> that doesn't parse is skipped with a warning during `npm run data`.
+## Cross-references — `[text](ref:…)`
+
+To link inline to another passage, use a normal Markdown link with a `ref:` target:
+
+```markdown
+… the seventh-day rest of [Genesis 2:1–3](ref:GEN 2:1-3).
+```
+
+The reference grammar is the same as anchors (`ref:JHN 1:1`, `ref:GEN 1:1-2:3`, `ref:GEN 3`,
+or a bare `ref:GEN` for the book page). The link resolves to the right page, and hovering it
+shows a preview of the first verse. **A bad reference fails the build** — so typos are caught
+at `npm run data`/`build` rather than shipping a dead link. (In `.astro` pages use
+`<Ref ref="GEN 2:1-3" />` instead.)
+
+## Footnotes — `[^id]`
+
+For source citations, use Markdown-style footnotes: a caller `[^id]` in the text and a
+definition `[^id]: …` anywhere in the note. The `id` is just a label (`1`, `behr`, …); notes
+are **numbered** in order of first use.
+
+```markdown
+…not two items in a list but a totality.[^merism]
+
+[^merism]: On "heaven and earth" as a *merism* for the whole created order, see the
+    standard Genesis commentaries.
+```
+
+Footnote definitions accept inline Markdown (and `ref:` links). They render as a numbered
+list at the bottom of the note, with a hover preview and click-to-jump — the **numbers** are
+your citations; **letters** stay reserved for the NT textual apparatus. (In `.astro` pages use
+the `<Fn>` / `<FnList>` components instead.)
 
 ## 4. See it
 

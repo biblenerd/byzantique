@@ -117,9 +117,15 @@ function blocksToHtml(blocks: QBlock[], showNums: boolean): string {
   return html;
 }
 
-/** Resolve a reference to a link target + display label (for inline citations). */
+/** Resolve a reference to a link target + display label (for inline citations).
+ *  A bare book code (e.g. "GEN") links to the book landing page. */
 export function refLink(refStr: string): { href: string; label: string } | null {
-  const r = parseRef(refStr);
+  const s = String(refStr).trim();
+  if (/^[0-9A-Za-z]+$/.test(s)) {
+    const meta = bookByCode(s.toUpperCase());
+    return meta ? { href: `/${meta.testament}/${meta.slug}/`, label: bookLabel(meta) } : null;
+  }
+  const r = parseRef(s);
   if (!r) return null;
   const meta = bookByCode(r.book);
   if (!meta) return null;
@@ -130,6 +136,35 @@ export function refLink(refStr: string): { href: string; label: string } | null 
   else range = `${r.sc}:${r.sv}–${r.ec}:${r.ev}`;
   const href = `/${meta.testament}/${meta.slug}/${r.sc}${whole ? '' : `#v${r.sv}`}`;
   return { href, label: `${bookLabel(meta)} ${range}` };
+}
+
+/** First-verse plain text for a reference (hover preview, Option 1), truncated. */
+export function refPreview(refStr: string, max = 180): string | null {
+  const r = parseRef(String(refStr).trim());
+  if (!r) return null; // bare-book refs have no single-verse preview
+  const book = loadBook(r.book);
+  if (!book) return null;
+  let started = false;
+  let txt = '';
+  for (const ch of book.chapters) {
+    if (ch.number < r.sc || ch.number > r.ec) continue;
+    for (const bl of ch.blocks) {
+      for (const seg of bl.segments ?? []) {
+        if (isVerse(seg)) {
+          if (started) {
+            const out = txt.trim();
+            return out.length > max ? out.slice(0, max).replace(/\s+\S*$/, '') + '…' : out;
+          }
+          if (inPassage(ch.number, seg.n, r)) started = true;
+        } else if (started && 't' in seg) {
+          txt += seg.t + ' ';
+        }
+      }
+    }
+  }
+  const out = txt.trim();
+  if (!out) return null;
+  return out.length > max ? out.slice(0, max).replace(/\s+\S*$/, '') + '…' : out;
 }
 
 /** Resolve a reference to a scripture blockquote (HTML string), or null. */

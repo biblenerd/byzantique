@@ -34,8 +34,8 @@ npm run data       # ONLY regenerate the JSON data (no server/build)
 | I want to… | In a page (`.astro`) | In commentary (`.md`) |
 |---|---|---|
 | Quote a passage | `<Scripture ref="JHN 1:1" />` | `{{ JHN 1:1 }}` |
-| Link a reference | `<Ref ref="JHN 1:1" />` | *(Phase 2)* |
-| Footnote | `<Fn fn={fn} note="…" />` + `<FnList fn={fn} />` | *(Phase 2)* |
+| Link a reference | `<Ref ref="JHN 1:1" />` | `[text](ref:JHN 1:1)` |
+| Footnote | `<Fn fn={fn} note="…" />` + `<FnList fn={fn} />` | `text[^1]` + `[^1]: …` |
 | Bold / italic / link | `<strong> <em> <a>` | `**bold** *italic* [text](url)` |
 
 References use USFM book codes (`GEN`, `JHN`, …) — see [USFM-BOOK-NAMES.md](./USFM-BOOK-NAMES.md).

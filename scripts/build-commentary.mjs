@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 import { marked } from 'marked';
-import { scriptureQuote } from '../src/lib/scripture.ts'; // run with --experimental-strip-types
+import { scriptureQuote, refLink, refPreview } from '../src/lib/scripture.ts'; // run with --experimental-strip-types
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'data/commentary');
@@ -22,6 +22,22 @@ function expandScripture(md) {
     const html = scriptureQuote(refStr.trim());
     if (!html) console.warn(`  ! unresolved scripture include: {{ ${refStr.trim()} }}`);
     return html ?? m;
+  });
+}
+
+const attrEsc = (s) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+// Resolve inline cross-references `[text](ref:JHN 1:1)` → an internal link (with a
+// precompiled first-verse hover preview). A bad ref fails the build (REQUIREMENTS §5.7).
+function expandRefs(md, file) {
+  return md.replace(/\[([^\]]+)\]\(ref:([^)]+)\)/g, (_, text, ref) => {
+    const r = ref.trim();
+    const link = refLink(r);
+    if (!link) throw new Error(`${path.relative(ROOT, file)}: unresolved cross-reference [${text}](ref:${r})`);
+    const prev = refPreview(r);
+    const attr = prev ? ` data-ref-preview="${attrEsc(prev)}"` : '';
+    return `<a class="xref" href="${link.href}"${attr}>${text}</a>`;
   });
 }
 
@@ -76,6 +92,51 @@ function anchorType(a) {
   return a.sv === a.ev ? 'verse' : 'range';
 }
 
+// Numbered author footnotes: `text[^id]` callers + `[^id]: …` definitions. Numbered in
+// order of first reference; ids are namespaced per note so they never collide on a page.
+// Reuses the .tn-list / .fn-ref structure so the footnote tooltip island works as-is.
+function processFootnotes(md, noteId, file) {
+  // Extract definitions line-by-line so indented continuation lines are consumed
+  // (otherwise a 4-space wrap would be left behind and render as a code block).
+  const lines = md.split('\n');
+  const defs = new Map();
+  const kept = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = lines[i].match(/^\[\^([^\]\s]+)\]:[ \t]*(.*)$/);
+    if (!m) { kept.push(lines[i]); continue; }
+    let text = m[2];
+    while (i + 1 < lines.length && /^(\s{2,}|\t)\S/.test(lines[i + 1])) {
+      text += ' ' + lines[i + 1].trim();
+      i++;
+    }
+    defs.set(m[1], text.trim());
+  }
+  md = kept.join('\n');
+  if (!defs.size) return { md, footnotesHtml: '' };
+
+  const order = [];
+  md = md.replace(/\[\^([^\]\s]+)\]/g, (m, id) => {
+    if (!defs.has(id)) return m;
+    let n = order.indexOf(id);
+    if (n === -1) { order.push(id); n = order.length - 1; }
+    const num = n + 1;
+    return `<sup class="fn-ref"><a id="fnref-${noteId}-${num}" href="#fn-${noteId}-${num}">${num}</a></sup>`;
+  });
+
+  let footnotesHtml = '';
+  if (order.length) {
+    const items = order
+      .map((id, i) => {
+        const num = i + 1;
+        const body = marked.parseInline(expandRefs(defs.get(id), file));
+        return `<li id="fn-${noteId}-${num}"><a class="tn-letter" href="#fnref-${noteId}-${num}">${num}</a><span class="tn-body">${body}</span></li>`;
+      })
+      .join('');
+    footnotesHtml = `<section class="note-fn ui"><ul class="tn-list">${items}</ul></section>`;
+  }
+  return { md, footnotesHtml };
+}
+
 function build() {
   fs.rmSync(OUT, { recursive: true, force: true }); // start clean (drop stale books)
   fs.mkdirSync(OUT, { recursive: true });
@@ -93,7 +154,10 @@ function build() {
       tags: data.tags ? data.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
       anchor: { ...ref, type: anchorType(ref), ref: data.anchor },
       span: (ref.ec - ref.sc) * 1000 + (ref.ev - ref.sv),
-      html: marked.parse(expandScripture(body.trim())),
+      html: (() => {
+        const fn = processFootnotes(body.trim(), path.basename(file, '.md'), file);
+        return marked.parse(expandRefs(expandScripture(fn.md), file)) + fn.footnotesHtml;
+      })(),
     };
     if (!byBook.has(ref.book)) byBook.set(ref.book, []);
     byBook.get(ref.book).push(note);

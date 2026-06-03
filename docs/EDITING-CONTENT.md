@@ -132,7 +132,8 @@ To quote scripture, put a reference in double braces on its own line:
   Markdown equivalent; it only works in commentary `.md`, not in `.astro`).
 - **Book introductions** (`data/book-intros/<CODE>.md`) and **section/pericope titles**
   (`data/pericopes/<CODE>.json`) are covered in [`ADDING-COMMENTARY.md`](./ADDING-COMMENTARY.md).
-- Source-citation footnotes are Phase 2; for now keep notes self-contained.
+- **Cross-reference** another passage with `[text](ref:JHN 1:1)`; **footnote** with
+  `text[^1]` and a `[^1]: …` definition. Both detailed in `ADDING-COMMENTARY.md`.
 
 ---
 
@@ -141,6 +142,6 @@ To quote scripture, put a reference in double braces on its own line:
 | I want to… | In a page (`.astro`) | In commentary (`.md`) |
 |---|---|---|
 | Quote a passage | `<Scripture ref="JHN 1:1" />` | `{{ JHN 1:1 }}` |
-| Link a reference | `<Ref ref="JHN 1:1" />` | *(Phase 2)* |
-| Footnote | `<Fn fn={fn} note="…" />` + `<FnList fn={fn} />` | *(Phase 2)* |
+| Link a reference | `<Ref ref="JHN 1:1" />` | `[text](ref:JHN 1:1)` |
+| Footnote | `<Fn fn={fn} note="…" />` + `<FnList fn={fn} />` | `text[^1]` + `[^1]: …` |
 | Bold / italic / link | `<strong> <em> <a>` | `**bold** *italic* [text](url)` |
