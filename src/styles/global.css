@@ -117,6 +117,19 @@ main { max-width: var(--measure); margin: 0 auto; padding: 0 20px 80px; }
 main.wide { max-width: 60rem; }
 h1 { font-size: 30px; margin: 8px 0 2px; }
 h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
+
+/* Nested ordered lists in rendered markdown (commentary, book intros, FAQ, any prose):
+   a numbered list nested inside another renders as 1. → a. → i. so authors can write
+   plain nested numbered markdown and get lettered sub-items automatically. UI lists set
+   their own list-style and don't nest ordered lists, so they're unaffected. */
+ol ol { list-style-type: lower-alpha; }
+ol ol ol { list-style-type: lower-roman; }
+
+/* Keep prose list indentation modest (browser default is ~40px), and pull nested
+   sub-items in a little more. UI lists set their own padding, so this only affects
+   markdown content lists. */
+ol, ul { padding-left: 1.6em; }
+ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .subtitle { color: var(--ink-soft); font-style: italic; margin: 0 0 8px; }
 .dev-banner {
   margin: 14px 0 18px; padding: 10px 14px; border-radius: 8px;
