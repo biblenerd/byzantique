@@ -73,12 +73,14 @@ import Base from '../../layouts/Base.astro';
       }
       msgEl.textContent = '';
       titleEl.textContent = (rec.titles || []).join(' · ');
+      const partsHtml = (parts: any[]) =>
+        parts
+          .map((p) => (p.href ? `<a href="${p.href}">${esc(p.label)}</a>` : esc(p.label)))
+          .join('; ');
       readingsEl.innerHTML = rec.readings
         .map(
           (r: any) =>
-            `<div class="lect-reading"><span class="lect-src">${esc(r.source)}</span>` +
-            (r.href ? `<a href="${r.href}">${esc(r.ref)}</a>` : `<span>${esc(r.ref)}</span>`) +
-            `</div>`,
+            `<div class="lect-reading"><span class="lect-src">${esc(r.source)}</span><span>${partsHtml(r.parts)}</span></div>`,
         )
         .join('');
     }
