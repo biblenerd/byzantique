@@ -30,21 +30,23 @@ export function chipsForChapter(code: string, chapter: number): LectChip[] {
 export interface ChipGroup {
   ref: string;
   href: string;
-  sv: number;
+  order: number; // start chapter*1000 + verse, so a reading beginning in an earlier chapter sorts first
   occasions: string[];
 }
 
 /** Group a chapter's chips by reference (one passage read at several occasions →
- *  one chip), in passage order. Collapses "common of saints" repetition. */
+ *  one chip), ordered by the reading's STARTING reference. A reading that begins
+ *  in an earlier chapter (e.g. John 9:39–10:9 on the John 10 page) sorts first. */
 export function chapterChipGroups(code: string, chapter: number): ChipGroup[] {
   const map = new Map<string, ChipGroup>();
   for (const c of chipsForChapter(code, chapter)) {
     let g = map.get(c.ref);
     if (!g) {
-      const sv = Number(c.href.match(/#v(\d+)/)?.[1] ?? 1);
-      map.set(c.ref, (g = { ref: c.ref, href: c.href, sv, occasions: [] }));
+      const m = c.href.match(/\/(\d+)(?:#v(\d+))?$/); // /…/<chapter>[#v<verse>]
+      const order = (m ? +m[1] : chapter) * 1000 + (m && m[2] ? +m[2] : 1);
+      map.set(c.ref, (g = { ref: c.ref, href: c.href, order, occasions: [] }));
     }
     if (!g.occasions.includes(c.occasion)) g.occasions.push(c.occasion);
   }
-  return [...map.values()].sort((a, b) => a.sv - b.sv);
+  return [...map.values()].sort((a, b) => a.order - b.order);
 }
