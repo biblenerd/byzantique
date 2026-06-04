@@ -40,8 +40,6 @@ const snippet = chapter.blocks
 const notes = notesForChapter(book.code, chapterNumber);
 const hasNotes = notes.length > 0;
 const lectGroups = chapterChipGroups(book.code, chapterNumber);
-const occLabel = (occasions: string[]) =>
-  occasions.length <= 3 ? occasions.join(' · ') : `read at ${occasions.length} occasions`;
 const vnum = (c: number, v: number) => c * 1000 + v;
 
 // Scripture attribution for this chapter's testament (TCENT is CC BY 4.0 — credit required).
@@ -66,7 +64,14 @@ const credit =
         <li>
           <span class="lect-ico" aria-hidden="true">📖</span>
           <a class="lect-ref" href={g.href}>{g.ref}</a>
-          <span class="lect-occ" title={g.occasions.join(' · ')}>{occLabel(g.occasions)}</span>
+          {g.occasions.length <= 3 ? (
+            <span class="lect-occ">{g.occasions.join(' · ')}</span>
+          ) : (
+            <details class="lect-occ-x">
+              <summary>read at {g.occasions.length} occasions</summary>
+              <span class="lect-occ-list">{g.occasions.join(' · ')}</span>
+            </details>
+          )}
         </li>
       ))}
     </ul>

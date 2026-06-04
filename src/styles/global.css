@@ -129,6 +129,15 @@ h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
 .lect-list .lect-ref { font-weight: 700; color: var(--accent); text-decoration: none; white-space: nowrap; }
 .lect-list .lect-ref:hover { text-decoration: underline; }
 .lect-list .lect-occ { color: var(--ink-soft); margin-left: 8px; }
+.lect-list .lect-occ-x { display: inline; }
+.lect-list .lect-occ-x summary {
+  display: inline; cursor: pointer; color: var(--ink-soft); margin-left: 8px; list-style: none;
+}
+.lect-list .lect-occ-x summary::-webkit-details-marker { display: none; }
+.lect-list .lect-occ-x summary::after { content: ' ▸'; font-size: 9px; color: var(--accent); }
+.lect-list .lect-occ-x[open] summary::after { content: ' ▾'; }
+.lect-list .lect-occ-x summary:hover { color: var(--accent); }
+.lect-list .lect-occ-x .lect-occ-list { display: block; margin: 4px 0 2px 28px; color: var(--ink-soft); }
 
 /* ---- scripture ---- */
 .scripture { font-size: 19px; line-height: 1.85; }
