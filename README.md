@@ -5,7 +5,7 @@ Dan's **commentary / notes** on the biblical text. A static site (Astro) over th
 > ### 🚧 Under active development — not ready yet
 > This is an early work in progress. The whole Bible is browsable, the reading experience
 > (side-by-side text + commentary) is built, and the **Orthodox lectionary is wired up**
-> (readings by date, 1950–2100). But **commentary is still sparse** — so far only Genesis
+> (readings by date, 1950–2100). But **commentary is still sparse:** so far only Genesis
 > is seeded. Expect rough edges, gaps, and breaking changes. Nothing here is final.
 >
 > **Live preview:** <https://byzantique.pages.dev> (will soon live at [byzantique.com](https://byzantique.com) once existing notes are migrated)
@@ -50,7 +50,7 @@ src/lib/canon.ts                        canon registry (names, order, slugs, USF
 src/pages/**.astro                      static pages read the JSON at build time
 ```
 
-- **Static-first (Option C hybrid):** every book and chapter is pre-rendered to HTML
+- **Static-first:** every book and chapter is pre-rendered to HTML
   (~1,450 routes; full build ≈ 5s), so the entire Bible reads with no JavaScript. The
   per-chapter JSON is also served for client-side features (search, cross-ref previews,
   the lectionary date page).
@@ -112,7 +112,7 @@ This repo mixes several licenses — see [`LICENSING.md`](./LICENSING.md) for de
 Byzantique is built with [Astro](https://astro.build). Much of the engineering —
 the build pipeline, components, and styling — was done in collaboration with
 [Claude Code](https://claude.com/claude-code), Anthropic's agentic coding tool.
-The biblical scholarship, commentary, notes, and editorial judgments are the author's own.
+The biblical scholarship, commentary, notes, and editorial judgments represent Dan's research.
 
 This project:
 - began as a [GitHub Pages site](https://github.com/biblenerd/biblenerd.github.io) (deprecated in 2024), 
