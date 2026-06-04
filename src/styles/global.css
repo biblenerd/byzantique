@@ -475,6 +475,11 @@ blockquote.creed p.creed-attr {
 .lect-actions { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 4px 0 20px; }
 .lect-actions button { font-family: var(--sans); font-size: 13px; padding: 5px 14px; border: 1px solid var(--rule); border-radius: 999px; background: var(--panel); color: var(--ink); cursor: pointer; }
 .lect-actions button:hover { border-color: var(--accent); color: var(--accent); }
+.lect-picker {
+  font-family: var(--sans); font-size: 13px; padding: 4px 10px; border: 1px solid var(--rule);
+  border-radius: 999px; background: var(--panel); color: var(--ink); cursor: pointer;
+}
+.lect-picker:hover, .lect-picker:focus { border-color: var(--accent); outline: none; }
 .lect-cal { font-family: var(--sans); font-size: 12px; color: var(--ink-soft); }
 .lect-reading { display: flex; gap: 14px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 16px; }
 .lect-reading:last-child { border-bottom: 0; }

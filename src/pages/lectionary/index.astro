@@ -15,6 +15,7 @@ import Base from '../../layouts/Base.astro';
   </div>
 
   <div class="lect-actions ui">
+    <input type="date" id="lect-picker" class="lect-picker" aria-label="Choose a date" />
     <button type="button" id="lect-today">Today</button>
     <span class="lect-cal">New Calendar (Revised Julian)</span>
   </div>
@@ -29,6 +30,7 @@ import Base from '../../layouts/Base.astro';
     const titleEl = document.getElementById('lect-title')!;
     const readingsEl = document.getElementById('lect-readings')!;
     const msgEl = document.getElementById('lect-msg')!;
+    const pickerEl = document.getElementById('lect-picker') as HTMLInputElement;
     const cache = new Map<number, Promise<any>>();
     let range: { min: number; max: number } | null = null;
 
@@ -55,6 +57,7 @@ import Base from '../../layouts/Base.astro';
     async function render(iso: string) {
       const d = parseISO(iso);
       history.replaceState(null, '', `?date=${iso}`);
+      pickerEl.value = iso;
       dateEl.textContent = fmtLong(d);
       const y = d.getFullYear();
       if (range && (y < range.min || y > range.max)) {
@@ -95,10 +98,17 @@ import Base from '../../layouts/Base.astro';
       b.addEventListener('click', () => step(Number(b.dataset.step))),
     );
     document.getElementById('lect-today')!.addEventListener('click', () => render(isoLocal(new Date())));
+    pickerEl.addEventListener('change', () => {
+      if (pickerEl.value) render(pickerEl.value);
+    });
 
     fetch('/data/lectionary/years.json')
       .then((r) => r.json())
-      .then((r) => (range = r))
+      .then((r) => {
+        range = r;
+        pickerEl.min = `${r.min}-01-01`;
+        pickerEl.max = `${r.max}-12-31`;
+      })
       .catch(() => {})
       .finally(() => render(current()));
   })();
