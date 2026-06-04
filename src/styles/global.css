@@ -431,7 +431,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .note-body p { margin: 0 0 12px; }
 .note-body blockquote {
   margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--gold);
-  background: var(--gold-soft); border-radius: 0 6px 6px 0; color: #4a4233; font-style: italic;
+  background: var(--gold-soft); border-radius: 0 6px 6px 0; color: #4a4233;
 }
 .note-body blockquote p { margin: 0; }
 
