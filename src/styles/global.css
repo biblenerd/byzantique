@@ -120,11 +120,15 @@ h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
   display: inline-flex; gap: 6px; align-items: center; text-decoration: none;
 }
 .chip.lect { background: var(--accent-soft); color: var(--accent); border-color: #e6cac6; }
-a.chip.lect { max-width: 22rem; }
-a.chip.lect:hover { border-color: var(--accent); }
-.chip .chip-ref { flex: none; font-weight: 600; white-space: nowrap; }
-.chip .chip-occ { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-soft); }
-.chip .chip-occ::before { content: '·'; margin-right: 6px; color: var(--ink-soft); }
+
+/* lectionary readings on a chapter page (a clean list, not truncating pills) */
+.lect-list { list-style: none; margin: 14px 0 22px; padding: 0; font-family: var(--sans); font-size: 13px; }
+.lect-list li { padding: 6px 0; border-bottom: 1px dotted var(--rule); line-height: 1.55; }
+.lect-list li:last-child { border-bottom: 0; }
+.lect-list .lect-ico { margin-right: 6px; }
+.lect-list .lect-ref { font-weight: 700; color: var(--accent); text-decoration: none; white-space: nowrap; }
+.lect-list .lect-ref:hover { text-decoration: underline; }
+.lect-list .lect-occ { color: var(--ink-soft); margin-left: 8px; }
 
 /* ---- scripture ---- */
 .scripture { font-size: 19px; line-height: 1.85; }

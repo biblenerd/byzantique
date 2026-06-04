@@ -40,8 +40,8 @@ const snippet = chapter.blocks
 const notes = notesForChapter(book.code, chapterNumber);
 const hasNotes = notes.length > 0;
 const lectGroups = chapterChipGroups(book.code, chapterNumber);
-const chipLabel = (occasions: string[]) =>
-  occasions.length <= 3 ? occasions.join(', ') : `${occasions.length} occasions`;
+const occLabel = (occasions: string[]) =>
+  occasions.length <= 3 ? occasions.join(' · ') : `read at ${occasions.length} occasions`;
 const vnum = (c: number, v: number) => c * 1000 + v;
 
 // Scripture attribution for this chapter's testament (TCENT is CC BY 4.0 — credit required).
@@ -61,14 +61,15 @@ const credit =
   <h1>{book.name}{book.paren && <span class="paren ui"> ({book.paren})</span>} {chapterNumber}</h1>
 
   {lectGroups.length > 0 && (
-    <div class="chips ui" data-pagefind-ignore>
+    <ul class="lect-list ui" data-pagefind-ignore>
       {lectGroups.map((g) => (
-        <a class="chip lect" href={g.href} title={g.occasions.join(' · ')}>
-          <span class="chip-ref">📖 {g.ref}</span>
-          <span class="chip-occ">{chipLabel(g.occasions)}</span>
-        </a>
+        <li>
+          <span class="lect-ico" aria-hidden="true">📖</span>
+          <a class="lect-ref" href={g.href}>{g.ref}</a>
+          <span class="lect-occ" title={g.occasions.join(' · ')}>{occLabel(g.occasions)}</span>
+        </li>
       ))}
-    </div>
+    </ul>
   )}
 
   {hasNotes ? (
