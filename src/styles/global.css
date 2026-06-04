@@ -120,6 +120,11 @@ h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
   display: inline-flex; gap: 6px; align-items: center; text-decoration: none;
 }
 .chip.lect { background: var(--accent-soft); color: var(--accent); border-color: #e6cac6; }
+a.chip.lect { max-width: 22rem; }
+a.chip.lect:hover { border-color: var(--accent); }
+.chip .chip-ref { flex: none; font-weight: 600; white-space: nowrap; }
+.chip .chip-occ { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink-soft); }
+.chip .chip-occ::before { content: '·'; margin-right: 6px; color: var(--ink-soft); }
 
 /* ---- scripture ---- */
 .scripture { font-size: 19px; line-height: 1.85; }
