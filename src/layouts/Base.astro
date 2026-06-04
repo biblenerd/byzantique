@@ -5,9 +5,11 @@ import { ABOUT_PAGES } from '../lib/nav';
 interface Props {
   title: string;
   description?: string;
-  wide?: boolean;
+  /** Content width tier. Default = prose measure; 'index' = wider for grids/tables;
+   *  'reader' = widest, for the side-by-side reader. */
+  width?: 'index' | 'reader';
 }
-const { title, description, wide } = Astro.props;
+const { title, description, width } = Astro.props;
 const fullTitle = title === 'Byzantique' ? title : `${title} · Byzantique`;
 const year = new Date().getFullYear();
 
@@ -74,7 +76,7 @@ const section = path.startsWith('/ot/')
         </svg>
       </a>
     </header>
-    <main id="main" class={wide ? 'wide' : undefined} data-pagefind-body data-pagefind-filter={`Section:${section}`}>
+    <main id="main" class={width} data-pagefind-body data-pagefind-filter={`Section:${section}`}>
       <slot />
     </main>
     <footer class="site">

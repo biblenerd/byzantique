@@ -49,7 +49,7 @@ const credit =
     : { testament: 'New Testament', title: 'Text-Critical English New Testament', abbr: 'TCENT', anchor: 'tcent', license: '© Robert Adam Boyd, CC BY 4.0' };
 ---
 
-<Base title={`${label} ${chapterNumber}`} description={snippet} wide={hasNotes}>
+<Base title={`${label} ${chapterNumber}`} description={snippet} width={hasNotes ? 'reader' : undefined}>
   <nav class="crumbs ui" data-pagefind-ignore>
     <a href="/">Byzantique</a><span class="sep">›</span>
     <a href={`/${book.testament}/`}>{heading}</a><span class="sep">›</span>
