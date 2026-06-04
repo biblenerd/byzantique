@@ -16,7 +16,9 @@ import { bookByCode, bookLabel } from '../src/lib/canon.ts';
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..');
 const FIXTURE = path.join(ROOT, 'data/lectionary/calendarium.json');
+const DATES_IN = path.join(ROOT, 'data/lectionary/dates'); // orthocal-engine dump (vendored)
 const OUT = path.join(ROOT, 'public/data/lectionary/chips');
+const YEAR_OUT = path.join(ROOT, 'public/data/lectionary/year');
 const WHOLE = 999;
 
 // orthocal sdisplay book abbreviation → USFM code
@@ -163,6 +165,51 @@ function build() {
 
   console.log(`build-lectionary: ${chipCount} chips across ${books} books → public/data/lectionary/chips/`);
   if (unresolved.size) console.warn(`  ! ${unresolved.size} unresolved refs: ${[...unresolved].slice(0, 5).join(' | ')}`);
+
+  buildDateReadings(dayByMd);
+}
+
+// Resolve one orthocal reading reference to our display + link.
+function resolveReading(rd) {
+  const ranges = parseRef(rd.ref);
+  if (!ranges.length) return { source: rd.source, ref: rd.ref, href: null };
+  const meta = bookByCode(ranges[0].code);
+  const href = meta
+    ? `/${meta.testament}/${meta.slug}/${ranges[0].sc}${ranges[0].ev === WHOLE ? '' : `#v${ranges[0].sv}`}`
+    : null;
+  return { source: rd.source, ref: refLabel(ranges), href };
+}
+
+// Transform the vendored orthocal-engine dump (data/lectionary/dates/<YEAR>.json)
+// into served per-year files with our references/links.
+function buildDateReadings(dayByMd) {
+  if (!fs.existsSync(DATES_IN)) {
+    console.warn('  ! no data/lectionary/dates/ — run scripts/dump-lectionary.py (today\'s readings skipped)');
+    return;
+  }
+  fs.rmSync(YEAR_OUT, { recursive: true, force: true });
+  fs.mkdirSync(YEAR_OUT, { recursive: true });
+  const years = fs.readdirSync(DATES_IN).filter((f) => /^\d{4}\.json$/.test(f)).map((f) => +f.slice(0, 4)).sort();
+  for (const y of years) {
+    const src = JSON.parse(fs.readFileSync(path.join(DATES_IN, `${y}.json`), 'utf8'));
+    const out = {};
+    for (const [md, rec] of Object.entries(src)) {
+      // Surface a fixed great-feast name (stored on Day.feast_name, not in titles).
+      const [mm, dd] = md.split('-').map(Number);
+      const fixed = dayByMd.get(`${mm}-${dd}`);
+      const titles = [...rec.titles];
+      if (rec.feast_level >= 5 && fixed?.feast_name && !titles.includes(fixed.feast_name))
+        titles.unshift(fixed.feast_name);
+      out[md] = {
+        titles,
+        feast_level: rec.feast_level,
+        readings: rec.readings.map(resolveReading),
+      };
+    }
+    fs.writeFileSync(path.join(YEAR_OUT, `${y}.json`), JSON.stringify(out));
+  }
+  fs.writeFileSync(path.join(YEAR_OUT, '..', 'years.json'), JSON.stringify({ min: years[0], max: years.at(-1) }));
+  console.log(`build-lectionary: date readings for ${years[0]}–${years.at(-1)} → public/data/lectionary/year/`);
 }
 
 build();

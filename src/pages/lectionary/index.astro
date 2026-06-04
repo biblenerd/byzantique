@@ -2,13 +2,102 @@
 import Base from '../../layouts/Base.astro';
 ---
 
-<Base title="Lectionary" description="Orthodox lectionary — readings by date.">
+<Base title="Lectionary" description="Orthodox daily lectionary readings, by date.">
   <nav class="crumbs ui"><a href="/">Byzantique</a><span class="sep">›</span>Lectionary</nav>
-  <h1>Lectionary</h1>
-  <p class="subtitle">Orthodox daily readings, by date.</p>
-  <p>
-    Coming in <strong>Phase 3</strong>: today's readings, browse by date, and
-    "appears in the lectionary" chips on every chapter — all computed locally from a
-    precomputed dataset (New / Revised-Julian calendar). See REQUIREMENTS.md §4.
-  </p>
+
+  <div class="lect-head">
+    <button type="button" class="lect-nav ui" data-step="-1" aria-label="Previous day">←</button>
+    <div class="lect-headings">
+      <h1 id="lect-date">Lectionary</h1>
+      <p class="subtitle" id="lect-title"></p>
+    </div>
+    <button type="button" class="lect-nav ui" data-step="1" aria-label="Next day">→</button>
+  </div>
+
+  <div class="lect-actions ui">
+    <button type="button" id="lect-today">Today</button>
+    <span class="lect-cal">New Calendar (Revised Julian)</span>
+  </div>
+
+  <div id="lect-readings"></div>
+  <p id="lect-msg" class="search-note">Loading readings…</p>
 </Base>
+
+<script>
+  (() => {
+    const dateEl = document.getElementById('lect-date')!;
+    const titleEl = document.getElementById('lect-title')!;
+    const readingsEl = document.getElementById('lect-readings')!;
+    const msgEl = document.getElementById('lect-msg')!;
+    const cache = new Map<number, Promise<any>>();
+    let range: { min: number; max: number } | null = null;
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const isoLocal = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const parseISO = (s: string) => {
+      const [y, m, d] = s.split('-').map(Number);
+      return new Date(y, m - 1, d);
+    };
+    const fmtLong = (d: Date) =>
+      d.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+
+    function yearData(y: number) {
+      if (!cache.has(y))
+        cache.set(y, fetch(`/data/lectionary/year/${y}.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+      return cache.get(y)!;
+    }
+
+    function current() {
+      return new URLSearchParams(location.search).get('date') || isoLocal(new Date());
+    }
+
+    async function render(iso: string) {
+      const d = parseISO(iso);
+      history.replaceState(null, '', `?date=${iso}`);
+      dateEl.textContent = fmtLong(d);
+      const y = d.getFullYear();
+      if (range && (y < range.min || y > range.max)) {
+        titleEl.textContent = '';
+        readingsEl.innerHTML = '';
+        msgEl.textContent = `Readings are available for ${range.min}–${range.max}.`;
+        return;
+      }
+      const data = await yearData(y);
+      const rec = data && data[`${pad(d.getMonth() + 1)}-${pad(d.getDate())}`];
+      if (!rec) {
+        titleEl.textContent = '';
+        readingsEl.innerHTML = '';
+        msgEl.textContent = 'No readings found for this date.';
+        return;
+      }
+      msgEl.textContent = '';
+      titleEl.textContent = (rec.titles || []).join(' · ');
+      readingsEl.innerHTML = rec.readings
+        .map(
+          (r: any) =>
+            `<div class="lect-reading"><span class="lect-src">${esc(r.source)}</span>` +
+            (r.href ? `<a href="${r.href}">${esc(r.ref)}</a>` : `<span>${esc(r.ref)}</span>`) +
+            `</div>`,
+        )
+        .join('');
+    }
+
+    function step(n: number) {
+      const d = parseISO(current());
+      d.setDate(d.getDate() + n);
+      render(isoLocal(d));
+    }
+
+    document.querySelectorAll<HTMLButtonElement>('.lect-nav').forEach((b) =>
+      b.addEventListener('click', () => step(Number(b.dataset.step))),
+    );
+    document.getElementById('lect-today')!.addEventListener('click', () => render(isoLocal(new Date())));
+
+    fetch('/data/lectionary/years.json')
+      .then((r) => r.json())
+      .then((r) => (range = r))
+      .catch(() => {})
+      .finally(() => render(current()));
+  })();
+</script>

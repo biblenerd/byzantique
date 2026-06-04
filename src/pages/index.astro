@@ -11,8 +11,13 @@ const verses = manifest.reduce((a, m) => a + m.verses, 0);
   <h1>Byzantique</h1>
   <p class="subtitle">Dan's notes on the Scriptures.</p>
 
-  <div class="chips ui" data-pagefind-ignore>
-    <span class="chip lect">📖 Today's readings — coming in Phase 3</span>
+  <div class="today-box ui" data-pagefind-ignore>
+    <div class="today-head">
+      <span class="today-label">📖 Today's readings</span>
+      <a class="today-more" href="/lectionary/">Browse by date →</a>
+    </div>
+    <p class="today-title" id="today-title">Loading…</p>
+    <div class="today-readings" id="today-readings"></div>
   </div>
 
   <div class="dev-banner ui" data-pagefind-ignore>
@@ -74,3 +79,37 @@ const verses = manifest.reduce((a, m) => a + m.verses, 0);
 
   <Scripture ref="ECC 12:10-14" />
 </Base>
+
+<script>
+  // Today's readings (client-side: date → precomputed lectionary lookup).
+  (() => {
+    const titleEl = document.getElementById('today-title');
+    const listEl = document.getElementById('today-readings');
+    if (!titleEl || !listEl) return;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+    const now = new Date();
+    const y = now.getFullYear();
+    fetch(`/data/lectionary/year/${y}.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        const rec = data && data[`${pad(now.getMonth() + 1)}-${pad(now.getDate())}`];
+        if (!rec) {
+          titleEl.textContent = 'Readings unavailable for today.';
+          return;
+        }
+        titleEl.textContent = (rec.titles || []).join(' · ');
+        listEl.innerHTML = rec.readings
+          .map(
+            (r: any) =>
+              `<span class="tr"><span class="tr-src">${esc(r.source)}:</span> ` +
+              (r.href ? `<a href="${r.href}">${esc(r.ref)}</a>` : esc(r.ref)) +
+              `</span>`,
+          )
+          .join('');
+      })
+      .catch(() => {
+        titleEl.textContent = 'Readings unavailable.';
+      });
+  })();
+</script>
