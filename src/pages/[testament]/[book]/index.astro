@@ -36,6 +36,13 @@ const notes = bookNotes(book.code);
 
   {intro && <div class="book-intro" set:html={intro} />}
 
+  <div class="col-label ui" data-pagefind-ignore>Chapters</div>
+  <ul class="chapter-grid" data-pagefind-ignore>
+    {text.chapters.map((c) => (
+      <li><a href={`/${book.testament}/${book.slug}/${c.number}`}>{c.number}</a></li>
+    ))}
+  </ul>
+
   {notes.length > 0 && (
     <section class="commentary">
       <div class="col-label ui">Book commentary</div>
@@ -51,11 +58,4 @@ const notes = bookNotes(book.code);
       ))}
     </section>
   )}
-
-  <div class="col-label ui" data-pagefind-ignore>Chapters</div>
-  <ul class="grid" data-pagefind-ignore>
-    {text.chapters.map((c) => (
-      <li><a href={`/${book.testament}/${book.slug}/${c.number}`}>{c.number}</a></li>
-    ))}
-  </ul>
 </Base>

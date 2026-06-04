@@ -343,13 +343,19 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .text-entry .meta code { font-size: 12px; }
 
 /* ---- book / chapter grids ---- */
-.grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; padding: 0; list-style: none; }
-.grid a {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 2.4em; padding: 8px 10px; border: 1px solid var(--rule); border-radius: 6px;
-  background: var(--panel); text-decoration: none; color: var(--ink); font-family: var(--sans); font-size: 14px;
+/* Chapter index: responsive grid of evenly-sized, column-aligned tiles. auto-fill +
+   minmax keeps rows/columns neat and reflows by viewport width. */
+.chapter-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 8px; margin: 14px 0 28px; padding: 0; list-style: none;
 }
-.grid a:hover { border-color: var(--accent); color: var(--accent); }
+.chapter-grid a {
+  display: flex; align-items: center; justify-content: center;
+  padding: 9px 6px; border: 1px solid var(--rule); border-radius: 6px;
+  background: var(--panel); text-decoration: none; color: var(--ink);
+  font-family: var(--sans); font-size: 14px;
+}
+.chapter-grid a:hover { border-color: var(--accent); color: var(--accent); }
 
 /* home-page Browse: large square Testament cards with icons */
 .browse-cards {
