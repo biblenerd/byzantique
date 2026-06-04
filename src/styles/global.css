@@ -532,7 +532,9 @@ blockquote.creed p.creed-attr {
 .reader-grid .col { min-width: 0; padding: 16px 0; }
 .reader-grid .col-text { padding-right: 32px; border-right: 1px solid var(--rule); }
 .reader-grid .col-notes { padding-left: 32px; }
-.reader-grid .col-text-inner { position: sticky; top: 60px; }
+/* pinned, self-scrolling scripture pane: scroll the commentary (page) while the
+   text stays on screen and can be scrolled independently to the relevant verse */
+.reader-grid .col-text-inner { position: sticky; top: 60px; max-height: calc(100vh - 80px); overflow-y: auto; padding-right: 10px; }
 .reader-grid .col-label { margin-top: 0; }
 .reader-grid .scripture { font-size: 18px; }
 
@@ -540,7 +542,7 @@ blockquote.creed p.creed-attr {
 .reader-grid.stacked .col-text,
 .reader-grid.stacked .col-notes { padding-left: 0; padding-right: 0; border-right: 0; margin: 0 auto; max-width: 42rem; }
 .reader-grid.stacked .col-text { border-bottom: 1px solid var(--rule); }
-.reader-grid.stacked .col-text-inner { position: static; }
+.reader-grid.stacked .col-text-inner { position: static; max-height: none; overflow: visible; padding-right: 0; }
 
 /* note ↔ verse linking (side-by-side reader only) */
 .reader .scripture .v { border-radius: 3px; transition: background .12s; }
@@ -548,6 +550,8 @@ blockquote.creed p.creed-attr {
 .reader .scripture .v.hl { background: var(--hl); box-shadow: inset 0 0 0 1px var(--hl-edge); }
 .reader .note { transition: box-shadow .12s; }
 .reader .note.nhl { box-shadow: 0 0 0 2px var(--gold); }
+.reader .note-anchor { cursor: pointer; }
+.reader .note-anchor:hover { text-decoration: underline; }
 
 @media (max-width: 900px) {
   .reader-toolbar { display: none; }
@@ -555,7 +559,7 @@ blockquote.creed p.creed-attr {
   .reader-grid.stacked { grid-template-columns: minmax(0, 1fr); }
   .reader-grid .col-text { padding-right: 0; border-right: 0; border-bottom: 1px solid var(--rule); }
   .reader-grid .col-notes { padding-left: 0; }
-  .reader-grid .col-text-inner { position: static; }
+  .reader-grid .col-text-inner { position: static; max-height: none; overflow: visible; padding-right: 0; }
 }
 
 /* ---- chapter nav ---- */

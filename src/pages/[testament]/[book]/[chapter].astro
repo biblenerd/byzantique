@@ -156,6 +156,21 @@ const credit =
         });
       note.addEventListener('mouseenter', () => set(true));
       note.addEventListener('mouseleave', () => set(false));
+
+      // Click the note's reference → scroll the text to its first verse + flash it.
+      const anchor = note.querySelector<HTMLElement>('.note-anchor');
+      let flashT: number;
+      anchor?.addEventListener('click', () => {
+        const target = verses.find((v) => {
+          const x = +v.dataset.v!;
+          return x >= from && x <= to;
+        });
+        if (!target) return;
+        target.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        set(true);
+        clearTimeout(flashT);
+        flashT = window.setTimeout(() => set(false), 1800);
+      });
     });
 
     // Hover a verse → highlight the notes that cover it.
