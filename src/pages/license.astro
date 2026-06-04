@@ -34,6 +34,23 @@ import Base from '../layouts/Base.astro';
     (Septuagint: public domain / CC0; New Testament: CC&nbsp;BY&nbsp;4.0).
   </p>
 
+  <h2>Fonts</h2>
+  <p>
+    Greek and Hebrew are set in self-hosted open-source typefaces —
+    <strong>Noto Serif</strong> (polytonic Greek) and <strong>Ezra SIL</strong>
+    (pointed and cantillated Hebrew, after the <em>Biblia Hebraica Stuttgartensia</em>).
+    Both are licensed under the <strong>SIL Open Font License 1.1</strong>; their license
+    files travel with the font subsets in the repository.
+  </p>
+
+  <h2>Lectionary data</h2>
+  <p>
+    The daily lectionary readings are derived from
+    <a href="https://github.com/brianglass/orthocal-python" target="_blank" rel="noopener">orthocal-python</a>,
+    used under the <strong>MIT License</strong>. Byzantique precomputes the readings from
+    its data; there is no runtime dependency on any external service.
+  </p>
+
   <h2>Site code</h2>
   <p>
     Byzantique is open source. The code that runs the site — the Astro application, build
@@ -42,8 +59,9 @@ import Base from '../layouts/Base.astro';
     <a href="https://github.com/biblenerd/byzantique" target="_blank" rel="noopener">github.com/biblenerd/byzantique</a>.
   </p>
   <p>
-    The repository bundles all three licenses — code (MIT), commentary (CC&nbsp;BY-SA&nbsp;4.0),
-    and the vendored scripture texts (their own terms). The breakdown is in its
+    The repository bundles several licenses — code (MIT), commentary (CC&nbsp;BY-SA&nbsp;4.0),
+    the vendored scripture texts, fonts (OFL), and lectionary data (MIT), each under its own
+    terms. The breakdown is in its
     <a href="https://github.com/biblenerd/byzantique/blob/main/LICENSING.md" target="_blank" rel="noopener">LICENSING</a>
     file.
   </p>
