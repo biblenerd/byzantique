@@ -9,12 +9,17 @@ import path from 'node:path';
 import url from 'node:url';
 import { marked } from 'marked';
 import { scriptureQuote, refLink, refPreview } from '../src/lib/scripture.ts'; // run with --experimental-strip-types
+import { bookByCode } from '../src/lib/canon.ts';
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'data/commentary');
 const OUT = path.join(ROOT, 'public/data/commentary');
 
 const WHOLE_CHAPTER_END = 999;
+
+// id → [{ id, book, testament, slug, type, sc }] for resolving note: cross-references.
+// Populated by a first pass over all note files (see build()).
+const NOTE_REGISTRY = new Map();
 
 // Replace standalone `{{ REF }}` lines with the resolved scripture blockquote (before Markdown parse).
 function expandScripture(md) {
@@ -38,6 +43,32 @@ function expandRefs(md, file) {
     const prev = refPreview(r);
     const attr = prev ? ` data-ref-preview="${attrEsc(prev)}"` : '';
     return `<a class="xref" href="${link.href}"${attr}>${text}</a>`;
+  });
+}
+
+// Resolve note cross-references `[text](note:ID)` (or `[text](note:CODE/ID)` to
+// disambiguate) → a link to that note's anchor on its page. Book-level notes live on the
+// book landing page; chapter/range notes on their starting chapter page. Unknown or
+// ambiguous ids fail the build, like ref: cross-references. ID is the note's filename
+// (without .md).
+function expandNoteRefs(md, file) {
+  return md.replace(/\[([^\]]+)\]\(note:([^)]+)\)/g, (_, text, target) => {
+    const t = target.trim();
+    const slash = t.indexOf('/');
+    const book = slash === -1 ? null : t.slice(0, slash).toUpperCase();
+    const id = slash === -1 ? t : t.slice(slash + 1);
+    let matches = NOTE_REGISTRY.get(id) ?? [];
+    if (book) matches = matches.filter((m) => m.book === book);
+    if (matches.length === 0)
+      throw new Error(`${path.relative(ROOT, file)}: unresolved note reference [${text}](note:${t})`);
+    if (matches.length > 1)
+      throw new Error(
+        `${path.relative(ROOT, file)}: ambiguous note reference [${text}](note:${t}) — qualify as note:CODE/${id}`,
+      );
+    const m = matches[0];
+    const base = `/${m.testament}/${m.slug}/`;
+    const href = m.type === 'book' ? `${base}#note-${id}` : `${base}${m.sc}#note-${id}`;
+    return `<a class="xref" href="${href}">${text}</a>`;
   });
 }
 
@@ -128,7 +159,7 @@ function processFootnotes(md, noteId, file) {
     const items = order
       .map((id, i) => {
         const num = i + 1;
-        const body = marked.parseInline(expandRefs(defs.get(id), file));
+        const body = marked.parseInline(expandRefs(expandNoteRefs(defs.get(id), file), file));
         return `<li id="fn-${noteId}-${num}"><a class="tn-letter" href="#fnref-${noteId}-${num}">${num}</a><span class="tn-body">${body}</span></li>`;
       })
       .join('');
@@ -141,8 +172,24 @@ function build() {
   fs.rmSync(OUT, { recursive: true, force: true }); // start clean (drop stale books)
   fs.mkdirSync(OUT, { recursive: true });
   const byBook = new Map();
+  const files = walk(SRC);
 
-  for (const file of walk(SRC)) {
+  // Pass 1: register every note id so note: cross-references can resolve (and validate).
+  for (const file of files) {
+    const { data } = parseFrontmatter(fs.readFileSync(file, 'utf8'));
+    if (!data.anchor) continue;
+    const ref = parseRef(data.anchor);
+    if (!ref) continue;
+    const meta = bookByCode(ref.book);
+    if (!meta) continue;
+    const id = path.basename(file, '.md');
+    const entry = { id, book: ref.book, testament: meta.testament, slug: meta.slug, type: anchorType(ref), sc: ref.sc };
+    if (!NOTE_REGISTRY.has(id)) NOTE_REGISTRY.set(id, []);
+    NOTE_REGISTRY.get(id).push(entry);
+  }
+
+  // Pass 2: build each note's HTML (now note: refs can resolve against the registry).
+  for (const file of files) {
     const { data, body } = parseFrontmatter(fs.readFileSync(file, 'utf8'));
     if (!data.anchor) { console.warn(`  ! ${path.relative(ROOT, file)}: no anchor`); continue; }
     const ref = parseRef(data.anchor);
@@ -156,7 +203,7 @@ function build() {
       span: (ref.ec - ref.sc) * 1000 + (ref.ev - ref.sv),
       html: (() => {
         const fn = processFootnotes(body.trim(), path.basename(file, '.md'), file);
-        return marked.parse(expandRefs(expandScripture(fn.md), file)) + fn.footnotesHtml;
+        return marked.parse(expandRefs(expandNoteRefs(expandScripture(fn.md), file), file)) + fn.footnotesHtml;
       })(),
     };
     if (!byBook.has(ref.book)) byBook.set(ref.book, []);

@@ -47,7 +47,7 @@ const notes = bookNotes(book.code);
     <section class="commentary">
       <div class="col-label ui">Book commentary</div>
       {notes.map((n) => (
-        <article class="note">
+        <article class="note" id={`note-${n.id}`}>
           <span class="note-anchor ui">
             <span class="badge">{anchorBadge(n.anchor.type)}</span>
             {book.name}

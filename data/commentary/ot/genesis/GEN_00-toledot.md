@@ -4,7 +4,7 @@ title: Toledot formula
 ---
 
 Genesis is structured around a series of תּוֹלֵדוֹת (*toledot*, "these are the generations
-of…") formulas that carry the narrative from the cosmos down to the family of Jacob. The Hebrew word means "descendants," "histories," "genealogy," or "generation(s)" (in reference to successors, usually introducing a geneaological list and related narratives) and various occurrences of it are thought to divide Genesis into 10–12 sections.
+of…") formulas that carry the narrative from the cosmos down to the family of Jacob (consistently represented in the LXX as γενέσεως / *geneseōs*). The Hebrew word means "descendants," "histories," "genealogy," or "generation(s)" (in reference to successors, usually introducing a geneaological list and related narratives) and various occurrences of it are thought to divide Genesis into 10–12 sections.
 
 The occurrences in Genesis occur at:
 

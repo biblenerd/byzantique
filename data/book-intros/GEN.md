@@ -1,6 +1,5 @@
 *Genesis* (Greek Γένεσις, "origin"; Hebrew בְּרֵאשִׁ֖ית / *Bereshit*, "in the beginning") is the
-first book of the Law and of the whole Bible. It moves from the creation of the
-cosmos to the founding of a people: the primeval history of chapters 1–11 (creation,
+first book of the Law (תּוֹרָה / *Torah*) / Pentateuch and of the whole Bible. It moves from the creation and ordering of the cosmos to the founding of a people: the primeval history of chapters 1–11 (creation,
 the fall, the flood, and Babel) gives way to the patriarchal histories of Abraham,
 Isaac, Jacob, and Joseph in chapters 12–50.
 

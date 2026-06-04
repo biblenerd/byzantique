@@ -106,7 +106,7 @@ const credit =
         <section class="col col-notes">
           <div class="col-label ui">Commentary</div>
           {notes.map((n) => (
-            <article class="note" data-from={vnum(n.anchor.sc, n.anchor.sv)} data-to={vnum(n.anchor.ec, n.anchor.ev)}>
+            <article class="note" id={`note-${n.id}`} data-from={vnum(n.anchor.sc, n.anchor.sv)} data-to={vnum(n.anchor.ec, n.anchor.ev)}>
               <span class="note-anchor ui">
                 <span class="badge">{anchorBadge(n.anchor.type)}</span>
                 {book.name} {refRange(n.anchor)}

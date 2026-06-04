@@ -105,6 +105,25 @@ shows a preview of the first verse. **A bad reference fails the build** — so t
 at `npm run data`/`build` rather than shipping a dead link. (In `.astro` pages use
 `<Ref ref="GEN 2:1-3" />` instead.)
 
+## Linking to another note — `[text](note:…)`
+
+To link to a *specific commentary note* (not a passage), use a `note:` target. The id is the
+note's **filename without `.md`**. For example, the Toledot note lives at
+`data/commentary/ot/genesis/00-toledot.md`, so its id is `00-toledot`:
+
+```markdown
+See the [Toledot formula](note:00-toledot) discussion on the book page.
+```
+
+The link resolves to that note's anchor on its page — **book-level notes** land on the book
+landing page (`/ot/genesis/#note-00-toledot`), **chapter/range notes** on their starting
+chapter page (e.g. `/ot/genesis/3#note-…`). The note is briefly highlighted when reached.
+
+- If two notes in different books share a filename, disambiguate with the book code:
+  `[…](note:GEN/00-toledot)`.
+- **A bad or ambiguous note id fails the build** — so renaming a note's file flags every link
+  to it (rename the file, fix the `note:` links, and the build stays green).
+
 ## Footnotes — `[^id]`
 
 For source citations, use Markdown-style footnotes: a caller `[^id]` in the text and a
