@@ -27,11 +27,15 @@ export function chipsForChapter(code: string, chapter: number): LectChip[] {
   return book[String(chapter)] ?? [];
 }
 
+export interface Occasion {
+  name: string;
+  oid: string; // p<pdist> (movable/float) or md<month>-<day> (fixed) — for next-date click-through
+}
 export interface ChipGroup {
   ref: string;
   href: string;
   order: number; // start chapter*1000 + verse, so a reading beginning in an earlier chapter sorts first
-  occasions: string[];
+  occasions: Occasion[];
 }
 
 /** Group a chapter's chips by reference (one passage read at several occasions →
@@ -46,7 +50,7 @@ export function chapterChipGroups(code: string, chapter: number): ChipGroup[] {
       const order = (m ? +m[1] : chapter) * 1000 + (m && m[2] ? +m[2] : 1);
       map.set(c.ref, (g = { ref: c.ref, href: c.href, order, occasions: [] }));
     }
-    if (!g.occasions.includes(c.occasion)) g.occasions.push(c.occasion);
+    if (!g.occasions.some((o) => o.name === c.occasion)) g.occasions.push({ name: c.occasion, oid: c.oid });
   }
   return [...map.values()].sort((a, b) => a.order - b.order);
 }

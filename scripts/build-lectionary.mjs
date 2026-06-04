@@ -190,6 +190,7 @@ function buildDateReadings(dayByMd) {
   fs.rmSync(YEAR_OUT, { recursive: true, force: true });
   fs.mkdirSync(YEAR_OUT, { recursive: true });
   const years = fs.readdirSync(DATES_IN).filter((f) => /^\d{4}\.json$/.test(f)).map((f) => +f.slice(0, 4)).sort();
+  const pascha = {}; // year → "MM-DD" of Orthodox Pascha (for movable-occasion click-through)
   for (const y of years) {
     const src = JSON.parse(fs.readFileSync(path.join(DATES_IN, `${y}.json`), 'utf8'));
     const out = {};
@@ -200,6 +201,7 @@ function buildDateReadings(dayByMd) {
       const titles = [...rec.titles];
       if (rec.feast_level >= 5 && fixed?.feast_name && !titles.includes(fixed.feast_name))
         titles.unshift(fixed.feast_name);
+      if (rec.titles.includes('Holy Pascha')) pascha[y] = md;
       out[md] = {
         titles,
         feast_level: rec.feast_level,
@@ -209,6 +211,7 @@ function buildDateReadings(dayByMd) {
     fs.writeFileSync(path.join(YEAR_OUT, `${y}.json`), JSON.stringify(out));
   }
   fs.writeFileSync(path.join(YEAR_OUT, '..', 'years.json'), JSON.stringify({ min: years[0], max: years.at(-1) }));
+  fs.writeFileSync(path.join(YEAR_OUT, '..', 'pascha.json'), JSON.stringify(pascha));
   console.log(`build-lectionary: date readings for ${years[0]}–${years.at(-1)} → public/data/lectionary/year/`);
 }
 

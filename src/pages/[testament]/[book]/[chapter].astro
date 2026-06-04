@@ -65,11 +65,19 @@ const credit =
           <span class="lect-ico" aria-hidden="true">📖</span>
           <a class="lect-ref" href={g.href}>{g.ref}</a>
           {g.occasions.length <= 3 ? (
-            <span class="lect-occ">{g.occasions.join(' · ')}</span>
+            <span class="lect-occ">
+              {g.occasions.map((o, i) => (
+                <Fragment>{i > 0 ? ' · ' : ''}<a class="lect-occ-link" href="/lectionary/" data-oid={o.oid}>{o.name}</a></Fragment>
+              ))}
+            </span>
           ) : (
             <details class="lect-occ-x">
               <summary>read at {g.occasions.length} occasions</summary>
-              <span class="lect-occ-list">{g.occasions.join(' · ')}</span>
+              <span class="lect-occ-list">
+                {g.occasions.map((o, i) => (
+                  <Fragment>{i > 0 ? ' · ' : ''}<a class="lect-occ-link" href="/lectionary/" data-oid={o.oid}>{o.name}</a></Fragment>
+                ))}
+              </span>
             </details>
           )}
         </li>
@@ -177,5 +185,58 @@ const credit =
       localStorage.setItem(KEY, b.dataset.layout!);
       apply(b.dataset.layout!);
     });
+  })();
+</script>
+
+<script>
+  // Lectionary occasion → the next date it is read (depends on "today", so resolved
+  // client-side). Movable days = Pascha + pdist; fixed days = next month/day.
+  (() => {
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('.lect-occ-link[data-oid]')];
+    if (!links.length) return;
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const iso = (d: Date) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const ty = today.getFullYear();
+
+    fetch('/data/lectionary/pascha.json')
+      .then((r) => r.json())
+      .then((pascha: Record<string, string>) => {
+        const next = (oid: string): string | null => {
+          if (oid.startsWith('md')) {
+            const [m, d] = oid.slice(2).split('-').map(Number);
+            for (const y of [ty, ty + 1, ty + 2]) {
+              const cand = new Date(y, m - 1, d);
+              if (cand >= today) return iso(cand);
+            }
+            return null;
+          }
+          if (oid.startsWith('p')) {
+            const pdist = Number(oid.slice(1));
+            if (pdist >= 1000) return null; // floating feasts can't be derived from Pascha alone
+            let best: Date | null = null;
+            for (const y of [ty - 1, ty, ty + 1, ty + 2]) {
+              const p = pascha[y];
+              if (!p) continue;
+              const [pm, pdd] = p.split('-').map(Number);
+              const cand = new Date(y, pm - 1, pdd);
+              cand.setDate(cand.getDate() + pdist);
+              if (cand >= today && (!best || cand < best)) best = cand;
+            }
+            return best ? iso(best) : null;
+          }
+          return null;
+        };
+        links.forEach((a) => {
+          const d = next(a.dataset.oid!);
+          if (d) a.href = `/lectionary/?date=${d}`;
+          else {
+            a.removeAttribute('href'); // floating/unknown: keep as plain text
+            a.classList.add('lect-occ-plain');
+          }
+        });
+      })
+      .catch(() => {});
   })();
 </script>

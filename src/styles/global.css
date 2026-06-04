@@ -138,6 +138,10 @@ h2 { font-size: 21px; margin: 28px 0 6px; color: var(--accent); }
 .lect-list .lect-occ-x[open] summary::after { content: ' ▾'; }
 .lect-list .lect-occ-x summary:hover { color: var(--accent); }
 .lect-list .lect-occ-x .lect-occ-list { display: block; margin: 4px 0 2px 28px; color: var(--ink-soft); }
+.lect-list .lect-occ-link { color: var(--ink-soft); text-decoration: none; }
+.lect-list .lect-occ-link:hover { color: var(--accent); text-decoration: underline; }
+.lect-list .lect-occ-plain { color: var(--ink-soft); cursor: default; }
+.lect-list .lect-occ-plain:hover { color: var(--ink-soft); text-decoration: none; }
 
 /* ---- scripture ---- */
 .scripture { font-size: 19px; line-height: 1.85; }
