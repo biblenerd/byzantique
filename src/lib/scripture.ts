@@ -2,7 +2,7 @@
 // Used by both the commentary Markdown pipeline ({{ ref }}) and the <Scripture>
 // Astro component (<Scripture ref="…" />). One source of truth.
 
-import { loadBook, isVerse, type BookText, type Segment } from './texts.ts';
+import { loadBook, isVerse, inlineHtml, inlinePlain, type BookText, type Segment } from './texts.ts';
 import { bookByCode, bookLabel } from './canon.ts';
 
 export const WHOLE_CHAPTER_END = 999;
@@ -105,7 +105,7 @@ function blocksToHtml(blocks: QBlock[], showNums: boolean): string {
     const inner = (b.segments ?? [])
       .map((s) => {
         if (isVerse(s)) return showNums ? `<span class="vn">${esc(s.v)}</span>` : '';
-        if ('t' in s) return `${esc(s.t)} `;
+        if ('t' in s) return `${inlineHtml(s.t)} `;
         return '';
       })
       .join('')
@@ -157,7 +157,7 @@ export function refPreview(refStr: string, max = 180): string | null {
           }
           if (inPassage(ch.number, seg.n, r)) started = true;
         } else if (started && 't' in seg) {
-          txt += seg.t + ' ';
+          txt += inlinePlain(seg.t) + ' ';
         }
       }
     }

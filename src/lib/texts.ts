@@ -24,6 +24,19 @@ export type Segment = VerseSeg | TextSeg | FootnoteSeg;
 export const isVerse = (s: Segment): s is VerseSeg => 'v' in s;
 export const isFootnote = (s: Segment): s is FootnoteSeg => 'f' in s;
 
+// Italic/translator-addition runs are stored in text segments wrapped in a private-use
+// sentinel pair (U+E000 … U+E001) by build-texts.mjs. Render them per context:
+const SENT_OPEN = String.fromCharCode(0xe000);
+const SENT_CLOSE = String.fromCharCode(0xe001);
+const escHtml = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+/** Text-segment string → safe HTML, with sentinel runs rendered as <i>…</i>. */
+export const inlineHtml = (t: string): string =>
+  escHtml(t).split(SENT_OPEN).join('<i>').split(SENT_CLOSE).join('</i>');
+/** Text-segment string → plain text (sentinels stripped), for previews/snippets. */
+export const inlinePlain = (t: string): string =>
+  t.split(SENT_OPEN).join('').split(SENT_CLOSE).join('');
+
 /** A textual note (from the USFM apparatus). */
 export interface Footnote {
   ref: string; // origin reference, e.g. "1:6"

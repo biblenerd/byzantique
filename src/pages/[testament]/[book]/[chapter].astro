@@ -2,7 +2,7 @@
 import Base from '../../../layouts/Base.astro';
 import ChapterText from '../../../components/ChapterText.astro';
 import { BOOKS, bookLabel } from '../../../lib/canon';
-import { builtCodes, loadBook, isVerse } from '../../../lib/texts';
+import { builtCodes, loadBook, isVerse, inlinePlain } from '../../../lib/texts';
 import { notesForChapter, refRange, anchorBadge } from '../../../lib/commentary';
 import { chapterChipGroups } from '../../../lib/lectionary';
 
@@ -33,7 +33,7 @@ const next = chapterNumber < total ? chapterNumber + 1 : null;
 const snippet = chapter.blocks
   .flatMap((b) => b.segments ?? [])
   .filter((s) => !isVerse(s))
-  .map((s: any) => s.t)
+  .map((s: any) => inlinePlain(s.t ?? ''))
   .join(' ')
   .slice(0, 150);
 

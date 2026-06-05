@@ -3,7 +3,7 @@
 // Each verse run is wrapped in <span class="v" data-v="…"> so the side-by-side
 // reader can highlight a note's verses (and vice-versa). Verses can continue
 // across block boundaries, so the current verse is tracked across blocks.
-import { isVerse, isFootnote, letter } from '../lib/texts';
+import { isVerse, isFootnote, letter, inlineHtml } from '../lib/texts';
 import { loadPericopes } from '../lib/pericopes';
 
 interface Props {
@@ -76,7 +76,7 @@ const rendered = blocks.map((b: any) => {
               ) : isFootnote(s) ? (
                 <a class="fn-ref" id={`fnref-${letter(s.f)}`} href={`#fn-${letter(s.f)}`}>{letter(s.f)}</a>
               ) : (
-                <Fragment>{s.t}{' '}</Fragment>
+                <Fragment set:html={inlineHtml(s.t) + ' '} />
               ),
             )}
           </span>

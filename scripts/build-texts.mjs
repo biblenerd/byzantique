@@ -38,6 +38,11 @@ function cleanInline(s) {
   t = t.replace(/\\(f|fe|x|fig|rq|ca|va|vp|ef|ex)\b[\s\S]*?\\\1\*/g, '');
   // \w word|attributes\w*  ->  word   (drop Strong's/lemma data)
   t = t.replace(/\\\+?w\s+([^\\|]*?)(?:\|[^\\]*?)?\\\+?w\*/g, '$1');
+  // Italic/emphasis char styles -> a sentinel pair (rendered as <i> later, stripped in
+  // plain-text contexts). \add = translator's addition (Brenton italics); it/bk/em/qt/tl/nd
+  // are the usual italicized styles. Must run before the generic marker strip below.
+  const I0 = String.fromCharCode(0xe000), I1 = String.fromCharCode(0xe001);
+  t = t.replace(/\\\+?(add|it|bk|em|qt|tl|nd)\b\s*([\s\S]*?)\\\+?\1\*/g, (_m, _n, inner) => I0 + inner + I1);
   // remaining character-style markers: drop the markers, keep their text
   t = t.replace(/\\\+?[a-z]+\d*\*/gi, ''); // closing \xx*
   t = t.replace(/\\\+?[a-z]+\d*\s?/gi, ''); // opening \xx
