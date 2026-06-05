@@ -327,6 +327,22 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .source-table .lic { white-space: nowrap; }
 .source-table .abbr-inline { font-family: var(--sans); font-size: 12px; color: var(--ink-soft); }
 
+/* Markdown (GFM) tables in commentary notes & book intros — styled to match the site's
+   other tables so authors get a clean table from plain pipe syntax, no extra markup.
+   Column alignment from `:--`/`:--:`/`--:` still works (it sets inline text-align). */
+.note-body table, .book-intro table {
+  border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 15px;
+  border: 1px solid var(--rule); border-radius: 8px; overflow: hidden;
+}
+.note-body th, .book-intro th {
+  font-family: var(--sans); font-size: 11.5px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-soft); text-align: left;
+  background: var(--accent-soft); padding: 8px 14px; border-bottom: 1px solid var(--rule);
+}
+.note-body td, .book-intro td { vertical-align: top; padding: 8px 14px; line-height: 1.5; }
+.note-body tbody tr:nth-child(even), .book-intro tbody tr:nth-child(even) { background: #f5f0e6; }
+.note-body tbody tr:hover, .book-intro tbody tr:hover { background: var(--hl); }
+
 /* Texts and Translations — detail cards */
 .text-entry {
   background: var(--panel); border: 1px solid var(--rule); border-left: 3px solid var(--accent);

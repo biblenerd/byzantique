@@ -142,6 +142,22 @@ list at the bottom of the note, with a hover preview and click-to-jump — the *
 your citations; **letters** stay reserved for the NT textual apparatus. (In `.astro` pages use
 the `<Fn>` / `<FnList>` components instead.)
 
+## Tables — Markdown pipe syntax
+
+Use standard GitHub-flavored Markdown tables. The header row and the `---` separator row are
+required; cells accept inline Markdown (`*italic*`, `**bold**`, `[links](ref:GEN 1:1)`):
+
+```markdown
+| Language | Text       | Translit   |  Gloss  |
+|----------|------------|:----------:|--------:|
+| Greek    | ἡμέρα μία  | hēmera mia | one day |
+| Hebrew   | יֹום אֶחָד  | yôm ʾeḥād  | one day |
+```
+
+Put a colon in the separator to align a column: `:---` left, `:--:` center, `---:` right.
+Tables are styled automatically (header rule, zebra striping, padded cells) to match the
+site's other tables — no classes or extra markup needed. Same in book intros.
+
 ## 4. See it
 
 ```bash

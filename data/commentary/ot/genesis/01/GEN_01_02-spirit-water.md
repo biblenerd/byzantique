@@ -4,4 +4,4 @@ title:
 tags: typology, baptism
 ---
 
-The Fathers saw a foreshadowing of baptism in the Spirit's rushing / hovering upon the water. 
+The Fathers saw a foreshadowing of Baptism in the Spirit's rushing / hovering upon the water. 

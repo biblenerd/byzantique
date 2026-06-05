@@ -4,7 +4,7 @@ title: Alliteration
 tags: translation
 ---
 
-The Greek LXX words translated "unsightly" (ἀόρατος / *aoratos*)[^unseen] … "unfurnished" (ἀκατασκεύαστος / *akataskevastos*) … "abyss" (ἀβύσσου / *abyssou*)[^abyss] are an example of alliteration to translate assonant Hebrew words. Law proposed using another word beginning with the prefix "un–" to translate "abyss" to capture this alliteration (i.e., "unseen… unsorted… unsounded").[^lawlxx] For example, you might translate ἀβύσσου (*abyssou*) as "underworld" (but this might also lead to confusion with Hades / Sheol).
+The Greek LXX words translated "unsightly" (ἀόρατος / *aoratos*)[^unseen] … "unfurnished" (ἀκατασκεύαστος / *akataskevastos*) … "abyss" (ἀβύσσου / *abyssou*)[^abyss] are an example of alliteration to translate assonant Hebrew words. Law proposed using another word beginning with the prefix "un–" to translate "abyss" to capture this alliteration (i.e., "unseen… unsorted… unsounded").[^lawlxx] I thought about translating ἀβύσσου (*abyssou*) as "underworld," but this might lead to confusion with Hades / Sheol.
 
 
 [^unseen]: ἀόρατος might be better translated "unseen."
