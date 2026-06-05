@@ -229,6 +229,11 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .fn-pop .tn-body em,
 .fn-pop em { color: #f6f1e7; }
 .fn-pop .tn-ref { color: #d8c594; margin-right: 6px; font-weight: 600; }
+/* Links inside the dark popover need a light color (the default --link blue and the
+   .xref dotted border are illegible on --ink). */
+.fn-pop a, .fn-pop .xref { color: #e9d6a3; }
+.fn-pop .xref { border-bottom-color: rgba(233, 214, 163, .55); }
+.fn-pop a:hover, .fn-pop .xref:hover { color: #fff; border-bottom-color: #fff; }
 
 /* textual notes list (under the text, before commentary) */
 .textual-notes {
@@ -449,7 +454,9 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
   margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--gold);
   background: var(--gold-soft); border-radius: 0 6px 6px 0; color: #4a4233;
 }
-.note-body blockquote p { margin: 0; }
+/* space multi-paragraph quotes, but keep the box tight around a single paragraph */
+.note-body blockquote p { margin: 0 0 .6em; }
+.note-body blockquote p:last-child { margin-bottom: 0; }
 
 /* cross-reference links in commentary ( [text](ref:JHN 1:1) ) */
 .xref { color: var(--link); text-decoration: none; border-bottom: 1px dotted var(--link); }

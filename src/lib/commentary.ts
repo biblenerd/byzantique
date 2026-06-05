@@ -29,12 +29,15 @@ export function loadNotes(code: string): Note[] {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
-/** Notes intersecting a chapter, ordered broad → narrow (REQUIREMENTS.md §5.2).
- *  Whole-book notes are excluded — they live on the book landing page. */
+/** Notes intersecting a chapter, ordered by where each note STARTS within this chapter
+ *  (REQUIREMENTS.md §5.2). A note continuing from an earlier chapter sorts first; others
+ *  by their start verse; ties broad → narrow. Whole-book notes are excluded — they live
+ *  on the book landing page. */
 export function notesForChapter(code: string, chapter: number): Note[] {
+  const startIn = (n: Note) => (n.anchor.sc < chapter ? 0 : n.anchor.sv);
   return loadNotes(code)
     .filter((n) => n.anchor.type !== 'book' && n.anchor.sc <= chapter && chapter <= n.anchor.ec)
-    .sort((a, b) => b.span - a.span || a.anchor.sv - b.anchor.sv);
+    .sort((a, b) => startIn(a) - startIn(b) || b.span - a.span);
 }
 
 /** Whole-book notes (anchored to a bare book code), for the book landing page. */
