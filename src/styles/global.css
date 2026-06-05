@@ -648,6 +648,45 @@ footer.site a { color: var(--link); }
 .footer-gh { display: inline-flex; margin-top: 10px; color: var(--ink-soft); }
 .footer-gh:hover { color: var(--accent); }
 
-/* ---- multilingual (REQUIREMENTS.md §12) — placeholder; fonts wired in Phase 1 ---- */
-[lang="grc"] { font-family: "Gentium Plus", var(--serif); }
-[lang="he"] { font-family: "Ezra SIL", "Taamey Frank CLM", serif; font-size: 1.15em; direction: rtl; unicode-bidi: isolate; }
+/* Greek & Hebrew (REQUIREMENTS.md §12) are handled automatically by the unicode-range
+   @font-face rules at the top of this file (Noto Serif Greek, Ezra SIL) — no per-run
+   language spans are emitted, so no [lang] selectors are needed here. */
+
+/* ---- print (REQUIREMENTS.md §13 Phase 5) ----
+   Strip interactive chrome, flatten the side-by-side reader to a single stacked column,
+   and keep notes/quotes/tables from splitting across pages. Backgrounds are dropped by
+   the browser in print, so panels read as bordered blocks. */
+@media print {
+  /* Hide navigation / interactive chrome */
+  .skip,
+  header.topbar,
+  footer.site,
+  .dev-banner,
+  .today-box,
+  .browse-cards,
+  .subnav,
+  .lect-list,
+  .reader-toolbar,
+  .chapnav,
+  .chapter-grid,
+  .fn-pop,
+  .ref-pop,
+  .search-dropdown { display: none !important; }
+
+  /* Page + base: black on white, use the full page width */
+  html, body { background: #fff; color: #000; }
+  body { font-size: 11pt; line-height: 1.45; }
+  main, main.index, main.reader { max-width: none; margin: 0; padding: 0; }
+  a { color: #000; }
+  .xref { border-bottom: 0; }
+
+  /* Flatten the reader: text first, then commentary; drop the pinned/scrolling pane */
+  .reader-grid { display: block !important; }
+  .reader-grid .col-text { padding: 0; border: 0; border-bottom: 1px solid #bbb; margin-bottom: 14px; }
+  .reader-grid .col-notes { padding: 0; }
+  .reader-grid .col-text-inner { position: static; max-height: none; overflow: visible; padding: 0; }
+
+  /* Avoid splitting cohesive blocks across pages */
+  .note, blockquote, table, figure, .tn-list li { break-inside: avoid; }
+  h1, h2, h3, .pericope-head { break-after: avoid; }
+}
