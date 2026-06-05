@@ -44,7 +44,7 @@ const notes = bookNotes(book.code);
   </ul>
 
   {notes.length > 0 && (
-    <section class="commentary">
+    <section class="commentary" data-pagefind-filter="Section:Commentary">
       <div class="col-label ui">Book commentary</div>
       {notes.map((n) => (
         <article class="note" id={`note-${n.id}`}>

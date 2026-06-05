@@ -103,7 +103,7 @@ const credit =
           </div>
         </section>
 
-        <section class="col col-notes">
+        <section class="col col-notes" data-pagefind-filter="Section:Commentary">
           <div class="col-label ui">Commentary</div>
           {notes.map((n) => (
             <article class="note" id={`note-${n.id}`} data-from={vnum(n.anchor.sc, n.anchor.sv)} data-to={vnum(n.anchor.ec, n.anchor.ev)}>
