@@ -23,6 +23,10 @@ const chaptersByCode = new Map(loadManifest().map((m) => [m.code, m.chapters]));
     {testament === 'ot' ? 'The first testament of the Christian Scriptures, following the Septuagint (LXX).' : 'The second testament of the Christian Scriptures.'}
   </p>
 
+  <p class="cov-note ui" data-pagefind-ignore>
+    The coverage bar beside each book shows where commentary notes exist.
+  </p>
+
   <ul class="booklist">
     {books.map((b) => {
       const isBuilt = built.has(b.code);

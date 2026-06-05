@@ -134,6 +134,7 @@ ol ol ol { list-style-type: lower-roman; }
 ol, ul { padding-left: 1.6em; }
 ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .subtitle { color: var(--ink-soft); font-style: italic; margin: 0 0 8px; }
+.cov-note { font-family: var(--sans); font-size: 13px; color: var(--ink-soft); margin: 4px 0 16px; }
 .dev-banner {
   margin: 14px 0 18px; padding: 10px 14px; border-radius: 8px;
   background: var(--gold-soft); border: 1px solid #e6d6a8; border-left: 3px solid var(--gold);
