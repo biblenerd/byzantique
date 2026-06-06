@@ -5,18 +5,17 @@ How to build and preview the site on your machine. (Deploying to Cloudflare Page
 
 ## Prerequisites
 
-- **Node.js ≥ 20** (developed on Node 24) and **npm**.
+- **Node.js ≥ 22.18** (Astro 6 needs ≥ 22.12; the data scripts import `.ts` directly, which
+  needs ≥ 22.18 for native type-stripping). Pinned to **24 (LTS)** in [`.nvmrc`](../.nvmrc) —
+  run `nvm use` first if you use nvm. And **npm**.
 - `python3` is only needed if you want to serve the `prototypes/` mockups.
 
 ## One-time setup
 
 ```bash
-npm install
+nvm use        # Node 24, from .nvmrc (optional but recommended)
+npm install    # or `npm ci` to match the committed lockfile exactly
 ```
-
-> **Why `usfm-grammar` is pinned to v2:** v3 pulls in a native `tree-sitter` dependency that
-> does not compile on current Node. v2 is pure JS. Its `npm audit` warnings are build-time
-> only and never ship to the static site.
 
 ## Everyday commands
 
@@ -39,9 +38,9 @@ There are two stages: a **data build** (our scripts) and the **site build** (Ast
 ```
 data/texts/englxxup/*.usfm  ─┐
 data/texts/engtcent/*.usfm  ─┤  scripts/build-texts.mjs       → public/data/texts/<CODE>.json  + manifest.json
-                             │  (usfm-grammar v2 + a raw-USFM paragraph/poetry scan)
-data/commentary/**/*.md     ─┘  scripts/build-commentary.mjs  → public/data/commentary/<CODE>.json + manifest.json
-                                (frontmatter + marked → anchored notes)
+                             │  (a custom line-oriented USFM block parser — no dependency)
+data/commentary/**/*.md     ─┘  scripts/build-commentary.mjs  → public/data/commentary/<CODE>.json + backlinks.json
+                                (frontmatter + marked → anchored notes + cross-reference index)
 ```
 
 - **`public/data/` is generated and git-ignored.** Never edit it by hand; re-run `npm run data`.
@@ -84,7 +83,7 @@ data/commentary/                  your notes (Markdown + anchor frontmatter)
 data/book-intros/<CODE>.md        per-book introductions
 data/pericopes/<CODE>.json        author section/pericope titles
 data/intro/engtcent.usfm          the TCENT translator's introduction
-scripts/         build-texts.mjs, build-commentary.mjs, build-intro.mjs  (the data build)
+scripts/         build-{texts,commentary,intro,lectionary}.mjs  (the data build)
 src/lib/         canon registry + loaders (texts, commentary, pericopes, bookintro, chips, nav)
 src/pages/       Astro routes (home, [testament]/[book]/[chapter], about/, search, license, privacy)
 src/layouts/ , src/components/ , src/styles/
