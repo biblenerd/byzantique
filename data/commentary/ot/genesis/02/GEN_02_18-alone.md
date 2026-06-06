@@ -1,7 +1,7 @@
 ---
 anchor: GEN 2:18
 title: 
-tags: 
+tags: anthropology
 ---
 
 God points out that "it is not good that the man should be alone."

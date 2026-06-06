@@ -1,6 +1,6 @@
 ---
 anchor: GEN 2:8
-title: 
+title: Adam was placed in the garden
 ---
 
 Notice the implication that Adam was likely created *outside the garden.*
