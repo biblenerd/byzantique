@@ -1,0 +1,55 @@
+---
+// "Referenced elsewhere" — notes elsewhere in the corpus that reference verses in this
+// chapter, grouped by verse. Collapsible when long. Kept distinct from the scripture text
+// and authored commentary (and from translator's notes). REQUIREMENTS.md §5.6.
+import type { BacklinkGroup, Backlink } from '../lib/commentary';
+
+interface Props {
+  groups: BacklinkGroup[];
+  total: number;
+}
+const { groups, total } = Astro.props;
+const collapsible = total > 5;
+const verb = (k: string) => (k === 'quote' ? 'quoted in' : 'cited in');
+const label = (e: Backlink) => (e.title ? e.title : `Note on ${e.src}`);
+---
+
+{groups.length > 0 && (
+  <section class="backlinks ui" data-pagefind-ignore>
+    {collapsible ? (
+      <details class="backlinks-d">
+        <summary>Referenced elsewhere · {total} note{total === 1 ? '' : 's'}</summary>
+        <ul>
+          {groups.map((g) => (
+            <li>
+              <span class="bl-v">v.&nbsp;{g.verse}</span>
+              {g.entries.map((e, i) => (
+                <Fragment>
+                  {i > 0 ? '; ' : ' — '}
+                  {verb(e.kind)}{' '}<a href={e.href}>{label(e)}</a>{e.title && ` (${e.src})`}
+                </Fragment>
+              ))}
+            </li>
+          ))}
+        </ul>
+      </details>
+    ) : (
+      <Fragment>
+        <div class="col-label bl-head">Referenced elsewhere</div>
+        <ul>
+          {groups.map((g) => (
+            <li>
+              <span class="bl-v">v.&nbsp;{g.verse}</span>
+              {g.entries.map((e, i) => (
+                <Fragment>
+                  {i > 0 ? '; ' : ' — '}
+                  {verb(e.kind)}{' '}<a href={e.href}>{label(e)}</a>{e.title && ` (${e.src})`}
+                </Fragment>
+              ))}
+            </li>
+          ))}
+        </ul>
+      </Fragment>
+    )}
+  </section>
+)}

@@ -1,9 +1,10 @@
 ---
 import Base from '../../../layouts/Base.astro';
 import ChapterText from '../../../components/ChapterText.astro';
+import Backlinks from '../../../components/Backlinks.astro';
 import { BOOKS, bookLabel } from '../../../lib/canon';
 import { builtCodes, loadBook, isVerse, inlinePlain } from '../../../lib/texts';
-import { notesForChapter, refRange, anchorBadge } from '../../../lib/commentary';
+import { notesForChapter, refRange, anchorBadge, backlinksForChapter } from '../../../lib/commentary';
 import { chapterChipGroups } from '../../../lib/lectionary';
 
 export function getStaticPaths() {
@@ -39,6 +40,11 @@ const snippet = chapter.blocks
 
 const notes = notesForChapter(book.code, chapterNumber);
 const hasNotes = notes.length > 0;
+const back = backlinksForChapter(book.code, chapterNumber);
+// Use the two-column reader whenever there's anything for the right column — authored
+// notes OR cross-reference backlinks. Backlinks-only chapters keep scripture as the main
+// (wider) column via `.reader.xref-only`.
+const hasReader = hasNotes || back.total > 0;
 const lectGroups = chapterChipGroups(book.code, chapterNumber);
 const vnum = (c: number, v: number) => c * 1000 + v;
 
@@ -49,7 +55,7 @@ const credit =
     : { testament: 'New Testament', title: 'Text-Critical English New Testament', abbr: 'TCENT', anchor: 'tcent', license: '© Robert Adam Boyd, CC BY 4.0' };
 ---
 
-<Base title={`${label} ${chapterNumber}`} description={snippet} width={hasNotes ? 'reader' : undefined}>
+<Base title={`${label} ${chapterNumber}`} description={snippet} width={hasReader ? 'reader' : undefined}>
   <nav class="crumbs ui" data-pagefind-ignore>
     <a href="/">Byzantique</a><span class="sep">›</span>
     <a href={`/${book.testament}/`}>{heading}</a><span class="sep">›</span>
@@ -85,15 +91,17 @@ const credit =
     </ul>
   )}
 
-  {hasNotes ? (
-    <div class="reader">
-      <div class="reader-toolbar ui" data-pagefind-ignore>
-        <span class="reader-count">{notes.length} {notes.length === 1 ? 'note' : 'notes'}</span>
-        <div class="layout-toggle" role="tablist" aria-label="Reading layout">
-          <button type="button" data-layout="side" class="active" aria-pressed="true">Side&#8209;by&#8209;side</button>
-          <button type="button" data-layout="stacked" aria-pressed="false">Stacked</button>
+  {hasReader ? (
+    <div class={`reader${hasNotes ? '' : ' xref-only'}`}>
+      {hasNotes && (
+        <div class="reader-toolbar ui" data-pagefind-ignore>
+          <span class="reader-count">{notes.length} {notes.length === 1 ? 'note' : 'notes'}</span>
+          <div class="layout-toggle" role="tablist" aria-label="Reading layout">
+            <button type="button" data-layout="side" class="active" aria-pressed="true">Side&#8209;by&#8209;side</button>
+            <button type="button" data-layout="stacked" aria-pressed="false">Stacked</button>
+          </div>
         </div>
-      </div>
+      )}
 
       <div class="reader-grid">
         <section class="col col-text">
@@ -103,8 +111,8 @@ const credit =
           </div>
         </section>
 
-        <section class="col col-notes" data-pagefind-filter="Section:Commentary">
-          <div class="col-label ui">Commentary</div>
+        <section class="col col-notes" data-pagefind-filter={hasNotes ? 'Section:Commentary' : undefined}>
+          {hasNotes && <div class="col-label ui">Commentary</div>}
           {notes.map((n) => (
             <article class="note" id={`note-${n.id}`} data-from={vnum(n.anchor.sc, n.anchor.sv)} data-to={vnum(n.anchor.ec, n.anchor.ev)}>
               <span class="note-anchor ui">
@@ -115,6 +123,7 @@ const credit =
               <div class="note-body" set:html={n.html} />
             </article>
           ))}
+          <Backlinks groups={back.groups} total={back.total} />
         </section>
       </div>
     </div>
@@ -194,7 +203,8 @@ const credit =
       });
     };
     apply(localStorage.getItem(KEY) || 'side');
-    reader.querySelector('.layout-toggle')!.addEventListener('click', (e) => {
+    // No toolbar on backlinks-only chapters — apply the stored layout but skip the toggle.
+    reader.querySelector('.layout-toggle')?.addEventListener('click', (e) => {
       const b = (e.target as HTMLElement).closest<HTMLButtonElement>('button');
       if (!b) return;
       localStorage.setItem(KEY, b.dataset.layout!);

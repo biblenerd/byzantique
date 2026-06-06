@@ -40,6 +40,39 @@ export function notesForChapter(code: string, chapter: number): Note[] {
     .sort((a, b) => startIn(a) - startIn(b) || b.span - a.span);
 }
 
+/** A note elsewhere that references a verse in some chapter ("referenced elsewhere"). */
+export interface Backlink {
+  tv: number; // target verse in this chapter
+  kind: 'quote' | 'link'; // {{ }} quoted vs ref: cited
+  title: string; // source note title ('' → "Note on <src>")
+  src: string; // human label of the source note's anchor, e.g. "Genesis 1:26"
+  href: string; // link to the source note
+}
+export interface BacklinkGroup {
+  verse: number;
+  entries: Backlink[];
+}
+
+let _backlinks: Record<string, Record<string, Backlink[]>> | null = null;
+function loadBacklinks(): Record<string, Record<string, Backlink[]>> {
+  if (_backlinks) return _backlinks;
+  const p = path.join(DIR, 'backlinks.json');
+  _backlinks = fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, 'utf8')) : {};
+  return _backlinks!;
+}
+
+/** Notes elsewhere that reference this chapter, grouped by the target verse. */
+export function backlinksForChapter(code: string, chapter: number): { groups: BacklinkGroup[]; total: number } {
+  const list = loadBacklinks()[code]?.[String(chapter)] ?? [];
+  const byVerse = new Map<number, Backlink[]>();
+  for (const b of list) {
+    if (!byVerse.has(b.tv)) byVerse.set(b.tv, []);
+    byVerse.get(b.tv)!.push(b);
+  }
+  const groups = [...byVerse.entries()].sort((a, b) => a[0] - b[0]).map(([verse, entries]) => ({ verse, entries }));
+  return { groups, total: list.length };
+}
+
 /** Whole-book notes (anchored to a bare book code), for the book landing page. */
 export function bookNotes(code: string): Note[] {
   return loadNotes(code)

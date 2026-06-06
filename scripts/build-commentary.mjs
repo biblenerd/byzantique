@@ -21,6 +21,10 @@ const WHOLE_CHAPTER_END = 999;
 // Populated by a first pass over all note files (see build()).
 const NOTE_REGISTRY = new Map();
 
+// Inverted "referenced elsewhere" index: targetBook → { targetChapter → [backlink] }.
+// A backlink records that some note (its source anchor) references a verse in this chapter.
+const BACKLINKS = {};
+
 // Replace standalone `{{ REF }}` lines with the resolved scripture blockquote (before Markdown parse).
 function expandScripture(md) {
   return md.replace(/^[ \t]*\{\{\s*([^}\n]+?)\s*\}\}[ \t]*$/gm, (m, refStr) => {
@@ -123,6 +127,42 @@ function anchorType(a) {
   return a.sv === a.ev ? 'verse' : 'range';
 }
 
+// Human label for a note's source anchor, e.g. "Genesis 1:26", "Psalms 73:13–14", "Genesis".
+function anchorLabel(ref, type, name) {
+  if (type === 'book') return name;
+  if (ref.ev === WHOLE_CHAPTER_END && ref.sc === ref.ec) return `${name} ${ref.sc}`;
+  if (ref.sc === ref.ec) return ref.sv === ref.ev ? `${name} ${ref.sc}:${ref.sv}` : `${name} ${ref.sc}:${ref.sv}–${ref.ev}`;
+  return `${name} ${ref.sc}:${ref.sv}–${ref.ec}:${ref.ev}`;
+}
+
+// Every scripture target a note references: `[…](ref:X)` (cited) and `{{ X }}` (quoted).
+function refTargets(body) {
+  const out = [];
+  for (const m of body.matchAll(/\]\(ref:([^)]+)\)/g)) out.push({ ref: m[1].trim(), kind: 'link' });
+  for (const m of body.matchAll(/\{\{\s*([^}\n]+?)\s*\}\}/g)) out.push({ ref: m[1].trim(), kind: 'quote' });
+  return out;
+}
+
+// Record backlinks for one source note onto the verses it references (skipping same-page
+// targets — those notes are already visible on that chapter). Quote beats link if a note
+// both quotes and cites the same verse.
+function collectBacklinks(srcRef, srcType, id, title, body) {
+  const meta = bookByCode(srcRef.book);
+  if (!meta) return;
+  const src = anchorLabel(srcRef, srcType, meta.name);
+  const href = `/${meta.testament}/${meta.slug}/${srcType === 'book' ? '' : srcRef.sc}#note-${id}`;
+  for (const { ref: targetStr, kind } of refTargets(body)) {
+    const tr = parseRef(targetStr);
+    if (!tr || !bookByCode(tr.book)) continue;
+    // same-page suppression: source note's range already covers this target chapter
+    if (tr.book === srcRef.book && srcRef.sc <= tr.sc && tr.sc <= srcRef.ec) continue;
+    const list = ((BACKLINKS[tr.book] ??= {})[tr.sc] ??= []);
+    const dup = list.find((e) => e.sid === id && e.tv === tr.sv);
+    if (dup) { if (kind === 'quote') dup.kind = 'quote'; continue; }
+    list.push({ tv: tr.sv, kind, title: title || '', src, href, sid: id });
+  }
+}
+
 // Numbered author footnotes: `text[^id]` callers + `[^id]: …` definitions. Numbered in
 // order of first reference; ids are namespaced per note so they never collide on a page.
 // Reuses the .tn-list / .fn-ref structure so the footnote tooltip island works as-is.
@@ -208,7 +248,19 @@ function build() {
     };
     if (!byBook.has(ref.book)) byBook.set(ref.book, []);
     byBook.get(ref.book).push(note);
+
+    collectBacklinks(ref, note.anchor.type, note.id, data.title ?? '', body);
   }
+
+  // Write the "referenced elsewhere" index (sorted by verse, then source label).
+  let blCount = 0;
+  for (const code of Object.keys(BACKLINKS))
+    for (const ch of Object.keys(BACKLINKS[code])) {
+      BACKLINKS[code][ch].sort((a, b) => a.tv - b.tv || a.src.localeCompare(b.src));
+      blCount += BACKLINKS[code][ch].length;
+    }
+  fs.writeFileSync(path.join(OUT, 'backlinks.json'), JSON.stringify(BACKLINKS, (k, v) => (k === 'sid' ? undefined : v)));
+  console.log(`  ✓ backlinks — ${blCount} cross-reference(s)`);
 
   const manifest = {};
   for (const [code, notes] of byBook) {

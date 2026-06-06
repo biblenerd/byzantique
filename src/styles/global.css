@@ -451,6 +451,24 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .note-title { font-size: 19px; margin: 2px 0 8px; }
 .note-body { font-size: 16.5px; }
 .note-body p { margin: 0 0 12px; }
+
+/* "Referenced elsewhere" cross-reference backlinks — its own muted block, distinct from
+   the authored notes above and from the lettered translator's notes. */
+.backlinks { margin: 22px 0 0; border-top: 1px solid var(--rule); padding-top: 12px;
+  font-family: var(--sans); font-size: 13px; line-height: 1.55; color: var(--ink-soft); }
+.backlinks .bl-head, .backlinks summary {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft);
+}
+.backlinks summary { cursor: pointer; list-style: none; }
+.backlinks summary::-webkit-details-marker { display: none; }
+.backlinks summary::after { content: ' ▸'; color: var(--accent); font-size: 10px; }
+.backlinks details[open] summary::after { content: ' ▾'; }
+.backlinks ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.backlinks li { padding: 5px 0; border-bottom: 1px dotted var(--rule); }
+.backlinks li:last-child { border-bottom: 0; }
+.backlinks .bl-v { color: var(--accent); font-weight: 700; }
+.backlinks a { color: var(--link); text-decoration: none; }
+.backlinks a:hover { text-decoration: underline; color: var(--accent); }
 .note-body blockquote {
   margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--gold);
   background: var(--gold-soft); border-radius: 0 6px 6px 0; color: #4a4233;
@@ -609,6 +627,14 @@ blockquote.creed p.creed-attr {
 .reader-grid.stacked .col-notes { padding-left: 0; padding-right: 0; border-right: 0; margin: 0 auto; max-width: var(--measure); }
 .reader-grid.stacked .col-text { border-bottom: 1px solid var(--rule); }
 .reader-grid.stacked .col-text-inner { position: static; max-height: none; overflow: visible; padding-right: 0; }
+
+/* backlinks-only chapters: scripture stays the main column, cross-refs are a narrower
+   right rail; don't pin the text (there's no long commentary to scroll past). */
+@media (min-width: 1025px) {
+  .reader.xref-only .reader-grid { grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); }
+}
+.reader.xref-only .col-text-inner { position: static; max-height: none; overflow: visible; padding-right: 0; }
+.reader.xref-only .backlinks { border-top: 0; margin-top: 6px; padding-top: 0; }
 
 /* note ↔ verse linking (side-by-side reader only) */
 .reader .scripture .v { border-radius: 3px; transition: background .12s; }
