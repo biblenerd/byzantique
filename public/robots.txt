@@ -1,0 +1,5 @@
+# Byzantique — allow everything; point crawlers at the sitemap.
+User-agent: *
+Allow: /
+
+Sitemap: https://byzantique.com/sitemap-index.xml

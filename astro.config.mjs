@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -60,5 +61,7 @@ export default defineConfig({
   build: {
     format: 'directory',
   },
-  integrations: [dataWatch()],
+  // sitemap is generated automatically on every `astro build` (uses `site` above).
+  // Excludes the search UI and 404 (404 is auto-excluded).
+  integrations: [dataWatch(), sitemap({ filter: (page) => !page.includes('/search') })],
 });
