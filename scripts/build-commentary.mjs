@@ -143,6 +143,22 @@ function refTargets(body) {
   return out;
 }
 
+// `[…](note:ID)` targets → the referenced note's own anchor (book, chapter, verse), so a
+// note→note link backlinks onto that note's reference. Resolved against NOTE_REGISTRY.
+function noteRefAnchors(body) {
+  const out = [];
+  for (const m of body.matchAll(/\]\(note:([^)]+)\)/g)) {
+    const t = m[1].trim();
+    const slash = t.indexOf('/');
+    const book = slash === -1 ? null : t.slice(0, slash).toUpperCase();
+    const nid = slash === -1 ? t : t.slice(slash + 1);
+    let matches = NOTE_REGISTRY.get(nid) ?? [];
+    if (book) matches = matches.filter((e) => e.book === book);
+    if (matches[0]) out.push(matches[0]); // { book, sc, sv, ... }
+  }
+  return out;
+}
+
 // Record backlinks for one source note onto the verses it references (skipping same-page
 // targets — those notes are already visible on that chapter). Quote beats link if a note
 // both quotes and cites the same verse.
@@ -151,15 +167,31 @@ function collectBacklinks(srcRef, srcType, id, title, body) {
   if (!meta) return;
   const src = anchorLabel(srcRef, srcType, meta.name);
   const href = `/${meta.testament}/${meta.slug}/${srcType === 'book' ? '' : srcRef.sc}#note-${id}`;
+  const add = (book, sc, sv, kind) => {
+    if (!bookByCode(book)) return;
+    if (book === srcRef.book && srcRef.sc <= sc && sc <= srcRef.ec) return; // same-page
+    const list = ((BACKLINKS[book] ??= {})[sc] ??= []);
+    const dup = list.find((e) => e.sid === id && e.tv === sv);
+    if (dup) { if (kind === 'quote') dup.kind = 'quote'; return; }
+    list.push({ tv: sv, kind, title: title || '', src, href, sid: id });
+  };
+  // book-level target (a whole-book note lives on the book landing page, keyed "book")
+  const addBook = (book) => {
+    if (!bookByCode(book)) return;
+    if (book === srcRef.book && srcType === 'book') return; // both on the book page
+    const list = ((BACKLINKS[book] ??= {}).book ??= []);
+    if (list.some((e) => e.sid === id)) return;
+    list.push({ tv: 0, kind: 'link', title: title || '', src, href, sid: id });
+  };
+  // scripture references ({{ }} quoted, ref: cited)
   for (const { ref: targetStr, kind } of refTargets(body)) {
     const tr = parseRef(targetStr);
-    if (!tr || !bookByCode(tr.book)) continue;
-    // same-page suppression: source note's range already covers this target chapter
-    if (tr.book === srcRef.book && srcRef.sc <= tr.sc && tr.sc <= srcRef.ec) continue;
-    const list = ((BACKLINKS[tr.book] ??= {})[tr.sc] ??= []);
-    const dup = list.find((e) => e.sid === id && e.tv === tr.sv);
-    if (dup) { if (kind === 'quote') dup.kind = 'quote'; continue; }
-    list.push({ tv: tr.sv, kind, title: title || '', src, href, sid: id });
+    if (tr) add(tr.book, tr.sc, tr.sv, kind);
+  }
+  // note→note references resolve to the referenced note's own anchor (its own reference)
+  for (const a of noteRefAnchors(body)) {
+    if (a.type === 'book') addBook(a.book);
+    else add(a.book, a.sc, a.sv, 'link');
   }
 }
 
@@ -223,7 +255,7 @@ function build() {
     const meta = bookByCode(ref.book);
     if (!meta) continue;
     const id = path.basename(file, '.md');
-    const entry = { id, book: ref.book, testament: meta.testament, slug: meta.slug, type: anchorType(ref), sc: ref.sc };
+    const entry = { id, book: ref.book, testament: meta.testament, slug: meta.slug, type: anchorType(ref), sc: ref.sc, sv: ref.sv };
     if (!NOTE_REGISTRY.has(id)) NOTE_REGISTRY.set(id, []);
     NOTE_REGISTRY.get(id).push(entry);
   }

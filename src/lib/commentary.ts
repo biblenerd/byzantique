@@ -73,6 +73,12 @@ export function backlinksForChapter(code: string, chapter: number): { groups: Ba
   return { groups, total: list.length };
 }
 
+/** Notes elsewhere that reference this book's whole-book notes (via note:), for the book page. */
+export function backlinksForBook(code: string): { entries: Backlink[]; total: number } {
+  const list = loadBacklinks()[code]?.['book'] ?? [];
+  return { entries: list, total: list.length };
+}
+
 /** Whole-book notes (anchored to a bare book code), for the book landing page. */
 export function bookNotes(code: string): Note[] {
   return loadNotes(code)

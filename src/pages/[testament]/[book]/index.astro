@@ -1,8 +1,9 @@
 ---
 import Base from '../../../layouts/Base.astro';
+import Backlinks from '../../../components/Backlinks.astro';
 import { BOOKS, bookLabel } from '../../../lib/canon';
 import { builtCodes, loadBook } from '../../../lib/texts';
-import { bookNotes, refRange, anchorBadge } from '../../../lib/commentary';
+import { bookNotes, refRange, anchorBadge, backlinksForBook } from '../../../lib/commentary';
 import { loadBookIntro } from '../../../lib/bookintro';
 
 export function getStaticPaths() {
@@ -24,6 +25,7 @@ const textName =
 
 const intro = loadBookIntro(book.code);
 const notes = bookNotes(book.code);
+const bookBack = backlinksForBook(book.code);
 ---
 
 <Base title={label} description={`${label} — read the text with commentary.`}>
@@ -56,6 +58,11 @@ const notes = bookNotes(book.code);
           <div class="note-body" set:html={n.html} />
         </article>
       ))}
+      <Backlinks groups={[{ verse: 0, entries: bookBack.entries }]} total={bookBack.total} flat />
     </section>
+  )}
+
+  {notes.length === 0 && bookBack.total > 0 && (
+    <Backlinks groups={[{ verse: 0, entries: bookBack.entries }]} total={bookBack.total} flat />
   )}
 </Base>
