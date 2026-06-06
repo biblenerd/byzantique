@@ -1,0 +1,26 @@
+# Dependabot version updates. Routine bumps wait a 7-day cooldown so a freshly-published
+# (possibly compromised) release isn't proposed during the highest-risk window before it's
+# discovered/yanked. Security updates are separate (enable them in Settings → Code security)
+# and BYPASS the cooldown, so vulnerability fixes still land immediately.
+version: 2
+updates:
+  # JavaScript dependencies
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+    open-pull-requests-limit: 5
+
+  # GitHub Actions used by the CI workflow (checkout, setup-node)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 3

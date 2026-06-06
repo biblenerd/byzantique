@@ -29,6 +29,29 @@ npm run data       # ONLY regenerate the JSON data (no server/build)
 `dev` and `build` run `npm run data` first, so you normally don't call `data` directly —
 do it when you've edited source texts or commentary and just want to refresh the JSON.
 
+## Updating dependencies (safely)
+
+Day-to-day you're already covered: **`npm ci`** installs exactly what's pinned in
+`package-lock.json` and fetches **no new versions**, so normal work never pulls anything new.
+Supply-chain risk only appears when you *deliberately* fetch new versions.
+
+- **Preferred: let Dependabot drive updates.** [`.github/dependabot.yml`](../.github/dependabot.yml)
+  opens grouped PRs with a **7-day cooldown** (a freshly-published, possibly-compromised
+  release isn't proposed until it's had a week to be caught/yanked). Merge the PR → `git pull`
+  → `npm ci`. Security fixes (enable *Dependabot security updates* in repo Settings) bypass the
+  cooldown. CI re-runs `npm ci && npm run build && npm audit` on every PR.
+- **Manual add/update — apply the same cooldown with npm's `--before`:**
+  ```bash
+  npm install <pkg>@latest --before="$(date -v-7d +%F)"   # macOS: only versions ≥ 7 days old
+  ```
+  (`date -d '7 days ago' +%F` on Linux.) Then commit the updated `package.json` + lockfile.
+- **Optional, stronger:** `npx socket npm install <pkg>` wraps the install with behavioral
+  supply-chain checks (suspicious install scripts, new/ typosquatted packages) before anything
+  lands on disk.
+
+Avoid bare `npm install <pkg>@latest` (no `--before`) the day a release drops — that's the one
+window the cooldown exists to skip.
+
 ## What "compiling" actually does
 
 There are two stages: a **data build** (our scripts) and the **site build** (Astro).
