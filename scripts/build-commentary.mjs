@@ -10,6 +10,7 @@ import url from 'node:url';
 import { marked } from 'marked';
 import { scriptureQuote, refLink, refPreview } from '../src/lib/scripture.ts'; // run with --experimental-strip-types
 import { bookByCode } from '../src/lib/canon.ts';
+import { expandYouTube } from '../src/lib/media.ts';
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'data/commentary');
@@ -33,6 +34,7 @@ function expandScripture(md) {
     return html ?? m;
   });
 }
+
 
 const attrEsc = (s) =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -275,7 +277,7 @@ function build() {
       span: (ref.ec - ref.sc) * 1000 + (ref.ev - ref.sv),
       html: (() => {
         const fn = processFootnotes(body.trim(), path.basename(file, '.md'), file);
-        return marked.parse(expandRefs(expandNoteRefs(expandScripture(fn.md), file), file)) + fn.footnotesHtml;
+        return marked.parse(expandRefs(expandNoteRefs(expandScripture(expandYouTube(fn.md)), file), file)) + fn.footnotesHtml;
       })(),
     };
     if (!byBook.has(ref.book)) byBook.set(ref.book, []);

@@ -158,6 +158,20 @@ Put a colon in the separator to align a column: `:---` left, `:--:` center, `---
 Tables are styled automatically (header rule, zebra striping, padded cells) to match the
 site's other tables — no classes or extra markup needed. Same in book intros.
 
+## Embedding a YouTube video — `{{ youtube … }}`
+
+Put a `{{ youtube … }}` (or `{{ yt … }}`) on its **own line**. Pass the video id or any
+normal YouTube URL — `watch?v=`, `youtu.be/`, `/embed/`, `/shorts/` all work:
+
+```markdown
+{{ youtube dQw4w9WgXcQ }}
+{{ youtube https://youtu.be/dQw4w9WgXcQ }}
+```
+
+It renders a responsive 16:9 player that never exceeds the note's width (so it fits on
+mobile), loads lazily, and uses the privacy-friendly `youtube-nocookie` domain. A bad id
+warns at build time. Works the same in **commentary notes and book intros**.
+
 ## 4. See it
 
 ```bash
