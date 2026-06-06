@@ -3,18 +3,21 @@
   "type": "module",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=22.18.0"
+  },
   "scripts": {
-    "data": "node scripts/build-texts.mjs && node --experimental-strip-types scripts/build-commentary.mjs && node scripts/build-intro.mjs && node --experimental-strip-types scripts/build-lectionary.mjs",
+    "data": "node scripts/build-texts.mjs && node scripts/build-commentary.mjs && node scripts/build-intro.mjs && node scripts/build-lectionary.mjs",
     "dev": "npm run data && astro dev",
     "build": "npm run data && astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.6.0"
+    "astro": "^6.4.4"
   },
   "devDependencies": {
-    "marked": "^12.0.0",
+    "marked": "^18.0.5",
     "pagefind": "^1.5.2"
   }
 }

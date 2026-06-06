@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 import { marked } from 'marked';
-import { scriptureQuote, refLink, refPreview } from '../src/lib/scripture.ts'; // run with --experimental-strip-types
+import { scriptureQuote, refLink, refPreview } from '../src/lib/scripture.ts'; // .ts imports: Node ≥22.18 strips types natively
 import { bookByCode } from '../src/lib/canon.ts';
 import { expandYouTube } from '../src/lib/media.ts';
 

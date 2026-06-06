@@ -90,7 +90,9 @@ The site is a static Astro build (`dist/`). To deploy:
    - Framework preset: **Astro**
    - Build command: **`npm run build`**
    - Build output directory: **`dist`**
-   - Environment variable: **`NODE_VERSION = 22`**
+   - Node version: pinned to **24** (LTS) via [`.nvmrc`](./.nvmrc), which Cloudflare Pages
+     reads automatically. **A `NODE_VERSION` environment variable in the dashboard overrides
+     `.nvmrc`** — so remove that variable (preferred) or set it to `24`. (Astro 6 needs Node ≥ 22.12.)
 3. **Custom domain** — Pages project → *Custom domains* → add **`byzantique.com`**
    (and `www`). If the domain's DNS is on Cloudflare, records are added automatically.
 

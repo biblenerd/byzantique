@@ -1,6 +1,6 @@
 // Build-time lectionary pipeline: orthocal-python's calendarium fixture →
 // the `passage → occasions` inverted index that drives chapter-page chips.
-// (REQUIREMENTS §4.) Run with --experimental-strip-types (imports canon.ts).
+// (REQUIREMENTS §4.) Imports canon.ts — Node ≥22.18 strips TS types natively.
 //
 // A reading is chipped only when its day qualifies: feast_level ≥ 5 OR a non-empty
 // (movable) title. Occasions are year-independent (keyed by pdist / month-day), so
