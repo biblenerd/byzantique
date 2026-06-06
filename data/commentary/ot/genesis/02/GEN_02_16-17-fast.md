@@ -10,7 +10,8 @@ ANE deities delivered their laws or law codes to their appointed kings, and here
 
 The Fathers emphasize that the tree of knowledge of good and evil wasn't bad or evil. Humans would have eventually been invited to eat from it, but they weren’t ready yet.
 
-Notice the commandment is here given solely to Adam, before Eve is created.
+Notice the commandment is here given solely to Adam, before Eve is created.[^xref]
 
 
 [^tsalikis]: St. Elder Iakovos Tsalikis of Evia, "On Prayer and Fasting," *Orthodox Path* blog, posted February 25, 2025. Retrieved from https://www.orthodoxpath.org/spiritual-life/prayer-fasting-st-elder-iakovos-tsalikis-evia/
+[^xref]: *Cf.* note on [Genesis 3:1-6](note:GEN_03_01-06-2ndpl)
