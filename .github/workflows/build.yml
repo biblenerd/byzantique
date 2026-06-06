@@ -1,0 +1,35 @@
+# Build gate: on every push to main and every PR, do a deterministic install and a full
+# build. The data build (build-commentary.mjs) FAILS on any unresolved `ref:`/`note:`
+# cross-reference, so a typo'd reference turns the check red here — before it ever deploys.
+# (Cloudflare Pages builds independently on push; this is the fast, explicit signal in
+# GitHub and lets PRs be gated.)
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node (from .nvmrc)
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install (deterministic, from the lockfile)
+        run: npm ci
+
+      - name: Build the site (fails on any bad cross-reference)
+        run: npm run build
+
+      - name: Supply-chain audit (alerts on known high/critical advisories)
+        run: npm audit --audit-level=high
