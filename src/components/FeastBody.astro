@@ -1,0 +1,19 @@
+---
+// Renders a feast's body (prose paragraphs + scripture-quote blocks) from feasts-data.
+// Quotes resolve through the same mechanism as {{ ref }} in commentary.
+import { scriptureQuote } from '../lib/scripture';
+import type { FeastPart } from '../lib/feasts-data';
+
+interface Props {
+  body: FeastPart[];
+}
+const { body } = Astro.props;
+---
+
+{body.map((part) =>
+  part.type === 'quote' ? (
+    <Fragment set:html={scriptureQuote(part.ref) ?? `<p>[unresolved: ${part.ref}]</p>`} />
+  ) : (
+    <p set:html={part.html} />
+  ),
+)}

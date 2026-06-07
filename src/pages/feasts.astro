@@ -1,0 +1,72 @@
+---
+// Old Testament Feasts & Festivals — a seasonal timeline of the major Jewish feasts, with
+// their Christian fulfilment. Scripture quotes resolve from the base texts (NT = BTV/TCENT,
+// OT = ENGLXXUP) via the same mechanism as {{ ref }} in commentary; content lives in
+// src/lib/feasts-data.ts.
+// NOTE: intentionally not linked from any menu or page for now. Reachable at /feasts/.
+import Base from '../layouts/Base.astro';
+import FeastBody from '../components/FeastBody.astro';
+import { SEASONS } from '../lib/feasts-data';
+---
+
+<Base
+  title="Old Testament Feasts & Festivals"
+  description="A seasonal timeline of the major Jewish feasts and festivals established in the Old Testament, with their dates and Christian fulfilment."
+  width="index"
+>
+  <h1>Old Testament Feasts &amp; Festivals</h1>
+  <p class="subtitle">
+    A quick reference for major Jewish feasts and festivals established in the Old Testament,
+    whose dates are calculated via a lunar calendar.
+  </p>
+
+  <div class="timeline">
+    {SEASONS.map((s) => (
+      <section class="tl-season">
+        <h2 id={s.id} class="tl-season-head"><span>{s.heading}</span></h2>
+        {s.feasts.map((f) => (
+          <article class="tl-feast">
+            <div class="tl-date">{f.date}</div>
+            <div class="tl-content">
+              <h3 class="tl-name" set:html={f.names} />
+              <div class="tl-body"><FeastBody body={f.body} /></div>
+            </div>
+          </article>
+        ))}
+      </section>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .timeline { position: relative; margin: 24px 0; }
+  /* the rail */
+  .timeline::before {
+    content: ''; position: absolute; left: 7px; top: 4px; bottom: 4px; width: 2px;
+    background: var(--accent-soft);
+  }
+  .tl-season { position: relative; padding-left: 30px; margin: 0 0 8px; }
+  .tl-season-head {
+    font-family: var(--sans); font-size: 13px; font-weight: 700; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--accent); margin: 24px 0 10px; position: relative;
+  }
+  .tl-season-head span { background: var(--bg); padding-right: 10px; position: relative; z-index: 1; }
+  /* season node on the rail */
+  .tl-season-head::before {
+    content: ''; position: absolute; left: -30px; top: 1px; width: 16px; height: 16px;
+    border-radius: 50%; background: var(--accent); border: 3px solid var(--bg); z-index: 2;
+  }
+  .tl-feast { position: relative; margin: 0 0 22px; }
+  /* feast node on the rail */
+  .tl-feast::before {
+    content: ''; position: absolute; left: -27px; top: 6px; width: 8px; height: 8px;
+    border-radius: 50%; background: var(--panel); border: 2px solid var(--gold); z-index: 2;
+  }
+  .tl-date {
+    font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .04em;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 2px;
+  }
+  .tl-name { margin: 0 0 4px; font-size: 17px; line-height: 1.35; }
+  .tl-body :global(p) { margin: 9px 0; line-height: 1.6; }
+  .tl-body :global(.scripture-quote) { margin: 9px 0; }
+</style>
