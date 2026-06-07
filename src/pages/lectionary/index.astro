@@ -83,7 +83,7 @@ import Base from '../../layouts/Base.astro';
       readingsEl.innerHTML = rec.readings
         .map(
           (r: any) =>
-            `<div class="lect-reading"><span class="lect-src">${esc(r.source)}</span><span>${partsHtml(r.parts)}</span></div>`,
+            `<div class="lect-reading"><span class="lect-src">${esc(r.source)}</span><span class="lect-ref-cell">${partsHtml(r.parts)}</span><span class="lect-desc">${esc(r.desc || '')}</span></div>`,
         )
         .join('');
     }

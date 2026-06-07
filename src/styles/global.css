@@ -569,9 +569,14 @@ blockquote.creed p.creed-attr {
 }
 .lect-picker:hover, .lect-picker:focus { border-color: var(--accent); outline: none; }
 .lect-cal { font-family: var(--sans); font-size: 12px; color: var(--ink-soft); }
-.lect-reading { display: flex; gap: 14px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 16px; }
+.lect-reading { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) 11rem; gap: 14px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 16px; }
 .lect-reading:last-child { border-bottom: 0; }
-.lect-src { flex: none; min-width: 9.5rem; font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--accent); }
+.lect-src { font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--accent); }
+.lect-desc { font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); }
+@media (max-width: 640px) {
+  .lect-reading { grid-template-columns: 1fr; gap: 2px; }
+  .lect-desc { font-size: 12px; font-style: italic; }
+}
 
 /* ---- home: today's readings ---- */
 .today-box { border: 1px solid var(--rule); border-radius: 10px; background: var(--panel); padding: 12px 16px; margin: 14px 0 22px; }

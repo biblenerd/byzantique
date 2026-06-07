@@ -182,7 +182,7 @@ function build() {
   console.log(`build-lectionary: ${chipCount} chips across ${books} books → public/data/lectionary/chips/`);
   if (unresolved.size) console.warn(`  ! ${unresolved.size} unresolved refs: ${[...unresolved].slice(0, 5).join(' | ')}`);
 
-  buildDateReadings(dayByMd);
+  buildDateReadings(dayByMd, dayByPdist);
 }
 
 // Merge contiguous ranges within one book (e.g. Daniel 3:1-23 + 3:24-89 → 3:1-89).
@@ -208,12 +208,28 @@ const rangeStr = (r) =>
         : `${r.sc}:${r.sv}-${r.ev}`
       : `${r.sc}:${r.sv}-${r.ec}:${r.ev}`;
 
+// Normalize a reading's commemoration description (orthocal's day-specific `desc`).
+// Returns '' to omit. Orthocal populates this only on multi-commemoration days, to tell
+// readings apart (e.g. "Sunday after Theophany" vs "St Theodosius"); single-occasion days
+// leave it blank (the day's title already names the one occasion). We additionally drop:
+//   - Vespers prophecy sequence numbers ("1st reading" … "15th reading") — row order shows it.
+//   - a desc that merely echoes its own source column (defensive; effectively never occurs).
+// and tidy "St" → "St." to match the site's style.
+function normDesc(desc, source) {
+  const d = String(desc ?? '').trim();
+  if (!d) return '';
+  if (/^\d+(st|nd|rd|th)\s+reading$/i.test(d)) return '';
+  if (d.toLowerCase() === String(source ?? '').trim().toLowerCase()) return '';
+  return d.replace(/\bSt\.?\s+/g, 'St. ');
+}
+
 // Resolve one orthocal reading to a list of per-book parts, each with its own link
 // (a composite spanning books — e.g. "1 Cor 5.6-8; Gal 3.13-14" — links each book
 // separately while staying grouped on display).
 function resolveReadingParts(rd) {
+  const desc = normDesc(rd.desc, rd.source);
   const ranges = parseRef(rd.ref);
-  if (!ranges.length) return { source: rd.source, parts: [{ label: rd.ref, href: null }] };
+  if (!ranges.length) return { source: rd.source, desc, parts: [{ label: rd.ref, href: null }] };
   const groups = [];
   for (const r of ranges) {
     let g = groups.find((x) => x.code === r.code);
@@ -228,12 +244,17 @@ function resolveReadingParts(rd) {
     const href = meta ? `/${meta.testament}/${meta.slug}/${first.sc}${first.ev === WHOLE ? '' : `#v${first.sv}`}` : null;
     return { label, href };
   });
-  return { source: rd.source, parts };
+  return { source: rd.source, desc, parts };
 }
+
+const mdToUTC = (y, md) => {
+  const [m, d] = md.split('-').map(Number);
+  return Date.UTC(y, m - 1, d);
+};
 
 // Transform the vendored orthocal-engine dump (data/lectionary/dates/<YEAR>.json)
 // into served per-year files with our references/links.
-function buildDateReadings(dayByMd) {
+function buildDateReadings(dayByMd, dayByPdist) {
   if (!fs.existsSync(DATES_IN)) {
     console.warn('  ! no data/lectionary/dates/ — run scripts/dump-lectionary.py (today\'s readings skipped)');
     return;
@@ -244,14 +265,30 @@ function buildDateReadings(dayByMd) {
   const pascha = {}; // year → "MM-DD" of Orthodox Pascha (for movable-occasion click-through)
   for (const y of years) {
     const src = JSON.parse(fs.readFileSync(path.join(DATES_IN, `${y}.json`), 'utf8'));
+    // This year's Pascha (md), so a calendar date can be mapped to its paschal distance
+    // for looking up movable commemoration names.
+    let paschaMd = null;
+    for (const [md, rec] of Object.entries(src)) {
+      if (rec.titles.includes('Holy Pascha')) { paschaMd = md; break; }
+    }
+    const paschaUTC = paschaMd != null ? mdToUTC(y, paschaMd) : null;
     const out = {};
     for (const [md, rec] of Object.entries(src)) {
-      // Surface a fixed great-feast name (stored on Day.feast_name, not in titles).
       const [mm, dd] = md.split('-').map(Number);
-      const fixed = dayByMd.get(`${mm}-${dd}`);
       const titles = [...rec.titles];
+      // Surface a fixed great-feast name (stored on Day.feast_name, not in titles).
+      const fixed = dayByMd.get(`${mm}-${dd}`);
       if (rec.feast_level >= 5 && fixed?.feast_name && !titles.includes(fixed.feast_name))
         titles.unshift(fixed.feast_name);
+      // Surface a movable commemoration name (keyed by paschal distance, not month/day):
+      // All Saints, Sunday of Orthodoxy, St Gregory Palamas, Pascha, Pentecost, etc.
+      // These feast_names are populated only for the few dozen special movable days, so
+      // unlike the fixed calendar they need no feast-level gate.
+      if (paschaUTC != null) {
+        const pdist = Math.round((mdToUTC(y, md) - paschaUTC) / 86400000);
+        const name = dayByPdist.get(pdist)?.feast_name?.trim();
+        if (name && !titles.includes(name)) titles.unshift(name);
+      }
       if (rec.titles.includes('Holy Pascha')) pascha[y] = md;
       out[md] = {
         titles,
