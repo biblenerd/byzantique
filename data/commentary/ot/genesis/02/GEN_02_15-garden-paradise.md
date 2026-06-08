@@ -12,7 +12,7 @@ Symmachus reads παραδείσῳ τῆς ἀκτῆς (*paradeisō tēs aktē
 
 The term Eden itself may be a Sumerian loanword having to do with "delight" and "luxury."[^aybd] So the variants may be trying to translate concepts not readily apparent from a mere transliteration of עֵדֶן to *Eden*. Ausloos contends that
 
->the term "Eden" seems to be used with a *double entendre*: on the one hand, the author intended to use the term ןדע as a toponym; on the other hand, in his word choice, it appears that the author aimed to characterise the specific nature of the "Eden" as a place of plenty and wealth.... [T]he Septuagint translator of Genesis, alternately transliterating and translating ןדע, ... succeeded in producing a faithful rendering of the term.[^eden-entendre]
+>the term "Eden" seems to be used with a *double entendre*: on the one hand, the author intended to use the term עדן as a toponym; on the other hand, in his word choice, it appears that the author aimed to characterise the specific nature of the "Eden" as a place of plenty and wealth.... [T]he Septuagint translator of Genesis, alternately transliterating and translating עדן, ... succeeded in producing a faithful rendering of the term.[^eden-entendre]
 
 Ultimately, this is a garden for the divine King. That mortals could once enter (and will again!) goes against the expectations of the ANE reader.
 

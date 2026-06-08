@@ -8,7 +8,7 @@ The Greek κατὰ ἀνατολὰς (*kata anatolas*, translated "eastward," 
 
 As previously noted, the LXX assumes it is geospatial, but other early translations assumed it was temporal, including other Greek translations (e.g., Aquila [ἀπὸ ἀρχῆθεν / *apo archēthen* = "from the beginning"], Symmachus [ἐκ πρώτης / *ek prōtēs* = "from the first"], and Theodotion [ἐν πρώτοις / *en prōtois* = "in the first"]),[^gottingen] Aramaic translations (targums), the Syriac, and the Latin Vulgate (*a principio*).[^halot] The ambiguity may be intentional.
 
->What is striking, however, is that this *yahweh* forms a regular human being&mdash;not a king&mdash;and installs him in a garden&mdash;not a city. Furthermore, this garden is said to be "in the east,"" an oblique reference to the direction of Babylon.[^tarazi]
+>What is striking, however, is that this *yahweh* forms a regular human being&mdash;not a king&mdash;and installs him in a garden&mdash;not a city. Furthermore, this garden is said to be "in the east," an oblique reference to the direction of Babylon.[^tarazi]
 
 The rationale for the direction is unclear, but could reference the rising sun / Son as the location of paradise, the direction of Mesopotamia / Babylon relative to where the author is writing, or something else (assuming its geospatial and not temporal).
 
