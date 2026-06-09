@@ -102,18 +102,31 @@ export const anchorBadge = (type: string): string =>
  * Per chapter: 0 notes → 0, exactly 1 note → 0.5, 2+ notes → 1.0.
  * fraction = sum of chapter weights ÷ total chapters.
  */
-export function bookCoverage(code: string, totalChapters: number): { fraction: number; notes: number } {
-  const notes = loadNotes(code);
-  if (totalChapters <= 0) return { fraction: 0, notes: notes.length };
-
-  const perChapter = new Array<number>(totalChapters + 1).fill(0);
-  for (const n of notes) {
-    if (n.anchor.type === 'book') continue; // whole-book notes don't count toward chapter coverage
+/** Per-chapter note counts, 1-indexed (index = chapter number; index 0 unused). A note
+ *  counts toward every chapter it touches; whole-book notes are excluded. */
+export function chapterNoteCounts(code: string, totalChapters: number): number[] {
+  const perChapter = new Array<number>(Math.max(0, totalChapters) + 1).fill(0);
+  if (totalChapters <= 0) return perChapter;
+  for (const n of loadNotes(code)) {
+    if (n.anchor.type === 'book') continue;
     const lo = Math.max(1, n.anchor.sc);
     const hi = Math.min(totalChapters, n.anchor.ec);
     for (let c = lo; c <= hi; c++) perChapter[c]++;
   }
+  return perChapter;
+}
 
+/** Bucket a chapter's note count into a 0–4 density level for the chapter heatmap.
+ *  Perceptual buckets (not linear) so one dense chapter doesn't wash out the rest. */
+export function densityLevel(n: number): number {
+  return n === 0 ? 0 : n === 1 ? 1 : n <= 3 ? 2 : n <= 6 ? 3 : 4;
+}
+
+export function bookCoverage(code: string, totalChapters: number): { fraction: number; notes: number } {
+  const notes = loadNotes(code);
+  if (totalChapters <= 0) return { fraction: 0, notes: notes.length };
+
+  const perChapter = chapterNoteCounts(code, totalChapters);
   let sum = 0;
   for (let c = 1; c <= totalChapters; c++) {
     sum += perChapter[c] === 0 ? 0 : perChapter[c] === 1 ? 0.5 : 1;

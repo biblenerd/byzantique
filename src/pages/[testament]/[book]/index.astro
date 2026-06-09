@@ -3,7 +3,7 @@ import Base from '../../../layouts/Base.astro';
 import Backlinks from '../../../components/Backlinks.astro';
 import { BOOKS, bookLabel } from '../../../lib/canon';
 import { builtCodes, loadBook } from '../../../lib/texts';
-import { bookNotes, refRange, anchorBadge, backlinksForBook } from '../../../lib/commentary';
+import { bookNotes, refRange, anchorBadge, backlinksForBook, chapterNoteCounts, densityLevel } from '../../../lib/commentary';
 import { loadBookIntro } from '../../../lib/bookintro';
 
 export function getStaticPaths() {
@@ -26,6 +26,11 @@ const textName =
 const intro = loadBookIntro(book.code);
 const notes = bookNotes(book.code);
 const bookBack = backlinksForBook(book.code);
+
+// Chapter heatmap: a bucketed density bar under each chapter number. Only shown once a
+// book has some chapter-level commentary (otherwise the grid would be all empty bars).
+const counts = chapterNoteCounts(book.code, text.chapters.length);
+const hasDensity = counts.some((n) => n > 0);
 ---
 
 <Base title={label} description={`${label} — read the text with commentary.`}>
@@ -39,10 +44,25 @@ const bookBack = backlinksForBook(book.code);
   {intro && <div class="book-intro" set:html={intro} />}
 
   <div class="col-label ui" data-pagefind-ignore>Chapters</div>
-  <ul class="chapter-grid" data-pagefind-ignore>
-    {text.chapters.map((c) => (
-      <li><a href={`/${book.testament}/${book.slug}/${c.number}`}>{c.number}</a></li>
-    ))}
+  {hasDensity && (
+    <p class="cov-note ui" data-pagefind-ignore>
+      The bar beneath each chapter number shows how much commentary it has, from none (empty) to
+      most. Hover a chapter for its note count.
+    </p>
+  )}
+  <ul class:list={['chapter-grid', { heat: hasDensity }]} data-pagefind-ignore>
+    {text.chapters.map((c) => {
+      const n = counts[c.number] ?? 0;
+      const title =
+        n === 0 ? `Chapter ${c.number} · no commentary` : `Chapter ${c.number} · ${n} note${n === 1 ? '' : 's'}`;
+      return (
+        <li>
+          <a href={`/${book.testament}/${book.slug}/${c.number}`} data-l={densityLevel(n)} title={title}>
+            {c.number}
+          </a>
+        </li>
+      );
+    })}
   </ul>
 
   {notes.length > 0 && (
