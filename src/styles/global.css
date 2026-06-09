@@ -449,12 +449,30 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
   gap: 8px; margin: 14px 0 28px; padding: 0; list-style: none;
 }
 .chapter-grid a {
+  position: relative;
   display: flex; align-items: center; justify-content: center;
   padding: 9px 6px; border: 1px solid var(--rule); border-radius: 6px;
   background: var(--panel); text-decoration: none; color: var(--ink);
   font-family: var(--sans); font-size: 14px;
 }
 .chapter-grid a:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Chapter heatmap (option D): a small bucketed bar under the number echoing the coverage
+   bar on the book list. Uses themed tokens, so it adapts in dark mode. */
+.chapter-grid.heat a { padding-bottom: 14px; }
+.chapter-grid.heat a::after {
+  content: ""; position: absolute; left: 6px; right: 6px; bottom: 5px;
+  height: 3px; border-radius: 999px; background: var(--rule);
+}
+.chapter-grid.heat a[data-l]::before {
+  content: ""; position: absolute; left: 6px; bottom: 5px;
+  height: 3px; border-radius: 999px; background: var(--accent); z-index: 1;
+}
+.chapter-grid.heat a[data-l="0"]::before { width: 0; }
+.chapter-grid.heat a[data-l="1"]::before { width: 18%; }
+.chapter-grid.heat a[data-l="2"]::before { width: 42%; }
+.chapter-grid.heat a[data-l="3"]::before { width: 70%; }
+.chapter-grid.heat a[data-l="4"]::before { width: calc(100% - 12px); }
 
 /* home-page Browse: large square Testament cards with icons */
 .browse-cards {
