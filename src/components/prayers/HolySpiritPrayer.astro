@@ -1,0 +1,62 @@
+---
+// The "Prayer to the Holy Spirit" slot. What goes here depends on the liturgical season,
+// keyed to paschal distance. All variants render; a client script reveals the right one for
+// the effective liturgical day. For evening prayer the day rolls forward one (Vespers begins
+// the next liturgical day), which is passed in via `service`.
+//
+//   <HolySpiritPrayer service="morning" />   <HolySpiritPrayer service="evening" />
+//
+// Default (no JS): "O Heavenly King" shows, correct for most of the year.
+interface Props {
+  service: 'morning' | 'evening';
+}
+const { service } = Astro.props;
+---
+
+<div class="hs-prayer" data-holyspirit={service}>
+  <p data-hs-variant="normal">
+    O Heavenly King, the Comforter, the Spirit of Truth, who art everywhere present and fillest
+    all things, Treasury of good things and Giver of life: come and abide in us, and cleanse us
+    from every impurity, and save our souls, O Good One.
+  </p>
+  <p data-hs-variant="paschal" hidden>
+    Christ is risen from the dead, trampling down death by death, and upon those in the tombs
+    bestowing life. <span class="hs-rubric">(thrice)</span>
+  </p>
+  <p data-hs-variant="ascension" hidden>
+    Thou hast ascended in glory, O Christ our God, granting joy to Thy disciples by the promise
+    of the Holy Spirit, through the blessing wherewith they were assured that Thou art the Son of
+    God, the Redeemer of the world. <span class="hs-rubric">(thrice)</span>
+  </p>
+</div>
+
+<script>
+  import { holySpiritVariant } from '../../lib/prayer-season';
+
+  let paschaCache: Promise<Record<string, string>> | null = null;
+  const loadPascha = () =>
+    (paschaCache ??= fetch('/data/lectionary/pascha.json').then((r) => r.json()));
+
+  document.querySelectorAll<HTMLElement>('[data-holyspirit]').forEach(async (root) => {
+    const service = root.getAttribute('data-holyspirit');
+    const d = new Date();
+    if (service === 'evening') d.setDate(d.getDate() + 1); // Vespers begins the next day
+    try {
+      const pascha = await loadPascha();
+      const md = pascha[String(d.getFullYear())];
+      if (!md) return; // outside the data range — leave the default
+      const [pm, pd] = md.split('-').map(Number);
+      const pdist = Math.round(
+        (Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) -
+          Date.UTC(d.getFullYear(), pm - 1, pd)) /
+          86_400_000,
+      );
+      const variant = holySpiritVariant(pdist); // 'none' → every block hidden
+      root.querySelectorAll<HTMLElement>('[data-hs-variant]').forEach((el) => {
+        el.hidden = el.getAttribute('data-hs-variant') !== variant;
+      });
+    } catch {
+      /* leave the default variant visible */
+    }
+  });
+</script>

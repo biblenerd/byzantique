@@ -1,0 +1,36 @@
+---
+// Embed a full scripture passage inside a prayer (psalms etc. are part of the prayers).
+// Renders like the main reader text, under a clickable reference header that links to the
+// chapter. Use `label` to override the auto reference (e.g. LXX/Hebrew dual numbering).
+//
+//   <PrayerScripture ref="PSA 50" label="Psalm 50(51)" />
+import { scripturePassage } from '../lib/scripture';
+
+interface Props {
+  ref: string;
+  label?: string;
+}
+const { ref, label } = Astro.props;
+const p = scripturePassage(ref);
+if (!p) console.warn(`<PrayerScripture>: unresolved reference "${ref}"`);
+---
+
+{p ? (
+  <div class="prayer-scripture">
+    <a class="ps-ref ui" href={p.href}>{label ?? p.label}</a>
+    <div class="scripture" set:html={p.body} />
+  </div>
+) : (
+  <p class="subtitle">[unresolved scripture: {ref}]</p>
+)}
+
+<style>
+  .prayer-scripture { margin: 22px 0; padding-left: 16px; border-left: 3px solid var(--gold); }
+  .ps-ref {
+    display: inline-flex; align-items: center; gap: 4px; margin-bottom: 8px;
+    font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--accent); text-decoration: none;
+  }
+  .ps-ref::after { content: '↗'; font-size: 11px; opacity: .75; }
+  .ps-ref:hover { text-decoration: underline; }
+</style>

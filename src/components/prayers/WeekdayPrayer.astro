@@ -1,0 +1,40 @@
+---
+// The prayer of the day (weekly cycle). All seven days render; a client script reveals the
+// one for the effective liturgical day. For evening prayer the day rolls forward one (Vespers
+// begins the next liturgical day), passed in via `service`. Needs JS to pick a day.
+//   <WeekdayPrayer service="morning" />   <WeekdayPrayer service="evening" />
+import Sunday from './weekday/Sunday.astro';
+import Monday from './weekday/Monday.astro';
+import Tuesday from './weekday/Tuesday.astro';
+import Wednesday from './weekday/Wednesday.astro';
+import Thursday from './weekday/Thursday.astro';
+import Friday from './weekday/Friday.astro';
+import Saturday from './weekday/Saturday.astro';
+
+interface Props {
+  service: 'morning' | 'evening';
+}
+const { service } = Astro.props;
+// index 0 = Sunday … 6 = Saturday (matches Date.getDay()).
+const days = [Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday];
+---
+
+<section class="prayer-block">
+  <h2>Prayer of the Day</h2>
+  <div data-weekday-prayer={service}>
+    {days.map((Day, i) => (
+      <div data-weekday={i} hidden><Day /></div>
+    ))}
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-weekday-prayer]').forEach((root) => {
+    const d = new Date();
+    if (root.getAttribute('data-weekday-prayer') === 'evening') d.setDate(d.getDate() + 1);
+    const wd = String(d.getDay());
+    root.querySelectorAll<HTMLElement>('[data-weekday]').forEach((el) => {
+      el.hidden = el.getAttribute('data-weekday') !== wd;
+    });
+  });
+</script>

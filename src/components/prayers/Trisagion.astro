@@ -1,0 +1,27 @@
+---
+// The Trisagion Prayers — a fixed unit reused in both morning and evening prayer (and
+// elsewhere). Edit here; every page that includes it updates.
+//   <Trisagion />
+interface Props {
+  heading?: string; // omit or pass false-y to render without the section heading
+}
+const { heading = 'Trisagion Prayers' } = Astro.props;
+---
+
+<section class="prayer-block">
+  {heading && <h2>{heading}</h2>}
+  <p>Holy God, Holy Mighty, Holy Immortal, have mercy on us. <span class="rubric">(thrice)</span></p>
+  <p>Glory to the Father, and to the Son, and to the Holy Spirit, now and ever, and unto ages of ages. Amen.</p>
+  <p>
+    O Most Holy Trinity, have mercy on us. O Lord, blot out our sins. O Master, pardon our
+    iniquities. O Holy One, visit and heal our infirmities, for Thy Name's sake.
+  </p>
+  <p>Lord, have mercy. <span class="rubric">(thrice)</span></p>
+  <p>Glory to the Father, and to the Son, and to the Holy Spirit, now and ever, and unto ages of ages. Amen.</p>
+  <p>
+    Our Father, who art in heaven, hallowed be Thy Name. Thy kingdom come, Thy will be done, on
+    earth as it is in heaven. Give us this day our daily bread, and forgive us our trespasses, as
+    we forgive those who trespass against us; and lead us not into temptation, but deliver us from
+    the evil one.
+  </p>
+</section>

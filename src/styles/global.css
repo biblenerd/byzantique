@@ -617,15 +617,12 @@ blockquote.scripture-quote cite {
 blockquote.scripture-quote cite a { color: var(--ink-soft); text-decoration: none; }
 blockquote.scripture-quote cite a:hover { color: var(--accent); text-decoration: underline; }
 
-/* Nicene Creed (FAQ) */
-blockquote.creed {
-  margin: 12px 0; padding: 4px 0 4px 16px; border-left: 3px solid var(--accent-soft);
-  font-style: normal; line-height: 1.55;
-}
-blockquote.creed p { margin: 0 0 .85em; }
-blockquote.creed p.creed-attr {
-  margin: .5em 0 0; font-family: var(--sans); font-size: 13px; color: var(--ink-soft);
-}
+/* Reusable prayers (Creed, Trisagion, weekday, …) — rendered as normal text, not quotes. */
+.prayer-block { margin: 8px 0 18px; }
+.creed { margin: 8px 0; line-height: 1.55; }
+.creed p { margin: 0 0 .85em; }
+.creed p:last-child { margin-bottom: 0; }
+.rubric, .hs-rubric { font-family: var(--sans); font-size: .82em; color: var(--ink-soft); }
 
 /* ---- header search box + live dropdown ---- */
 .site-search { position: relative; display: flex; align-items: center; }
@@ -682,6 +679,9 @@ blockquote.creed p.creed-attr {
 }
 .lect-picker:hover, .lect-picker:focus { border-color: var(--accent); outline: none; }
 .lect-cal { font-family: var(--sans); font-size: 12px; color: var(--ink-soft); }
+.lect-prayers { text-align: center; margin: 22px 0 0; font-family: var(--sans); font-size: 13px; }
+.lect-prayers a { text-decoration: none; color: var(--link); }
+.lect-prayers a:hover { color: var(--accent); text-decoration: underline; }
 .lect-reading { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) 11rem; gap: 14px; align-items: baseline; padding: 9px 0; border-bottom: 1px solid var(--rule); font-size: 16px; }
 .lect-reading:last-child { border-bottom: 0; }
 .lect-src { font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--accent); }
@@ -701,6 +701,8 @@ blockquote.creed p.creed-attr {
 .today-readings { display: flex; flex-wrap: wrap; gap: 6px 14px; font-family: var(--sans); font-size: 13.5px; }
 .today-readings a { text-decoration: none; }
 .today-readings .tr-src { color: var(--ink-soft); }
+.today-prayers { display: block; text-align: right; margin-top: 10px; font-family: var(--sans); font-size: 12.5px; text-decoration: none; color: var(--link); }
+.today-prayers:hover { color: var(--accent); text-decoration: underline; }
 
 /* ---- search (Pagefind UI) ---- */
 #search {

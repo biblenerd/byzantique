@@ -192,3 +192,20 @@ export function scriptureQuote(refStr: string): string | null {
 
   return `<blockquote class="scripture-quote">${body}<cite><a href="${href}">${cite}</a></cite></blockquote>`;
 }
+
+/** Resolve a reference to a full passage rendered like the main reader text (not the
+ *  compact quote box), plus a link + label for a clickable reference header. For embedding
+ *  scripture inline in prayers. Returns null if the reference can't be resolved. */
+export function scripturePassage(refStr: string): { body: string; href: string; label: string } | null {
+  const ref = parseRef(refStr);
+  if (!ref) return null;
+  const book = loadBook(ref.book);
+  const link = refLink(refStr);
+  if (!book || !link) return null;
+  const { blocks } = getPassageBlocks(book, ref);
+  if (!blocks.length) return null;
+
+  let verseCount = 0;
+  for (const b of blocks) for (const s of b.segments ?? []) if (isVerse(s)) verseCount++;
+  return { body: blocksToHtml(blocks, verseCount > 1), href: link.href, label: link.label };
+}

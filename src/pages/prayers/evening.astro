@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import HolySpiritPrayer from '../../components/prayers/HolySpiritPrayer.astro';
+import Trisagion from '../../components/prayers/Trisagion.astro';
+import NiceneCreed from '../../components/prayers/NiceneCreed.astro';
+import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
+---
+
+<Base title="Evening Prayers" description="Evening prayers from the Orthodox daily prayer rule.">
+  <nav class="crumbs ui">
+    <a href="/">Byzantique</a><span class="sep">›</span>
+    <a href="/prayers/">Prayers</a><span class="sep">›</span>Evening
+  </nav>
+  <h1>Evening Prayers</h1>
+  <p class="subtitle">Before sleep, at the day's end.</p>
+
+  <div class="dev-banner ui" data-pagefind-ignore>
+    🚧 <strong>Placeholder / scaffold.</strong> The full text and ordering are still being
+    written. Because Vespers begins the next liturgical day, the seasonal and weekday prayers
+    below follow <em>tomorrow's</em> pattern.
+  </div>
+
+  <p>In the name of the Father, and of the Son, and of the Holy Spirit. Amen.</p>
+  <p>Glory to You, our God, glory to You.</p>
+
+  <HolySpiritPrayer service="evening" />
+
+  <Trisagion />
+
+  <NiceneCreed heading="The Symbol of Faith" />
+
+  <WeekdayPrayer service="evening" />
+
+  <p>[Placeholder — the remaining evening prayers and dismissal will be added here.]</p>
+</Base>

@@ -1,0 +1,51 @@
+---
+// The Nicene-Constantinopolitan Creed (the Symbol of Faith). A fixed unit reused in the
+// prayers and on the FAQ page. Pass `heading` to render a section heading (used in the
+// prayers); omit it for inline use (the FAQ).
+//   <NiceneCreed heading="The Symbol of Faith" />   <NiceneCreed />
+interface Props {
+  heading?: string;
+}
+const { heading } = Astro.props;
+---
+
+<section class="prayer-block">
+  {heading && <h2>{heading}</h2>}
+  <div class="creed">
+    <p>
+      I believe in one God,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;the Father, the Almighty,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;maker of heaven and earth,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;of all things visible and invisible.
+    </p>
+    <p>
+      I believe in one Lord, Jesus Christ,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;the Son of God, the only-begotten,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;begotten of the Father before all ages.<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;Light of Light, true God of true God,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;begotten, not made,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;of one essence with the Father,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;by whom all things were made.<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;For us and for our salvation he came down from heaven,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;was incarnate of the Holy Spirit and the Virgin Mary,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;and became man.<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;And he was crucified for us under Pontius Pilate,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;and suffered, and was buried.<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;On the third day he rose again, according to the Scriptures,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;and ascended into heaven,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;and sits at the right hand of the Father.<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;He will come again in glory to judge the living and the dead,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;and his kingdom shall have no end.
+    </p>
+    <p>
+      I believe in the Holy Spirit, the Lord, the giver of life,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;who proceeds from the Father,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;who with the Father and the Son together is worshiped and glorified,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;who has spoken by the prophets.<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;I believe in one holy catholic and apostolic Church.<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;I acknowledge one Baptism for the forgiveness of sins.<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;I look for the resurrection of the dead,<br />
+      &nbsp;&nbsp;&nbsp;&nbsp;and the life of the age to come. Amen.
+    </p>
+  </div>
+</section>

@@ -1,0 +1,38 @@
+---
+import Base from '../../layouts/Base.astro';
+import PrayerScripture from '../../components/PrayerScripture.astro';
+import HolySpiritPrayer from '../../components/prayers/HolySpiritPrayer.astro';
+import Trisagion from '../../components/prayers/Trisagion.astro';
+import NiceneCreed from '../../components/prayers/NiceneCreed.astro';
+import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
+---
+
+<Base title="Morning Prayers" description="Morning prayers from the Orthodox daily prayer rule.">
+  <nav class="crumbs ui">
+    <a href="/">Byzantique</a><span class="sep">›</span>
+    <a href="/prayers/">Prayers</a><span class="sep">›</span>Morning
+  </nav>
+  <h1>Morning Prayers</h1>
+  <p class="subtitle">On rising, to begin the day.</p>
+
+  <div class="dev-banner ui" data-pagefind-ignore>
+    🚧 <strong>Placeholder / scaffold.</strong> The full text and ordering are still being
+    written; the sections below demonstrate the reusable prayers, the seasonal Holy Spirit slot,
+    and the prayer of the day.
+  </div>
+
+  <p>In the name of the Father, and of the Son, and of the Holy Spirit. Amen.</p>
+  <p>Glory to You, our God, glory to You.</p>
+
+  <HolySpiritPrayer service="morning" />
+
+  <Trisagion />
+
+  <PrayerScripture ref="PSA 50" label="Psalm 50(51)" />
+
+  <NiceneCreed heading="The Symbol of Faith" />
+
+  <WeekdayPrayer service="morning" />
+
+  <p>[Placeholder — the remaining morning prayers and dismissal will be added here.]</p>
+</Base>
