@@ -20,6 +20,7 @@
   src: url(/fonts/ezra-sil-hebrew.woff2) format('woff2'); unicode-range: U+0590-05FF, U+FB1D-FB4F; }
 
 :root {
+  color-scheme: light;
   --bg: #faf8f3;
   --panel: #fffdf8;
   --ink: #2b2722;
@@ -33,10 +34,72 @@
   --hl: #fbeec2;
   --hl-edge: #e0c878;
 
+  /* Semantic tokens for colors that would otherwise be hardcoded — so the dark theme
+     (below) can remap everything from one place. */
+  --on-accent: #fff;       /* text on an --accent fill */
+  --stripe: #f5f0e6;       /* even-row striping in tables */
+  --verse-hover: #f1ebda;  /* reader verse hover */
+  --tag-bg: #f1ece1;       /* inline tag / kbd background */
+  --off: #dcd5c5;          /* coverage track */
+  --gold-edge: #e7d39a;    /* gold chip / antilegomena border */
+  --banner-edge: #e6d6a8;  /* dev banner border */
+  --banner-ink: #6e560f;   /* dev banner emphasis */
+  --chip-ink: #6b531a;     /* gold chip text */
+  --chip-lect-edge: #e6cac6;
+  --ok: #2f6b46;           /* homologoumena (received) green */
+  --ok-edge: #bcdcc6;
+  --pop-bg: #2b2722;       /* footnote/ref hover popover (a dark tooltip in light mode) */
+  --pop-fg: #f6f1e7;
+  --pop-ref: #d8c594;
+  --pop-link: #e9d6a3;
+  --pop-hover: #fff;
+  --pop-edge: transparent;
+
   --serif: "Noto Serif Greek", "Ezra SIL", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --sans: "Noto Serif Greek", "Ezra SIL", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 
   --measure: 45rem;
+}
+
+/* ---- Dark theme ---- */
+/* The <head> script sets data-theme on <html> before first paint, resolving the stored
+   choice or the system preference, so there is no flash and the toggle just flips this.
+   Scoped to `screen` so printing always falls back to the light palette (see @media print). */
+@media screen {
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #181511;
+  --panel: #221e17;
+  --ink: #e9e2d3;
+  --ink-soft: #a79d8a;
+  --rule: #38322a;
+  --accent: #db9295;       /* Byzantine red, lightened to read on dark */
+  --accent-soft: #3a2622;
+  --gold: #c9a44e;
+  --gold-soft: #2f2917;
+  --link: #8fb6d1;
+  --hl: #4a3f1e;
+  --hl-edge: #7a6428;
+
+  --on-accent: #1a1611;
+  --stripe: #26221a;
+  --verse-hover: #2c2719;
+  --tag-bg: #2a251c;
+  --off: #4a4334;
+  --gold-edge: #5a4d2a;
+  --banner-edge: #5a4d2a;
+  --banner-ink: #d9b96a;
+  --chip-ink: #d9b96a;
+  --chip-lect-edge: #4d322e;
+  --ok: #79c096;
+  --ok-edge: #335f44;
+  --pop-bg: #2e2920;
+  --pop-fg: #ece5d8;
+  --pop-ref: #d9b96a;
+  --pop-link: #e2c382;
+  --pop-hover: #fff;
+  --pop-edge: rgba(255, 255, 255, .08);
+}
 }
 
 * { box-sizing: border-box; }
@@ -54,7 +117,7 @@ a { color: var(--link); }
 /* skip link (a11y) */
 .skip {
   position: absolute; left: -999px; top: 0;
-  background: var(--accent); color: #fff; padding: 8px 14px; z-index: 100;
+  background: var(--accent); color: var(--on-accent); padding: 8px 14px; z-index: 100;
 }
 .skip:focus { left: 8px; top: 8px; }
 
@@ -71,6 +134,17 @@ header.topbar {
 .brand .glyph { flex: none; }
 .topbar nav { font-size: 14px; display: flex; gap: 16px; align-items: center; }
 .topbar .spacer { flex: 1; }
+
+/* ---- dark-mode toggle ---- */
+.theme-toggle {
+  flex: none; width: 34px; height: 34px; padding: 0; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none; border: 1px solid var(--rule); border-radius: 999px; color: var(--ink-soft);
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: inline; }
 
 /* ---- About dropdown ---- */
 .has-sub { position: relative; }
@@ -104,7 +178,7 @@ header.topbar {
   border: 1px solid var(--rule); background: var(--panel); text-decoration: none; color: var(--ink);
 }
 .subnav a:hover { border-color: var(--accent); color: var(--accent); }
-.subnav a[aria-current="page"] { background: var(--accent); color: #fff; border-color: var(--accent); }
+.subnav a[aria-current="page"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 
 /* ---- breadcrumbs ---- */
 nav.crumbs { font-size: 13px; color: var(--ink-soft); font-family: var(--sans); margin: 18px 0 0; }
@@ -137,10 +211,10 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .cov-note { font-family: var(--sans); font-size: 13px; color: var(--ink-soft); margin: 4px 0 16px; }
 .dev-banner {
   margin: 14px 0 18px; padding: 10px 14px; border-radius: 8px;
-  background: var(--gold-soft); border: 1px solid #e6d6a8; border-left: 3px solid var(--gold);
+  background: var(--gold-soft); border: 1px solid var(--banner-edge); border-left: 3px solid var(--gold);
   font-family: var(--sans); font-size: 13px; line-height: 1.5; color: var(--ink);
 }
-.dev-banner strong { color: #6e560f; font-weight: 700; }
+.dev-banner strong { color: var(--banner-ink); font-weight: 700; }
 .col-label {
   font-family: var(--sans); text-transform: uppercase; letter-spacing: .12em;
   font-size: 11px; font-weight: 700; color: var(--gold); margin: 24px 0 8px;
@@ -150,10 +224,10 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .chips { margin: 14px 0; display: flex; gap: 8px; flex-wrap: wrap; }
 .chip {
   font-family: var(--sans); font-size: 12.5px; padding: 5px 11px; border-radius: 999px;
-  background: var(--gold-soft); color: #6b531a; border: 1px solid #e7d39a;
+  background: var(--gold-soft); color: var(--chip-ink); border: 1px solid var(--gold-edge);
   display: inline-flex; gap: 6px; align-items: center; text-decoration: none;
 }
-.chip.lect { background: var(--accent-soft); color: var(--accent); border-color: #e6cac6; }
+.chip.lect { background: var(--accent-soft); color: var(--accent); border-color: var(--chip-lect-edge); }
 
 /* lectionary readings on a chapter page (a clean list, not truncating pills) */
 .lect-list { list-style: none; margin: 14px 0 22px; padding: 0; font-family: var(--sans); font-size: 13px; }
@@ -217,7 +291,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 /* footnote hover popover */
 .fn-pop {
   position: fixed; z-index: 60; max-width: 330px;
-  background: var(--ink); color: #f6f1e7;
+  background: var(--pop-bg); color: var(--pop-fg); border: 1px solid var(--pop-edge);
   font-family: var(--sans); font-size: 13px; line-height: 1.5;
   padding: 9px 12px; border-radius: 8px; box-shadow: 0 10px 34px rgba(43, 39, 34, .3);
   opacity: 0; transform: translateY(4px); transition: opacity .12s, transform .12s; pointer-events: none;
@@ -228,13 +302,13 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 /* keep all popover text light (override the dark .tn-body em used in the bottom list) */
 .fn-pop .tn-body,
 .fn-pop .tn-body em,
-.fn-pop em { color: #f6f1e7; }
-.fn-pop .tn-ref { color: #d8c594; margin-right: 6px; font-weight: 600; }
-/* Links inside the dark popover need a light color (the default --link blue and the
-   .xref dotted border are illegible on --ink). */
-.fn-pop a, .fn-pop .xref { color: #e9d6a3; }
+.fn-pop em { color: var(--pop-fg); }
+.fn-pop .tn-ref { color: var(--pop-ref); margin-right: 6px; font-weight: 600; }
+/* Links inside the popover need a contrasting color (the default --link blue and the
+   .xref dotted border are illegible on the popover fill). */
+.fn-pop a, .fn-pop .xref { color: var(--pop-link); }
 .fn-pop .xref { border-bottom-color: rgba(233, 214, 163, .55); }
-.fn-pop a:hover, .fn-pop .xref:hover { color: #fff; border-bottom-color: #fff; }
+.fn-pop a:hover, .fn-pop .xref:hover { color: var(--pop-hover); border-bottom-color: var(--pop-hover); }
 
 /* textual notes list (under the text, before commentary) */
 .textual-notes {
@@ -286,7 +360,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
   color: var(--accent); font-family: var(--sans); font-weight: 700; font-size: 14px;
 }
 .intro-body table.sigla td { vertical-align: top; padding: 9px 16px; line-height: 1.5; }
-.intro-body table.sigla tr:nth-child(even) { background: #f5f0e6; }
+.intro-body table.sigla tr:nth-child(even) { background: var(--stripe); }
 .intro-body table.sigla tr:hover { background: var(--hl); }
 .intro-body sup.fn-ref { font-size: .7em; }
 
@@ -306,7 +380,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
   scroll-margin-top: 72px;
 }
 .abbrev-table tbody td { vertical-align: top; padding: 9px 16px; line-height: 1.5; }
-.abbrev-table tbody tr:nth-child(even) { background: #f5f0e6; }
+.abbrev-table tbody tr:nth-child(even) { background: var(--stripe); }
 .abbrev-table tbody tr:hover { background: var(--hl); }
 .abbrev-table tbody tr:target { background: var(--hl); box-shadow: inset 3px 0 0 var(--accent); }
 .abbrev-table .tt-link {
@@ -326,7 +400,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
   background: var(--accent-soft); padding: 9px 14px; border-bottom: 1px solid var(--rule);
 }
 .source-table td { vertical-align: top; padding: 9px 14px; line-height: 1.45; }
-.source-table tbody tr:nth-child(even) { background: #f5f0e6; }
+.source-table tbody tr:nth-child(even) { background: var(--stripe); }
 .source-table tbody tr:hover { background: var(--hl); }
 .source-table .lang { font-family: var(--sans); font-weight: 700; font-size: 13px; color: var(--accent); white-space: nowrap; }
 .source-table .basis, .source-table .lic { font-family: var(--sans); font-size: 12.5px; color: var(--ink-soft); }
@@ -346,7 +420,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
   background: var(--accent-soft); padding: 8px 14px; border-bottom: 1px solid var(--rule);
 }
 .note-body td, .book-intro td { vertical-align: top; padding: 8px 14px; line-height: 1.5; }
-.note-body tbody tr:nth-child(even), .book-intro tbody tr:nth-child(even) { background: #f5f0e6; }
+.note-body tbody tr:nth-child(even), .book-intro tbody tr:nth-child(even) { background: var(--stripe); }
 .note-body tbody tr:hover, .book-intro tbody tr:hover { background: var(--hl); }
 
 /* Texts and Translations — detail cards */
@@ -421,8 +495,8 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 }
 /* canonical-status chips: OT Anagignoskomena + NT Antilegomena = amber; Homologoumena = green */
 .booklist .status--anag,
-.booklist .status--antilegomena { color: var(--gold); border-color: #e7d39a; }
-.booklist .status--homologoumena { color: #2f6b46; border-color: #bcdcc6; }
+.booklist .status--antilegomena { color: var(--gold); border-color: var(--gold-edge); }
+.booklist .status--homologoumena { color: var(--ok); border-color: var(--ok-edge); }
 .booklist .todo { color: var(--ink-soft); }
 
 /* ---- book landing: introduction ---- */
@@ -445,7 +519,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
   display: inline-flex; align-items: center; gap: 6px; margin-bottom: 4px;
 }
 .note-anchor .badge {
-  font-weight: 600; color: var(--ink-soft); background: #f1ece1; border: 1px solid var(--rule);
+  font-weight: 600; color: var(--ink-soft); background: var(--tag-bg); border: 1px solid var(--rule);
   border-radius: 999px; padding: 1px 8px; font-size: 10.5px; text-transform: uppercase; letter-spacing: .06em;
 }
 .note-title { font-size: 19px; margin: 2px 0 8px; }
@@ -476,7 +550,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .backlinks a:hover { text-decoration: underline; color: var(--accent); }
 .note-body blockquote {
   margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--gold);
-  background: var(--gold-soft); border-radius: 0 6px 6px 0; color: #4a4233;
+  background: var(--gold-soft); border-radius: 0 6px 6px 0; color: var(--ink-soft);
 }
 /* space multi-paragraph quotes, but keep the box tight around a single paragraph */
 .note-body blockquote p { margin: 0 0 .6em; }
@@ -618,7 +692,7 @@ blockquote.creed p.creed-attr {
   font: inherit; font-size: 12.5px; border: 0; background: transparent;
   color: var(--ink-soft); padding: 5px 14px; cursor: pointer;
 }
-.layout-toggle button.active { background: var(--accent); color: #fff; }
+.layout-toggle button.active { background: var(--accent); color: var(--on-accent); }
 
 /* scripture : commentary = 1 : 1.25 — commentary gets a bit more of the width */
 .reader-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 0; }
@@ -648,7 +722,7 @@ blockquote.creed p.creed-attr {
 
 /* note ↔ verse linking (side-by-side reader only) */
 .reader .scripture .v { border-radius: 3px; transition: background .12s; }
-.reader .scripture .v:hover { background: #f1ebda; }
+.reader .scripture .v:hover { background: var(--verse-hover); }
 .reader .scripture .v.hl { background: var(--hl); box-shadow: inset 0 0 0 1px var(--hl-edge); }
 .reader .note { transition: box-shadow .12s; }
 .reader .note.nhl { box-shadow: 0 0 0 2px var(--gold); }
