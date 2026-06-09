@@ -26,6 +26,38 @@ import MailLink from '../../components/MailLink.astro';
     </p>
   </Faq>
 
+  <Faq q="I couldn't find a passage in the Old Testament. Your chapter and verse numbers are wrong!">
+    <p>
+      They're probably not wrong, just different. This site follows the Septuagint (LXX) for
+      the Old Testament, and its chapter and verse numbering does not always line up with the
+      Hebrew (Masoretic) Bible that most English translations follow.
+    </p>
+    <p>A few reasons a passage might land somewhere you didn't expect:</p>
+    <ul>
+      <li>
+        <strong>The Psalms are the usual culprit.</strong> The LXX and the Hebrew number them
+        differently, so through most of the Psalter the LXX number runs one behind the Hebrew.
+        For example, the beloved "The Lord is my shepherd" is Psalm 23 in Hebrew but Psalm 22 in
+        the LXX. You will often see it written as Psalm 22(23) to show both.
+      </li>
+      <li>
+        <strong>Chapter and verse breaks are late additions.</strong> Chapters were not added to
+        the biblical text until around the 13th century, and verse numbers not until the 16th, so
+        different traditions sometimes cut the text in slightly different places.
+      </li>
+      <li>
+        <strong>Some books differ in content or arrangement.</strong> A handful of books read
+        considerably differently in the LXX (e.g., Daniel, Jeremiah, Ezra and Nehemiah), and several (the Maccabees, Wisdom, Sirach, and others) are not in the shorter Hebrew canon at all.
+      </li>
+    </ul>
+    <p>
+      As a rule I follow the LXX numbering for the Old Testament and note the Hebrew numbering
+      where it helps. When a source I am quoting uses yet another system, I cite whatever text I
+      am referencing. If you are hunting for a verse, try looking a chapter or a verse or two on
+      either side.
+    </p>
+  </Faq>
+
   <Faq q="What does the site name mean?">
     <p>
       It's a portmanteau of "Byzantine," "antique," and "mozzarella stick." Pick two.
@@ -42,9 +74,45 @@ import MailLink from '../../components/MailLink.astro';
     </p>
   </Faq>
 
+  <Faq q="I found a typo or think you got something wrong">
+    <p>
+      Entirely possible, and I'd genuinely like to know. I write these notes as a student, not an
+      oracle, so mistakes happen: typos, a botched citation, or just a take that turns out to be
+      unhelpful. I fix them as I learn. Drop me a line at <MailLink email="qohelet.dan@pm.me" /> and
+      I'll take a look.
+    </p>
+    <p>
+      Technically inclined? The whole site lives on
+      <a href="https://github.com/biblenerd/byzantique" target="_blank" rel="noopener">GitHub</a>,
+      so feel free to <a href="https://github.com/biblenerd/byzantique/issues/new" target="_blank" rel="noopener">open an issue</a>.
+      And if you're really high speed, submit a pull request with your proposed fix.
+    </p>
+    <p>
+      One caveat: I'll gladly fix something that is factually wrong or plainly broken (a
+      misspelling, a dead link, a mangled citation). I'm far less likely to change a note simply
+      because someone disagrees with it. A fair amount of what's here is an object of study rather
+      than a settled verdict, so "I'd read it differently" is a conversation, not a bug report.
+    </p>
+    <p>
+      Bear in mind that these are <em>my</em> notes on the Scriptures, not a community wiki. I'm
+      not crowdsourcing the commentary or taking requests for passages I haven't gotten to yet,
+      and you'll notice there's no comment section anywhere on the site. It's simply where I keep
+      my own notes, opened up in case they help someone else.
+    </p>
+  </Faq>
+
+  <Faq q="Do you track me, run ads, or use cookies?">
+    <p>
+      No ads, no tracking cookies, and nothing of yours for sale. The only thing collected is
+      cookieless, aggregate analytics through Cloudflare, which counts visits without building any
+      profile of you. The full details, in plain language, are on the
+      <a href="/privacy/">Privacy</a> page.
+    </p>
+  </Faq>
+
   <Faq q="Are you a priest, a scholar, or some kind of expert?">
     <p>
-      No, no, and emphatically no. I'm a dude with a Bible, a notebook, and too many tabs open. See
+      I'm not a priest, and I'd never call myself an expert. That said, I'm not winging it: I've done years of formal study in seminaries across several Christian traditions and I'm finishing a Master of Arts in Orthodox Biblical Studies. At the end of the day, though, I'm still a guy with a Bible, a notebook, and too many tabs open. This site is the work of a perpetual student, not an oracle, so weigh everything accordingly. See
       <a href="/about/approach/">Approach</a> for the longer disclosure.
     </p>
   </Faq>
@@ -73,7 +141,7 @@ import MailLink from '../../components/MailLink.astro';
 
   <Faq q="Why did you make this website?">
     <p>
-      Why not? I have been using Evernote, Obsidian, and documents saved on my computer for a long time to keep track of various notes, but it's getting harder to find things, so I figured a more organized approach is in order. Also, posting it publicly allows me to more easily share my notes with others when referencing them in discussions. Hence this site.
+      Why not? Mostly I got tired of paying rising rent to store my own words. The notes themselves were everywhere: Evernote, Obsidian, documents on my computer and across numerous cloud storage providers, things I'd written, and a few apps and blogging platforms that have since died and taken my data with them. Each survivor seemed to charge more every year for roughly the same features (or for new features I don't need). A website, by contrast, is free to host. Building it (with a generous assist from Claude Code) let me organize everything the way it actually fits together, and a public link turns out to be far easier to share than "hang on, let me find that note." So here we are.
     </p>
     <p>
       Inspiration for this site includes:
@@ -96,6 +164,31 @@ import MailLink from '../../components/MailLink.astro';
   <Faq q="What does this abbreviation mean?">
     <p>
       Check out the <a href="/about/abbreviations/">Abbreviations page.</a>
+    </p>
+  </Faq>
+
+  <Faq q="How do I find notes on a specific verse?">
+    <p>
+      Pick a Testament from the menu, then a book, then a chapter, and any notes appear right
+      alongside the text. The slim bar next to each book shows how much of it has commentary so
+      far, so you can see at a glance where the notes are. You can also use the search box in the
+      top bar to jump to a word, a phrase, or a reference. Fair warning: this is a growing
+      collection, so plenty of passages have no notes yet.
+    </p>
+  </Faq>
+
+  <Faq q="What do the colored bars and labels next to each book mean?">
+    <p>
+      Two kinds of markers. The slim bar is a coverage meter: it fills to show roughly how much
+      of that book has commentary, and stays empty where I haven't written anything yet.
+    </p>
+    <p>
+      The little word labels sort the books two ways. Some describe grouping (Pentateuch, History,
+      Gospel, Epistle, and so on); others describe a book's standing in the tradition, including
+      <em>Anagignoskomena</em> (the "Readables" of the wider Orthodox Old Testament, beyond the
+      shorter Hebrew canon), <em>Homologoumena</em> (the New Testament books received without
+      dispute), and <em>Antilegomena</em> (those whose place in the canon was once debated). Hover
+      any label to see its definition.
     </p>
   </Faq>
 
