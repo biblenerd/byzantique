@@ -41,6 +41,7 @@
   --verse-hover: #f1ebda;  /* reader verse hover */
   --tag-bg: #f1ece1;       /* inline tag / kbd background */
   --off: #dcd5c5;          /* coverage track */
+  --gold-ink: #8a6a22;     /* gold as TEXT (darker than --gold to pass AA on light bg) */
   --gold-edge: #e7d39a;    /* gold chip / antilegomena border */
   --banner-edge: #e6d6a8;  /* dev banner border */
   --banner-ink: #6e560f;   /* dev banner emphasis */
@@ -86,6 +87,7 @@
   --verse-hover: #2c2719;
   --tag-bg: #2a251c;
   --off: #4a4334;
+  --gold-ink: var(--gold); /* dark gold already passes AA as text */
   --gold-edge: #5a4d2a;
   --banner-edge: #5a4d2a;
   --banner-ink: #d9b96a;
@@ -113,6 +115,25 @@ body {
 }
 .ui { font-family: var(--sans); }
 a { color: var(--link); }
+
+/* Visible keyboard focus on every interactive element (WCAG 2.4.7). :where() keeps
+   specificity at 0 so components can still define their own focus styling. */
+:where(a, button, input, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect a reduced-motion preference (WCAG 2.3.3): drop smooth scroll and near-zero out
+   transitions/animations. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+  }
+}
 
 /* skip link (a11y) */
 .skip {
@@ -217,7 +238,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .dev-banner strong { color: var(--banner-ink); font-weight: 700; }
 .col-label {
   font-family: var(--sans); text-transform: uppercase; letter-spacing: .12em;
-  font-size: 11px; font-weight: 700; color: var(--gold); margin: 24px 0 8px;
+  font-size: 11px; font-weight: 700; color: var(--gold-ink); margin: 24px 0 8px;
 }
 
 /* ---- chips ---- */
@@ -513,7 +534,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 }
 /* canonical-status chips: OT Anagignoskomena + NT Antilegomena = amber; Homologoumena = green */
 .booklist .status--anag,
-.booklist .status--antilegomena { color: var(--gold); border-color: var(--gold-edge); }
+.booklist .status--antilegomena { color: var(--gold-ink); border-color: var(--gold-edge); }
 .booklist .status--homologoumena { color: var(--ok); border-color: var(--ok-edge); }
 .booklist .todo { color: var(--ink-soft); }
 

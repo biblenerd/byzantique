@@ -53,11 +53,23 @@ const hasDensity = counts.some((n) => n > 0);
   <ul class:list={['chapter-grid', { heat: hasDensity }]} data-pagefind-ignore>
     {text.chapters.map((c) => {
       const n = counts[c.number] ?? 0;
+      // Visual tooltip (mouse) and an accessible name (screen reader / touch), since the
+      // density bar itself is decorative and the count is otherwise only conveyed on hover.
       const title =
         n === 0 ? `Chapter ${c.number} · no commentary` : `Chapter ${c.number} · ${n} note${n === 1 ? '' : 's'}`;
+      const aria = hasDensity
+        ? n === 0
+          ? `Chapter ${c.number}, no commentary`
+          : `Chapter ${c.number}, ${n} commentary note${n === 1 ? '' : 's'}`
+        : `Chapter ${c.number}`;
       return (
         <li>
-          <a href={`/${book.testament}/${book.slug}/${c.number}`} data-l={densityLevel(n)} title={title}>
+          <a
+            href={`/${book.testament}/${book.slug}/${c.number}`}
+            data-l={densityLevel(n)}
+            title={title}
+            aria-label={aria}
+          >
             {c.number}
           </a>
         </li>
