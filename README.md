@@ -2,13 +2,13 @@
 
 Dan's **commentary / notes** on the biblical text. A static site (Astro) over the Septuagint (Brenton's LXX for Old Testament) and the Text-Critical English New Testament (TCENT / BTV), with Orthodox lectionary awareness and client-side search.
 
-> ### 🚧 Under active development — not ready yet
+> ### 🚧 Under active development
 > This is an early work in progress. The whole Bible is browsable, the reading experience
 > (side-by-side text + commentary) is built, and the **Orthodox lectionary is wired up**
 > (readings by date, 1950–2100). But **commentary is still sparse:** so far only Genesis
 > is seeded. Expect rough edges, gaps, and breaking changes. Nothing here is final.
 >
-> **Live preview:** <https://byzantique.pages.dev> (will soon live at [byzantique.com](https://byzantique.com) once existing notes are migrated)
+> **Visit the site** at [byzantique.com](https://byzantique.com)
 
 **Current status:** the platform is largely built — whole-Bible browsing, the side-by-side
 reader, cross-references, self-hosted Greek/Hebrew fonts, and the lectionary are all in
