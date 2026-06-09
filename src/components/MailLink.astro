@@ -1,0 +1,46 @@
+---
+// Scrape-resistant email link. The address is base64-encoded at build time and the real
+// `mailto:` is assembled in the browser only on interaction (hover / keyboard focus / click),
+// so the plaintext is never present in the static HTML — nor even in the live DOM — until a
+// human acts on the link. Without JS it shows a readable, non-clickable form of the address.
+//
+//   <MailLink email="me@example.com" />
+//   <MailLink email="me@example.com" subject="Hello" label="Email me" />
+interface Props {
+  email: string;
+  subject?: string;
+  /** Visible text. Defaults to the address with "@" written as " at " (no literal user@host). */
+  label?: string;
+}
+const { email, subject, label } = Astro.props;
+const target = subject ? `${email}?subject=${encodeURIComponent(subject)}` : email;
+const data = Buffer.from(target).toString('base64');
+const readable = label ?? email.replace('@', ' at ');
+---
+
+<a class="maillink" href="#" data-mail={data} rel="nofollow">{readable}</a>
+
+<script>
+  // Assemble the mailto only on interaction; idempotent across any number of links.
+  (() => {
+    const reveal = (a: HTMLAnchorElement) => {
+      if (!a.dataset.mail) return;
+      try {
+        a.href = 'mailto:' + atob(a.dataset.mail);
+        delete a.dataset.mail;
+      } catch {}
+    };
+    document.querySelectorAll<HTMLAnchorElement>('a.maillink[data-mail]').forEach((a) => {
+      a.addEventListener('pointerenter', () => reveal(a));
+      a.addEventListener('focus', () => reveal(a));
+      // Fallback when no hover/focus preceded the click (e.g. touch): build it, then go.
+      a.addEventListener('click', (e) => {
+        if (a.dataset.mail) {
+          e.preventDefault();
+          reveal(a);
+          a.click();
+        }
+      });
+    });
+  })();
+</script>
