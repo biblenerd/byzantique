@@ -5,14 +5,15 @@ Dan's **commentary / notes** on the biblical text. A static site (Astro) over th
 > ### 🚧 Under active development
 > This is an early work in progress. The whole Bible is browsable, the reading experience
 > (side-by-side text + commentary) is built, and the **Orthodox lectionary is wired up**
-> (readings by date, 1950–2100). But **commentary is still sparse:** so far only Genesis
-> is seeded. Expect rough edges, gaps, and breaking changes. Nothing here is final.
+> (readings by date, 1950–2100). But **commentary is still sparse:** so far it covers
+> Genesis and a scattering of other passages. Expect rough edges, gaps, and breaking
+> changes. Nothing here is final.
 >
 > **Visit the site** at [byzantique.com](https://byzantique.com)
 
 **Current status:** the platform is largely built — whole-Bible browsing, the side-by-side
-reader, cross-references, self-hosted Greek/Hebrew fonts, and the lectionary are all in
-place. The remaining work is **writing the commentary**.
+reader, cross-references, light/dark themes, self-hosted Greek/Hebrew fonts, and the
+lectionary are all in place. The remaining work is **writing the commentary**.
 
 **Docs:** see [`docs/`](./docs/) — editing pages & commentary, local development, and
 USFM book codes. (Start at the [docs index](./docs/README.md).)
@@ -64,7 +65,9 @@ src/pages/**.astro                      static pages read the JSON at build time
 - **Reading experience:** chapters with commentary render a **side-by-side reader**
   (scripture left, notes right) with a stacked-layout toggle, a sticky text column, and
   hover linking between notes and the verses they cover. Books have landing pages with an
-  introduction, a responsive chapter grid, and book-level commentary.
+  introduction, a responsive chapter grid (each chapter showing a small commentary-density
+  bar), and book-level commentary. The whole site supports light and dark themes, defaulting
+  to the reader's system preference.
 - **Commentary:** Markdown notes anchored to a reference (`GEN 1:1`, ranges, cross-chapter,
   or a bare book code) via frontmatter, compiled by `build-commentary.mjs`. Notes support
   a `{{ REF }}` scripture-inclusion convention, **cross-references** to passages

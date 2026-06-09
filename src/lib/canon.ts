@@ -5,9 +5,8 @@
 //  - LXX/Orthodox names are primary; traditional name shown in parentheses.
 //  - Never use "apocrypha"/"deuterocanonical" — the term is *Anagignoskomena*.
 //
-// NOTE (Phase 0): only GEN has built text so far. USFM `code` values for the
-// other books are provisional and verified against ENGLXXUP in Phase 1
-// (open item #4). `built` marks books whose text JSON exists.
+// Which books actually have generated text is derived at build time from the text
+// manifest (see builtCodes() in texts.ts), not stored here. The whole canon is vendored.
 
 export type Testament = 'ot' | 'nt';
 
@@ -18,13 +17,12 @@ export interface Book {
   slug: string; // URL slug
   testament: Testament;
   anag?: boolean; // Anagignoskomenon
-  built?: boolean; // text JSON has been generated
   chips?: string[]; // grouping chips (computed from GROUPS below)
   status?: { label: string; kind: 'anag' | 'homologoumena' | 'antilegomena' }; // colored canonical-status chip
 }
 
 export const OT_BOOKS: Book[] = [
-  { code: 'GEN', name: 'Genesis', slug: 'genesis', testament: 'ot', built: true },
+  { code: 'GEN', name: 'Genesis', slug: 'genesis', testament: 'ot' },
   { code: 'EXO', name: 'Exodus', slug: 'exodus', testament: 'ot' },
   { code: 'LEV', name: 'Leviticus', slug: 'leviticus', testament: 'ot' },
   { code: 'NUM', name: 'Numbers', slug: 'numbers', testament: 'ot' },
