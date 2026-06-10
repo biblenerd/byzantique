@@ -28,6 +28,7 @@
   --rule: #e7e0d2;
   --accent: #7c2128; /* Byzantine red */
   --accent-soft: #f3e6e2;
+  --rubric: #c0392b; /* brighter red for rubrics (the deep --accent reads brown on parchment) */
   --gold: #b08d3a;
   --gold-soft: #f7eccb;
   --link: #355c7d;
@@ -76,6 +77,7 @@
   --rule: #38322a;
   --accent: #db9295;       /* Byzantine red, lightened to read on dark */
   --accent-soft: #3a2622;
+  --rubric: var(--accent); /* the lightened red already reads as red on dark */
   --gold: #c9a44e;
   --gold-soft: #2f2917;
   --link: #8fb6d1;
@@ -625,7 +627,9 @@ blockquote.scripture-quote cite a:hover { color: var(--accent); text-decoration:
 .creed { margin: 8px 0; line-height: 1.55; }
 .creed p { margin: 0 0 .85em; }
 .creed p:last-child { margin-bottom: 0; }
-.rubric, .hs-rubric { font-family: var(--sans); font-size: .82em; color: var(--ink-soft); }
+/* Rubrics: instructions and counts, set like .subtitle (serif italic) but in red, the
+   traditional rubric color. --accent is a deep red in light mode, a lighter red in dark. */
+.rubric, .hs-rubric { font-style: italic; color: var(--rubric); }
 
 /* ---- header search box + live dropdown ---- */
 .site-search { position: relative; display: flex; align-items: center; }

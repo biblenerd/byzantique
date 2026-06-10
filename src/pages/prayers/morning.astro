@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Ref from '../../components/Ref.astro';
 import PrayerScripture from '../../components/PrayerScripture.astro';
 import HolySpiritPrayer from '../../components/prayers/HolySpiritPrayer.astro';
 import Trisagion from '../../components/prayers/Trisagion.astro';
@@ -22,12 +23,28 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
   </div>
 
   <div class="prayers">
+
+  <p class="rubric">Stand before the holy icons, make the sign of the Cross, then say:</p>
+
   <p>In the name of the Father and of the Son and of the Holy Spirit. Amen.</p>
+
+  <p class="rubric">Stand in silence for some time, then say:</a>
+
+  <p>Lord Jesus Christ, Son of God, have mercy on me, a sinner. <span class="rubric">(3x)</span></p>
+
+  <p>
+    Through the prayers of our holy Fathers, O Lord Jesus Christ out God, have mercy on us. Amen.
+  </p>
+
   <p>Glory to Thee, our God, glory to Thee.</p>
 
   <HolySpiritPrayer service="morning" />
 
   <Trisagion />
+
+  <p>
+    Through the prayers of our holy Fathers, O Lord Jesus Christ out God, have mercy on us. Amen.
+  </p>
 
   <h2>Morning Troparia</h2>
 
@@ -38,18 +55,64 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
   <p>Glory to the Father and to the Son and to the Holy Spirit.</p>
 
   <p>
-    O Lord, who hast raised me from bed and from sleep, enlighten my mind and heart, and open my lips that I may sing of Thee, O Holy Trinity: Holy, Holy, Holy art Thou, O God: through the Theotokos, have mercy on us.
+    O Lord, who hast raised me from bed and from sleep, enlighten my mind and heart, and open my lips that I may sing of Thee, O Holy Trinity: Holy, Holy, Holy art Thou, O God. Through the Theotokos, have mercy on us.
   </p>
 
   <p>Now and ever and unto ages of ages. Amen.</p>
 
   <p>
-    The Judge.... [TODO]
+    The Judge shall come suddenly, and the deeds of each shall be exposed. But at midnight we cry out with fear: Holy, Holy, Holy art Thou, O God. Through the Theotokos, have mercy on us.
+  </p>
+
+  <p>
+    Lord, have mercy. <span class="rubric">(12x)</span> <br />
+  </p>
+  <p class="subtitle">"Lord, have mercy" in other languages:</p>
+  <ul>
+    <li>Κύριε ἐλέησον (<em>Kyrie eleison</em>). <span class="rubric">(3x)</span></li>
+    <li>Го́споди, поми́луй (<em>Gospodi pomiluj</em>). <span class="rubric">(3x)</span></li>
+    <li>Doamne, miluiește. <span class="rubric">(3x)</span></li>
+    <li>Señor, ten piedad. <span class="rubric">(3x)</span></li>
+  </ul>
+
+  <h2>Prayer of Thanksgiving</h2>
+
+  <p>
+    Rising from sleep I thank Thee, O Holy Trinity; for, in Thy great goodness and longsuffering Thou hast not been angry with me, an idler and a sinner, nor hast Thou destroyed me together with my iniquities, but Thou hast shown Thy usual love for man. And when I was prostrate in despair, Thou didst raise me to keep the morning watch and glorify Thy dominion. Now enlighten, Thou, the eyes of my mind and open my lips to meditate on Thy words, and to understand Thy commandments and to do Thy will, and to chant unto Thee in heartfelt confession, and praise Thine all-holy Name, of the Father and of the Son and of the Holy Spirit, now and ever and unto ages of ages. Amen.
+  </p>
+
+  <h2>Morning Psalms</h2>
+
+  <p>
+    Come, let us worship God our King.<br />
+    Come, let us worship and fall down before Christ, our King and our God.<br />
+    Come, let us worship and fall down before Christ Himself, our King and our God.<br />
+  </p>
+
+  <PrayerScripture ref="PSA 120" label="Psalm 120(121)" />
+
+  <p class="subtitle">
+    Additional psalms, if desired:
+    <ul>
+      <li><strong>First Hour:</strong> <Ref ref="PSA 5" />, <Ref ref="PSA 89" />, <Ref ref="PSA 100" /></li>
+      <li><strong>Third Hour:</strong> <Ref ref="PSA 16" />, <Ref ref="PSA 24" /></li>
+      <li><strong>Sixth Hour:</strong> <Ref ref="PSA 53" />, <Ref ref="PSA 54" />, <Ref ref="PSA 90" /></li>
+    </ul>
   </p>
 
   <PrayerScripture ref="PSA 50" label="Psalm 50(51)" />
 
+  <p>
+    Glory to the Father and to the Son and to the Holy Spirit, now and ever and unto ages of ages. Amen.
+  </p>
+
   <NiceneCreed heading="The Symbol of Faith" />
+
+  <h2>Prayer of St. Macarius the Great</h2>
+
+  <p>
+    O God, cleanse me, a sinner, even though I've done nothing good before Thee; yet deliver me from the evil one, and let Thy will be done in me, that I may open my unworthy lips and praise Thy holy Name, of the Father and of the Son and of the Holy Spirit, now and ever and unto ages of ages. Amen.
+  </p>
 
   <WeekdayPrayer service="morning" />
 
