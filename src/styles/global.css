@@ -618,6 +618,9 @@ blockquote.scripture-quote cite a { color: var(--ink-soft); text-decoration: non
 blockquote.scripture-quote cite a:hover { color: var(--accent); text-decoration: underline; }
 
 /* Reusable prayers (Creed, Trisagion, weekday, …) — rendered as normal text, not quotes. */
+/* Prayer body reads at the scripture size (matching the embedded psalms), a little larger
+   than default prose. The embedded <PrayerScripture> keeps its own .scripture sizing. */
+.prayers { font-size: 19px; line-height: 1.8; }
 .prayer-block { margin: 8px 0 18px; }
 .creed { margin: 8px 0; line-height: 1.55; }
 .creed p { margin: 0 0 .85em; }
