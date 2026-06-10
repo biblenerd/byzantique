@@ -110,8 +110,11 @@ const verses = manifest.reduce((a, m) => a + m.verses, 0);
             (r: any) =>
               `<span class="tr"><span class="tr-src">${esc(r.source)}:</span> ` +
               r.parts
-                .map((p: any) => (p.href ? `<a href="${p.href}">${esc(p.label)}</a>` : esc(p.label)))
-                .join('; ') +
+                .map((p: any, i: number) => {
+                  const sep = i === 0 ? '' : p.code && p.code === r.parts[i - 1].code ? ', ' : '; ';
+                  return sep + (p.href ? `<a href="${p.href}">${esc(p.label)}</a>` : esc(p.label));
+                })
+                .join('') +
               `</span>`,
           )
           .join('');

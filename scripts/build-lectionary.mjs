@@ -236,14 +236,19 @@ function resolveReadingParts(rd) {
     if (!g) groups.push((g = { code: r.code, ranges: [] }));
     g.ranges.push(r);
   }
-  const parts = groups.map((g) => {
-    g.ranges = mergeRanges(g.ranges);
+  // Each merged range is its own linkable part, so a non-contiguous reading
+  // (e.g. "Genesis 17:1-2, 17:4-12, 17:14") links each piece to its own verse. The book
+  // label is shown once per book (on its first range); the renderer joins same-book ranges
+  // with ", " and separate books with "; " (using `code`).
+  const parts = [];
+  for (const g of groups) {
     const meta = bookByCode(g.code);
-    const label = `${meta ? bookLabel(meta) : g.code} ${g.ranges.map(rangeStr).join(', ')}`;
-    const first = g.ranges[0];
-    const href = meta ? `/${meta.testament}/${meta.slug}/${first.sc}${first.ev === WHOLE ? '' : `#v${first.sv}`}` : null;
-    return { label, href };
-  });
+    mergeRanges(g.ranges).forEach((r, i) => {
+      const prefix = i === 0 ? `${meta ? bookLabel(meta) : g.code} ` : '';
+      const href = meta ? `/${meta.testament}/${meta.slug}/${r.sc}${r.ev === WHOLE ? '' : `#v${r.sv}`}` : null;
+      parts.push({ label: `${prefix}${rangeStr(r)}`, href, code: g.code });
+    });
+  }
   return { source: rd.source, desc, parts };
 }
 
