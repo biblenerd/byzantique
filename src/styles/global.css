@@ -631,6 +631,17 @@ blockquote.scripture-quote cite a:hover { color: var(--accent); text-decoration:
    traditional rubric color. --accent is a deep red in light mode, a lighter red in dark. */
 .rubric, .hs-rubric { font-style: italic; color: var(--rubric); }
 
+/* Daily readings inserted into the prayers (source label + linked reference + description). */
+.daily-readings { margin: 8px 0; }
+.daily-reading { margin: 0 0 14px; }
+.daily-reading:last-child { margin-bottom: 0; }
+.dr-head { margin: 0; }
+.dr-src {
+  font-family: var(--sans); font-size: 12px; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--accent); margin-right: 4px;
+}
+.dr-desc { margin: 1px 0 0; font-family: var(--sans); font-size: 13px; color: var(--ink-soft); }
+
 /* ---- header search box + live dropdown ---- */
 .site-search { position: relative; display: flex; align-items: center; }
 .site-search .search-ic {

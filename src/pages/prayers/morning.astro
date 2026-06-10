@@ -16,12 +16,6 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
   <h1>Morning Prayers</h1>
   <p class="subtitle">On rising, to begin the day.</p>
 
-  <div class="dev-banner ui" data-pagefind-ignore>
-    🚧 <strong>Placeholder / scaffold.</strong> The full text and ordering are still being
-    written; the sections below demonstrate the reusable prayers, the seasonal Holy Spirit slot,
-    and the prayer of the day.
-  </div>
-
   <div class="prayers">
 
   <p class="rubric">Stand before the holy icons, make the sign of the Cross, then say:</p>
@@ -30,11 +24,26 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
 
   <p class="rubric">Stand in silence for some time, then say:</a>
 
-  <p>Lord Jesus Christ, Son of God, have mercy on me, a sinner. <span class="rubric">(3x)</span></p>
+  <p>
+    O God, cleanse me a sinner, and have mercy on me. <span class="rubric">(prostration)</span><br />
+    O God, cleanse me a sinner, and have mercy on me. <span class="rubric">(prostration)</span><br />
+  </p>
+
+  <h2>Prayer of St. Macarius the Great</h2>
+
+  <p>
+    O God, cleanse me, a sinner, for I have done nothing good before Thee. <span class="rubric">(prostration)</span><br />
+    Deliver me from the evil one, and grant me Thy grace,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;that I may open my unworthy lips without condemnation<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;and praise Thine all-holy Name <span class="rubric">(rising)</span><br />
+    &nbsp;&nbsp;&nbsp;&nbsp;of the Father and of the Son and of the Holy Spirit. Amen.
+  </p>
 
   <p>
     Through the prayers of our holy Fathers, O Lord Jesus Christ out God, have mercy on us. Amen.
   </p>
+
+  <h2>Prayer to the Holy Spirit</h2>
 
   <p>Glory to Thee, our God, glory to Thee.</p>
 
@@ -46,10 +55,10 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
     Through the prayers of our holy Fathers, O Lord Jesus Christ out God, have mercy on us. Amen.
   </p>
 
-  <h2>Morning Troparia</h2>
+  <h2>Troparia to the Holy Trinity</h2>
 
   <p>
-    Rising from sleep we fall down before Thee, O Good One, and with the angels' song we cry to thee, All-powerful: Holy, Holy, Holy art Thou, O God: through the Theotokos, have mercy on us.
+    Rising from sleep we fall down before Thee, O Good One, and with the angels' song we cry to Thee, All-powerful: Holy, Holy, Holy art Thou, O God: through the Theotokos, have mercy on us.
   </p>
 
   <p>Glory to the Father and to the Son and to the Holy Spirit.</p>
@@ -67,21 +76,23 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
   <p>
     Lord, have mercy. <span class="rubric">(12x)</span> <br />
   </p>
-  <p class="subtitle">"Lord, have mercy" in other languages:</p>
+  <p class="rubric">"Lord, have mercy" in other languages (for reference):</p>
   <ul>
-    <li>Κύριε ἐλέησον (<em>Kyrie eleison</em>). <span class="rubric">(3x)</span></li>
-    <li>Го́споди, поми́луй (<em>Gospodi pomiluj</em>). <span class="rubric">(3x)</span></li>
-    <li>Doamne, miluiește. <span class="rubric">(3x)</span></li>
-    <li>Señor, ten piedad. <span class="rubric">(3x)</span></li>
+    <li><strong>Greek:</strong> Κύριε ἐλέησον (<em>Kyrie eleison</em>).</li>
+    <li><strong>Slavonic:</strong> Го́споди, поми́луй (<em>Gospodi pomiluj</em>).</li>
+    <li><strong>Romanian:</strong> Doamne, miluiește.</li>
+    <li><strong>Spanish:</strong> Señor, ten piedad.</li>
   </ul>
 
   <h2>Prayer of Thanksgiving</h2>
 
   <p>
-    Rising from sleep I thank Thee, O Holy Trinity; for, in Thy great goodness and longsuffering Thou hast not been angry with me, an idler and a sinner, nor hast Thou destroyed me together with my iniquities, but Thou hast shown Thy usual love for man. And when I was prostrate in despair, Thou didst raise me to keep the morning watch and glorify Thy dominion. Now enlighten, Thou, the eyes of my mind and open my lips to meditate on Thy words, and to understand Thy commandments and to do Thy will, and to chant unto Thee in heartfelt confession, and praise Thine all-holy Name, of the Father and of the Son and of the Holy Spirit, now and ever and unto ages of ages. Amen.
+    As I rise from sleep I thank Thee, O Holy Trinity; for, in Thy great goodness and longsuffering Thou hast not been angry with me, an idler and a sinner, nor hast Thou destroyed me together with my iniquities, but Thou hast shown Thy usual love for man. And when I was prostrate in despair, Thou didst raise me to keep the morning watch and glorify Thy dominion. Now enlighten, Thou, the eyes of my mind and open my mouth to meditate on Thy words, and to understand Thy commandments and to do Thy will, and to chant unto Thee in heartfelt confession, and praise Thine all-holy Name, of the Father and of the Son and of the Holy Spirit, now and ever and unto ages of ages. Amen.
   </p>
 
-  <h2>Morning Psalms</h2>
+  <h2>Penitential Psalm</h2>
+
+  <p class="rubric">A censing may be done during the reading of the Psalm.</p>
 
   <p>
     Come, let us worship God our King.<br />
@@ -89,33 +100,182 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
     Come, let us worship and fall down before Christ Himself, our King and our God.<br />
   </p>
 
+  <PrayerScripture ref="PSA 50" label="Psalm 50(51)" />
+
+
+  <h2>Psalter Reading(s)</h2>
+
   <PrayerScripture ref="PSA 120" label="Psalm 120(121)" />
 
-  <p class="subtitle">
-    Additional psalms, if desired:
+  <p class="rubric">
+    Additional psalm(s), if desired:
     <ul>
-      <li><strong>First Hour:</strong> <Ref ref="PSA 5" />, <Ref ref="PSA 89" />, <Ref ref="PSA 100" /></li>
-      <li><strong>Third Hour:</strong> <Ref ref="PSA 16" />, <Ref ref="PSA 24" /></li>
-      <li><strong>Sixth Hour:</strong> <Ref ref="PSA 53" />, <Ref ref="PSA 54" />, <Ref ref="PSA 90" /></li>
+      <li><strong>First Hour (~6 AM):</strong> <Ref ref="PSA 5" />, <Ref ref="PSA 89" />, <Ref ref="PSA 100" /></li>
+      <li><strong>Third Hour (~9 AM):</strong> <Ref ref="PSA 16" />, <Ref ref="PSA 24" /></li>
+      <li><strong>Sixth Hour (~Noon):</strong> <Ref ref="PSA 53" />, <Ref ref="PSA 54" />, <Ref ref="PSA 90" /></li>
     </ul>
   </p>
-
-  <PrayerScripture ref="PSA 50" label="Psalm 50(51)" />
 
   <p>
     Glory to the Father and to the Son and to the Holy Spirit, now and ever and unto ages of ages. Amen.
   </p>
 
-  <NiceneCreed heading="The Symbol of Faith" />
 
-  <h2>Prayer of St. Macarius the Great</h2>
+  <h2>Appointed Scripture Reading(s)</h2>
+
+  <p class="rubric">One or more pericopes of Sacred Scripture may be read, as appointed.</p>
+
+  <div class="daily-readings" data-reading-group="ot"></div>
+
+  <div class="daily-readings" data-reading-group="nt"></div>
+
+  <h2>Prayer Before Reading the Holy Gospel</h2>
 
   <p>
-    O God, cleanse me, a sinner, even though I've done nothing good before Thee; yet deliver me from the evil one, and let Thy will be done in me, that I may open my unworthy lips and praise Thy holy Name, of the Father and of the Son and of the Holy Spirit, now and ever and unto ages of ages. Amen.
+    Illumine our hearts, O Master who lovest mankind, with the pure light of Thy divine knowledge. Open the eyes of our minds to the understanding of Thy Gospel teachings. Implant also in us the fear of thy blessed commandments, that trampling down all carnal desires we may enter upon a spiritual manner of living, both thinking and doing such things that are well pleasing unto Thee, for Thou art the illumination of our souls and bodies and unto Thee we ascribe glory together with Thy Father who is without beginning and Thy all Holy Good and Life Creating Spirit, now and ever and unto the ages of ages. Amen.
   </p>
+
+  <div class="daily-readings" data-reading-group="gospel"></div>
+
+
+  <NiceneCreed heading="The Symbol of Faith" />
+
+
+  <h2>Prayer of the Optina Elders and St. Philaret of Moscow</h2>
+
+  <p>
+    O Lord, grant me to greet the coming day in peace.<br />
+    Help me in all things to rely upon Thy holy will.<br />
+    In every hour of the day reveal Thy will to me.<br />
+    Bless my dealings with all who surround me.<br />
+    Teach me to treat all that comes to me throughout the day<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;with peace of soul<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;and with firm conviction that Thy will governs all.<br />
+    In all my deeds and words, guide my thoughts and feelings.<br />
+    In unforeseen events, let me not forget that all are sent by Thee.<br />
+    Teach me to act firmly and wisely,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;without embittering or embarrassing others.<br />
+    Give me strength to bear the fatigue of this coming day<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;with all that it shall bring.<br />
+    Direct my will.<br />
+    Teach me to pray.<br />
+    Pray Thou Thyself in me.<br />
+    Amen.
+  </p>
+
+  <h2>Hymn to the Most-Holy Theotokos</h2>
+
+  <p>
+    Rejoice, O Virgin Theotokos, Mary full of grace,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;the Lord is with thee.<br />
+    Blessed art thou among women,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;and blessed is the fruit of thy womb;<br />
+    for thou hast borne the Savior of our souls.
+  </p>
+
+  
+
+  <p>
+    Most glorious Ever-Virgin, blessed Theotokos, present our prayer to thy Son and our God, and pray that through thee, He would save our souls.
+  </p>
+  <p>O heavenly hosts of Angels and Archangels, pray for us sinners.</p>
+  <p>O glorious Apostles, Prophets, and Martyrs, and all Saints, pray for us sinners.</p>
+  <p>
+    Pray to God for me, O Holy <span class="rubric">[name of your patron saint]</span>, for with fervor I run to thee, swift helper and intercessor for my soul.
+  </p>
+  <p>
+    My hope is the Father, my refuge is the Son, my protection is the Holy Spirit; O Holy Trinity: Glory to Thee.
+  </p>
+  <p>
+    All my hope I place in thee, O Mother of God: keep me under thy veil.
+  </p>
+
+  <p>
+    It is truly meet to bless thee, O Theotokos,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;ever-blessed and most pure,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;and the Mother of our God.<br />
+    More honorable than the Cherubim,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;and more glorious beyond compare than the Seraphim,<br />
+    &nbsp;&nbsp;&nbsp;&nbsp;who without corruption gavest birth to God the Word:<br />
+    true Theotokos, we magnify thee.
+  </p>
+
+  <h2>Reading Lives of the Saints</h2>
+
+  <p class="rubric">Here you may <a href="https://www.oca.org/saints/lives" target="_blank">read the life of the saint(s) of the day</a> along with any appointed troparia for the day.</p>
 
   <WeekdayPrayer service="morning" />
 
-  <p>[Placeholder — the remaining morning prayers and dismissal will be added here.]</p>
+  <h2>Closing Prayer</h2>
+
+  <p>Lord, have mercy. <span class="rubric">(3x)</span></p>
+
+  <p>
+    Lord Jesus Christ, Son of God, through the prayers of Thy most pure Mother and all the saints: save me, a sinner. Amen.
+  </p>
+
   </div>
+
+  <script>
+    // Today's appointed readings, grouped for morning prayer: Old Testament, then non-Gospel
+    // New Testament, then the Gospel(s). Vespers readings are excluded; within each group the
+    // lectionary order is preserved. Same-tab links to the chapter text.
+    (async () => {
+      const slots = {
+        ot: document.querySelector('[data-reading-group="ot"]'),
+        nt: document.querySelector('[data-reading-group="nt"]'),
+        gospel: document.querySelector('[data-reading-group="gospel"]'),
+      };
+      if (!slots.ot && !slots.nt && !slots.gospel) return;
+
+      const esc = (s: string) =>
+        s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+      const pad = (n: number) => String(n).padStart(2, '0');
+
+      const d = new Date();
+      let rec: any;
+      try {
+        const data = await (await fetch(`/data/lectionary/year/${d.getFullYear()}.json`)).json();
+        rec = data[`${pad(d.getMonth() + 1)}-${pad(d.getDate())}`];
+      } catch {
+        return;
+      }
+      if (!rec) return;
+
+      const GOSPELS = new Set(['MAT', 'MRK', 'LUK', 'JHN']);
+      const groupOf = (r: any): 'ot' | 'nt' | 'gospel' | null => {
+        const p = r.parts && r.parts[0];
+        if (!p) return null;
+        if (p.href && p.href.startsWith('/ot/')) return 'ot';
+        return p.code && GOSPELS.has(p.code) ? 'gospel' : 'nt';
+      };
+
+      // Each non-contiguous part links independently: "," within a book, ";" between books.
+      const refHtml = (parts: any[]) =>
+        parts
+          .map((p, i) => {
+            const sep = i === 0 ? '' : p.code && p.code === parts[i - 1].code ? ', ' : '; ';
+            return sep + (p.href ? `<a href="${p.href}">${esc(p.label)}</a>` : esc(p.label));
+          })
+          .join('');
+
+      const buckets: Record<string, any[]> = { ot: [], nt: [], gospel: [] };
+      for (const r of rec.readings) {
+        if (/vespers/i.test(r.source || '')) continue; // excluded from morning prayer
+        const g = groupOf(r);
+        if (g) buckets[g].push(r);
+      }
+
+      const render = (r: any) =>
+        `<div class="daily-reading"><p class="dr-head"><span class="dr-src">${esc(r.source)}</span> ` +
+        `<span class="dr-ref">${refHtml(r.parts)}</span></p>` +
+        (r.desc ? `<p class="dr-desc">${esc(r.desc)}</p>` : '') +
+        `</div>`;
+
+      for (const key of Object.keys(slots) as Array<keyof typeof slots>) {
+        const el = slots[key];
+        if (el) el.innerHTML = buckets[key].map(render).join('');
+      }
+    })();
+  </script>
 </Base>
