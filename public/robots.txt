@@ -1,5 +1,46 @@
-# Byzantique — allow everything; point crawlers at the sitemap.
+# Byzantique — index the site, but keep the personal prayer pages out of search.
 User-agent: *
 Allow: /
+Disallow: /prayers/
+
+# AI crawlers and dataset bots: do not crawl the prayer pages.
+User-agent: GPTBot
+Disallow: /prayers/
+
+User-agent: OAI-SearchBot
+Disallow: /prayers/
+
+User-agent: ChatGPT-User
+Disallow: /prayers/
+
+User-agent: Google-Extended
+Disallow: /prayers/
+
+User-agent: ClaudeBot
+Disallow: /prayers/
+
+User-agent: Claude-Web
+Disallow: /prayers/
+
+User-agent: anthropic-ai
+Disallow: /prayers/
+
+User-agent: PerplexityBot
+Disallow: /prayers/
+
+User-agent: CCBot
+Disallow: /prayers/
+
+User-agent: Bytespider
+Disallow: /prayers/
+
+User-agent: Amazonbot
+Disallow: /prayers/
+
+User-agent: Applebot-Extended
+Disallow: /prayers/
+
+User-agent: meta-externalagent
+Disallow: /prayers/
 
 Sitemap: https://byzantique.com/sitemap-index.xml

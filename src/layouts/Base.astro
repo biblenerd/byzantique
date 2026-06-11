@@ -8,8 +8,11 @@ interface Props {
   /** Content width tier. Default = prose measure; 'index' = wider for grids/tables;
    *  'reader' = widest, for the side-by-side reader. */
   width?: 'index' | 'reader';
+  /** Keep the page out of search: omit it from the on-site index (Pagefind) and tell
+   *  crawlers not to index it. (robots.txt + the sitemap filter cover the rest.) */
+  noindex?: boolean;
 }
-const { title, description, width } = Astro.props;
+const { title, description, width, noindex } = Astro.props;
 const fullTitle = title === 'Byzantique' ? title : `${title} · Byzantique`;
 const year = new Date().getFullYear();
 // Absolute URLs (resolved against `site`) for social cards + canonical.
@@ -43,6 +46,7 @@ const section = path.startsWith('/ot/')
       })();
     </script>
     <meta name="theme-color" content="#faf8f3" />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <title>{fullTitle}</title>
     {description && <meta name="description" content={description} />}
     <meta property="og:type" content="website" />
@@ -110,7 +114,7 @@ const section = path.startsWith('/ot/')
         </svg>
       </button>
     </header>
-    <main id="main" class={width} data-pagefind-body data-pagefind-filter={`Section:${section}`}>
+    <main id="main" class={width} data-pagefind-body={noindex ? undefined : true} data-pagefind-filter={`Section:${section}`}>
       <slot />
     </main>
     <footer class="site">

@@ -63,5 +63,9 @@ export default defineConfig({
   },
   // sitemap is generated automatically on every `astro build` (uses `site` above).
   // Excludes the search UI and 404 (404 is auto-excluded).
-  integrations: [dataWatch(), sitemap({ filter: (page) => !page.includes('/search') })],
+  // Keep the search UI and the (private) prayer pages out of the sitemap.
+  integrations: [
+    dataWatch(),
+    sitemap({ filter: (page) => !page.includes('/search') && !page.includes('/prayers') }),
+  ],
 });
