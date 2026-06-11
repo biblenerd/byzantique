@@ -1,12 +1,14 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Ref from '../../components/Ref.astro';
+import PrayerScripture from '../../components/PrayerScripture.astro';
 import HolySpiritPrayer from '../../components/prayers/HolySpiritPrayer.astro';
 import Trisagion from '../../components/prayers/Trisagion.astro';
 import NiceneCreed from '../../components/prayers/NiceneCreed.astro';
 import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
 ---
 
-<Base title="Evening Prayers" description="Evening prayers from the Orthodox daily prayer rule.">
+<Base title="Evening Prayers" description="Evening prayers from the Orthodox daily prayer rule." noindex>
   <nav class="crumbs ui">
     <a href="/">Byzantique</a><span class="sep">›</span>
     <a href="/prayers/">Prayers</a><span class="sep">›</span>Evening
@@ -21,15 +23,167 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
   </div>
 
   <div class="prayers">
-  <p>In the name of the Father, and of the Son, and of the Holy Spirit. Amen.</p>
+  <p class="rubric">Stand before the holy icons, make the sign of the Cross, then say:</p>
+
+  <p>In the name of the Father and of the Son and of the Holy Spirit. Amen.</p>
+
+  <p>
+    Through the prayers of our holy Fathers, O Lord Jesus Christ our God, have mercy on us. Amen.
+  </p>
+
   <p>Glory to Thee, our God, glory to Thee.</p>
 
   <HolySpiritPrayer service="evening" />
 
   <Trisagion />
 
+  <h2>Penitential Troparia & Prayer</h2>
+
+  <p>
+    Have mercy on us, O Lord, have mercy on us, for laying aside all excuse, we sinners offer to Thee, as our Master, this supplication: have mercy on us.
+  </p>
+
+  <p>Glory to the Father and to the Son and to the Holy Spirit.</p>
+
+  <p>
+    O Lord, have mercy on us, for in Thee have we put our trust. Do not be angry with us, nor remember our iniquities, but look down on us even now, since Thou art compassionate, and deliver us from our enemies. For Thou art our God, and we are Thy people, we are all the work of Thy hands, and we call on Thy Name.
+  </p>
+
+  <p>Now and ever and unto ages of ages. Amen.</p>
+
+  <p>O blessed Theotokos, open the doors of compassion to us whose hope is in thee, that we may not perish but be delivered from adversity through thee, who art the salvation of the Christian people.</p>
+
+  <p>
+    Lord, have mercy. <span class="rubric">(12x)</span> <br />
+  </p>
+  <p class="rubric">"Lord, have mercy" in other languages (for reference):</p>
+  <ul>
+    <li><strong>Greek:</strong> Κύριε ἐλέησον (<em>Kyrie eleison</em>).</li>
+    <li><strong>Slavonic:</strong> Го́споди, поми́луй (<em>Gospodi pomiluj</em>).</li>
+    <li><strong>Romanian:</strong> Doamne, miluiește.</li>
+    <li><strong>Spanish:</strong> Señor, ten piedad.</li>
+  </ul>
+
+  <p>
+    O Lord our God, forgive all the sins I have committed this day in deed, word, or thought, for Thou art good and lovest mankind. Grant me peaceful and undisturbed sleep, and deliver me from all influence and temptation of the evil one; raise me up again in due time that I may glorify Thee, for Thou art blessed with Thine only-begotten Son, and Thine all-Holy Spirit, now and ever and unto ages of ages. Amen.
+  </p>
+
+  <h2>Psalter Reading(s)</h2>
+
+  <p>
+    Come, let us worship God our King.<br />
+    Come, let us worship and fall down before Christ, our King and our God.<br />
+    Come, let us worship and fall down before Christ Himself, our King and our God.<br />
+  </p>
+
+  <PrayerScripture ref="PSA 50" label="Psalm 50(51)" />
+
+  <p class="rubric">
+    Additional (or alternative) psalm(s), if desired: <Ref ref="PSA 69" />, <Ref ref="PSA 142" />.
+  </p>
+
+  <p>
+    Glory to the Father and to the Son and to the Holy Spirit, now and ever and unto ages of ages. Amen.
+  </p>
+
+  <h2>Appointed Scripture Reading(s)</h2>
+
+  <p class="rubric">One or more pericopes of Sacred Scripture may be read, as appointed.</p>
+
+  <div class="daily-readings" data-reading-group="vespers"></div>
+
   <NiceneCreed heading="The Symbol of Faith" />
+
+  <h2>Prayer of the Hours by St. Basil the Great</h2>
+
+  <p>
+    Thou Who at every season and every hour, in heaven and on earth, art worshipped and glorified, O Christ our God, Who art longsuffering, merciful, and compassionate, Who loves the righteous and shows mercy upon the sinner, calling all to salvation through the promise of the blessings to come. O Lord, in this hour, receive our supplications and direct our lives according to Thy commandments. Sanctify our souls. Purify our bodies. Set our minds aright. Cleanse our thoughts. Deliver us from all affliction, evil, and distress. Wall us about with Thy holy angels, that guided and guarded by their host, we may attain to the unity of the Faith and to the knowledge of Thine unapproachable glory, for Thou art blessed unto ages of ages. Amen.
+  </p>
+
+  <h2>Prayers to the Theotokos</h2>
+
+  <p>
+    Most glorious, Ever-Virgin Mother of Christ our God, present our prayer to thy Son and our God, that through thee He may save our souls.
+  </p>
+
+  <p>
+    All my hope I place in thee, O Mother of God. Keep me under thy veil.
+  </p>
+
+  <p>
+    Virgin Theotokos, do not despise me, a sinner, for I am in need of they help and intercession. My soul has hoped in thee. Have mercy on me.
+  </p>
+
+  <h2>Prayer of St. Joannicius</h2>
+
+  <p>
+    My hope is the Father. My refuge is the Son. My protection is the Holy Spirit. O Holy Trinity, glory to thee.
+  </p>
 
   <p>[Placeholder — the remaining evening prayers and dismissal will be added here.]</p>
   </div>
+
+  <script>
+    // The Vespers readings for the FOLLOWING liturgical day. Because the liturgical day begins
+    // at Vespers (this evening), these are the Vespers readings listed under tomorrow's date.
+    (async () => {
+      const slot = document.querySelector('[data-reading-group="vespers"]');
+      if (!slot) return;
+
+      const esc = (s: string) =>
+        s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+      const pad = (n: number) => String(n).padStart(2, '0');
+
+      // Shown when nothing is appointed for the coming day's Vespers.
+      const NONE =
+        `<p class="rubric">No appointed evening readings. ` +
+        `<a href="/lectionary/">See all of today's readings &rarr;</a></p>`;
+
+      const d = new Date();
+      d.setDate(d.getDate() + 1); // Vespers tonight begins the next calendar day
+      let rec: any;
+      try {
+        const data = await (await fetch(`/data/lectionary/year/${d.getFullYear()}.json`)).json();
+        rec = data[`${pad(d.getMonth() + 1)}-${pad(d.getDate())}`];
+      } catch {
+        return; // couldn't load — leave the slot as is rather than claim there are none
+      }
+      if (!rec) {
+        slot.innerHTML = NONE;
+        return;
+      }
+
+      // Each non-contiguous part links independently: "," within a book, ";" between books.
+      const refHtml = (parts: any[]) =>
+        parts
+          .map((p, i) => {
+            const sep = i === 0 ? '' : p.code && p.code === parts[i - 1].code ? ', ' : '; ';
+            return sep + (p.href ? `<a href="${p.href}">${esc(p.label)}</a>` : esc(p.label));
+          })
+          .join('');
+
+      // Evening carries the coming day's vigil: Vespers and Matins (including the Matins
+      // Gospels and the Holy Friday Passion Gospels). The Liturgy's Epistle/Gospel are read
+      // in the morning; the Hours and other special services are left out.
+      const readings = rec.readings.filter((r: any) => /vespers|matins|passion/i.test(r.source || ''));
+      if (readings.length === 0) {
+        slot.innerHTML = NONE;
+        return;
+      }
+      let prevSrc: string | null = null;
+      slot.innerHTML = readings
+        .map((r: any) => {
+          const showSrc = r.source !== prevSrc; // label a run of one source only once
+          prevSrc = r.source;
+          return (
+            `<div class="daily-reading"><p class="dr-head">` +
+            (showSrc ? `<span class="dr-src">${esc(r.source)}</span> ` : '') +
+            `<span class="dr-ref">${refHtml(r.parts)}</span></p>` +
+            (r.desc ? `<p class="dr-desc">${esc(r.desc)}</p>` : '') +
+            `</div>`
+          );
+        })
+        .join('');
+    })();
+  </script>
 </Base>

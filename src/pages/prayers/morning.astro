@@ -8,7 +8,7 @@ import NiceneCreed from '../../components/prayers/NiceneCreed.astro';
 import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
 ---
 
-<Base title="Morning Prayers" description="Morning prayers from the Orthodox daily prayer rule.">
+<Base title="Morning Prayers" description="Morning prayers from the Orthodox daily prayer rule." noindex>
   <nav class="crumbs ui">
     <a href="/">Byzantique</a><span class="sep">›</span>
     <a href="/prayers/">Prayers</a><span class="sep">›</span>Morning
@@ -163,7 +163,7 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
     Amen.
   </p>
 
-  <h2>Hymn to the Most-Holy Theotokos</h2>
+  <h2>Hymn and Prayers to the Theotokos</h2>
 
   <p>
     Rejoice, O Virgin Theotokos, Mary full of grace,<br />
@@ -172,8 +172,6 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
     &nbsp;&nbsp;&nbsp;&nbsp;and blessed is the fruit of thy womb;<br />
     for thou hast borne the Savior of our souls.
   </p>
-
-  
 
   <p>
     Most glorious Ever-Virgin, blessed Theotokos, present our prayer to thy Son and our God, and pray that through thee, He would save our souls.
@@ -238,9 +236,9 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
         const data = await (await fetch(`/data/lectionary/year/${d.getFullYear()}.json`)).json();
         rec = data[`${pad(d.getMonth() + 1)}-${pad(d.getDate())}`];
       } catch {
-        return;
+        return; // couldn't load — leave the slots as is rather than claim there are none
       }
-      if (!rec) return;
+      if (!rec) rec = { readings: [] }; // no entry → treat as nothing appointed
 
       const GOSPELS = new Set(['MAT', 'MRK', 'LUK', 'JHN']);
       const groupOf = (r: any): 'ot' | 'nt' | 'gospel' | null => {
@@ -259,9 +257,12 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
           })
           .join('');
 
+      // Morning carries the Divine Liturgy readings only. Vespers and Matins (incl. the
+      // Matins Gospels) belong to the evening vigil for the coming day; the Hours and other
+      // special services aren't part of the simple daily rule.
       const buckets: Record<string, any[]> = { ot: [], nt: [], gospel: [] };
       for (const r of rec.readings) {
-        if (/vespers/i.test(r.source || '')) continue; // excluded from morning prayer
+        if (r.source !== 'Epistle' && r.source !== 'Gospel') continue;
         const g = groupOf(r);
         if (g) buckets[g].push(r);
       }
@@ -272,9 +273,18 @@ import WeekdayPrayer from '../../components/prayers/WeekdayPrayer.astro';
         (r.desc ? `<p class="dr-desc">${esc(r.desc)}</p>` : '') +
         `</div>`;
 
+      // When the Liturgy group is empty, say so (but not for OT, which is normally absent).
+      const noneMsg = (text: string) =>
+        `<p class="rubric">${text} <a href="/lectionary/">See all of today's readings &rarr;</a></p>`;
+      const EMPTY: Record<string, string> = {
+        nt: noneMsg('No appointed epistle readings.'),
+        gospel: noneMsg('No appointed Gospel readings.'),
+      };
+
       for (const key of Object.keys(slots) as Array<keyof typeof slots>) {
         const el = slots[key];
-        if (el) el.innerHTML = buckets[key].map(render).join('');
+        if (!el) continue;
+        el.innerHTML = buckets[key].length ? buckets[key].map(render).join('') : (EMPTY[key] ?? '');
       }
     })();
   </script>
