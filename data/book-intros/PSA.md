@@ -1,3 +1,5 @@
+The Psalms are the prayer book of the Church.
+
 The numbering of the Psalms in the Septuagint (LXX) differs from that of the Hebrew MT, and there is an additional Psalm in the LXX that is not present in the MT. Here is a mapping table:
 
 | Greek LXX | Hebrew MT |
