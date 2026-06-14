@@ -20,5 +20,8 @@
   "devDependencies": {
     "marked": "^18.0.5",
     "pagefind": "^1.5.2"
+  },
+  "overrides": {
+    "esbuild": "0.28.1"
   }
 }
