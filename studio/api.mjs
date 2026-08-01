@@ -43,6 +43,7 @@ export async function handle(req, res, { root, load }) {
   const shortcodes = await load('/src/lib/shortcodes.ts');
   const canon = await load('/src/lib/canon.ts');
   const texts = await load('/src/lib/texts.ts');
+  const scripture = await load('/src/lib/scripture.ts');
 
   const SRC = path.join(root, 'data/commentary');
   const chapterCount = (code) => texts.loadBook(code)?.chapters.length ?? 0;
@@ -136,6 +137,18 @@ export async function handle(req, res, { root, load }) {
     return json(res, 200, list);
   }
 
+  // GET /refcheck?ref=ROM+6:23 — validate a scripture reference for the ref picker.
+  if (route === '/refcheck' && req.method === 'GET') {
+    const ref = (url.searchParams.get('ref') || '').trim();
+    const link = ref ? scripture.refLink(ref) : null;
+    return json(res, 200, {
+      ok: !!link,
+      label: link?.label ?? null,
+      href: link?.href ?? null,
+      preview: link ? scripture.refPreview(ref) : null,
+    });
+  }
+
   // GET /doctor — notes whose filename drifts from the convention for their anchor. A range
   // may be filed by start verse only OR start-end (both accepted); the slug before .md must
   // be a clean kebab, so ISA_11_02-03_gifts7's underscore is flagged. A wrong book folder or
@@ -165,8 +178,6 @@ export async function handle(req, res, { root, load }) {
       const dir = prefixFull.slice(0, prefixFull.lastIndexOf('/'));
       const fullStem = prefixFull.slice(dir.length + 1, -1); // drop trailing '-'
 
-      // Structural stems the convention accepts for this anchor (start-end and, for a
-      // range, start verse only).
       const stems = [fullStem];
       if (a.scope !== 'book') {
         const startStem =
@@ -183,6 +194,12 @@ export async function handle(req, res, { root, load }) {
       issues.push({ path: rel, reason: 'misfiled', expected: prefixFull + recoverSlug(rel) + suffix });
     }
     return json(res, 200, issues);
+  }
+
+  // POST /lint — every unresolved reference in a body, with offsets, for inline underlines.
+  if (route === '/lint' && req.method === 'POST') {
+    const { body = '' } = JSON.parse((await readBody(req)) || '{}');
+    return json(res, 200, { problems: shortcodes.validateReferences(String(body), previewCtx()) });
   }
 
   // POST /preview — render + validate a draft through the real pipeline.
@@ -213,7 +230,9 @@ export async function handle(req, res, { root, load }) {
     return json(res, 200, { html, error, problems, path: target, prefix, suffix });
   }
 
-  // POST /save — write the note to its convention path, moving it if the anchor changed.
+  // POST /save — write the note to its convention path, moving it if the anchor or slug
+  // changed. When a move changes the note's id and the old id is left orphaned, repoint every
+  // note: reference that pointed at the old id (rename with reference fixup).
   if (route === '/save' && req.method === 'POST') {
     const d = JSON.parse((await readBody(req)) || '{}');
     const slug = (d.slug || notes.slugify(d.title || '')).trim();
@@ -238,8 +257,29 @@ export async function handle(req, res, { root, load }) {
       }
     }
 
+    // Rename fixup: if the id changed and the old id is now orphaned, repoint references.
+    let refsUpdated = 0;
+    const refFiles = [];
+    if (moved) {
+      const oldId = path.basename(d.originalPath, '.md');
+      const newId = path.basename(target, '.md');
+      const reg = notes.buildNoteRegistry(SRC);
+      if (oldId !== newId && !reg.has(oldId)) {
+        const esc = oldId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const re = new RegExp('\\]\\(note:([0-9A-Z]+/)?' + esc + '\\)', 'g');
+        for (const file of notes.walkMarkdown(SRC)) {
+          const txt = fs.readFileSync(file, 'utf8');
+          const hits = txt.match(re);
+          if (!hits) continue;
+          fs.writeFileSync(file, txt.replace(re, '](note:$1' + newId + ')'));
+          refsUpdated += hits.length;
+          refFiles.push(path.relative(root, file));
+        }
+      }
+    }
+
     const problems = shortcodes.validateReferences(String(d.body || ''), previewCtx());
-    return json(res, 200, { path: target, moved, slug, problems });
+    return json(res, 200, { path: target, moved, slug, problems, refsUpdated, refFiles });
   }
 
   return json(res, 404, { error: `no studio route ${req.method} ${route}` });

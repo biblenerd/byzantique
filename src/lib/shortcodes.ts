@@ -226,6 +226,7 @@ export interface RefProblem {
   target: string; // the raw reference text
   text?: string; // the link text (for ref: and note:)
   index: number; // character offset in the body
+  end: number; // offset just past the match
   reason: string; // a human explanation
 }
 
@@ -249,6 +250,7 @@ export function validateReferences(body: string, ctx: ShortcodeCtx): RefProblem[
         target,
         text: m[1],
         index: m.index ?? 0,
+        end: (m.index ?? 0) + m[0].length,
         reason: `Unresolved scripture reference "${target}".`,
       });
   }
@@ -266,6 +268,7 @@ export function validateReferences(body: string, ctx: ShortcodeCtx): RefProblem[
         target,
         text: m[1],
         index: m.index ?? 0,
+        end: (m.index ?? 0) + m[0].length,
         reason: `No note with id "${id}"${book ? ` in ${book}` : ''}.`,
       });
     else if (res === 'ambiguous')
@@ -275,6 +278,7 @@ export function validateReferences(body: string, ctx: ShortcodeCtx): RefProblem[
         target,
         text: m[1],
         index: m.index ?? 0,
+        end: (m.index ?? 0) + m[0].length,
         reason: `Ambiguous note id "${id}" — qualify as CODE/${id}.`,
       });
   }
@@ -291,6 +295,7 @@ export function validateReferences(body: string, ctx: ShortcodeCtx): RefProblem[
           severity: 'warning',
           target: inner,
           index: m.index ?? 0,
+          end: (m.index ?? 0) + m[0].length,
           reason: `Could not extract a YouTube id from "${yt[1].trim()}".`,
         });
     } else if (!scriptureQuote(inner)) {
@@ -299,6 +304,7 @@ export function validateReferences(body: string, ctx: ShortcodeCtx): RefProblem[
         severity: 'warning',
         target: inner,
         index: m.index ?? 0,
+        end: (m.index ?? 0) + m[0].length,
         reason: `Unresolved scripture include "${inner}".`,
       });
     }

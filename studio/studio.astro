@@ -39,7 +39,7 @@ import '../src/styles/global.css';
           <datalist id="sx-tagoptions"></datalist>
         </div>
         <div class="sx-toolbar" id="sx-toolbar"></div>
-        <textarea id="sx-body" spellcheck="true" placeholder="Write the note in Markdown…"></textarea>
+        <div id="sx-editor" class="sx-editor"></div>
       </main>
 
       <!-- Right: filename, save, validation, live preview -->
@@ -64,27 +64,25 @@ import '../src/styles/global.css';
       <ul id="sx-picker-list"></ul>
     </div>
 
+    <!-- Reference picker -->
+    <div id="sx-refpicker" class="sx-picker sx-refpicker" hidden>
+      <div class="rp-row">
+        <select id="rp-book"></select>
+        <input id="rp-cv" placeholder="6:23  ·  6:23-25  ·  6" autocomplete="off" />
+      </div>
+      <div id="rp-status" class="rp-status"></div>
+      <div class="rp-actions"><button id="rp-insert" type="button" disabled>Insert</button></div>
+    </div>
+
     <div id="sx-toast" class="sx-toast"></div>
 
     <style is:global>
-      .studio {
-        display: grid;
-        grid-template-columns: 260px minmax(0, 1fr) minmax(0, 1fr);
-        height: 100vh;
-        font-family: var(--sans);
-        color: var(--ink);
-        background: var(--bg);
-      }
+      .studio { display: grid; grid-template-columns: 260px minmax(0, 1fr) minmax(0, 1fr); height: 100vh; font-family: var(--sans); color: var(--ink); background: var(--bg); }
       .studio > * { overflow: auto; min-width: 0; }
-      .studio input, .studio select, .studio textarea {
-        font: inherit; color: var(--ink); background: var(--bg);
-        border: 1px solid var(--rule); border-radius: 6px; padding: 6px 8px;
-      }
-      .studio button {
-        font: inherit; cursor: pointer; border: 1px solid var(--rule);
-        background: var(--panel); color: var(--ink); border-radius: 6px; padding: 5px 10px;
-      }
+      .studio input, .studio select { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 6px; padding: 6px 8px; }
+      .studio button { font: inherit; cursor: pointer; border: 1px solid var(--rule); background: var(--panel); color: var(--ink); border-radius: 6px; padding: 5px 10px; }
       .studio button:hover { border-color: var(--accent); }
+      .studio button:disabled { opacity: 0.5; cursor: default; }
 
       /* Left list */
       .sx-list { border-right: 1px solid var(--rule); background: var(--panel); }
@@ -118,7 +116,15 @@ import '../src/styles/global.css';
       .sx-taginput:focus { outline: none; }
       .sx-toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
       .sx-toolbar button { font-size: 0.82rem; }
-      #sx-body { flex: 1; min-height: 320px; resize: none; font-family: var(--mono, ui-monospace, "SF Mono", Menlo, monospace); font-size: 0.9rem; line-height: 1.55; }
+      .sx-editor { flex: 1; min-height: 320px; overflow: hidden; border: 1px solid var(--rule); border-radius: 6px; }
+
+      /* CodeMirror */
+      .cm-editor { height: 100%; }
+      .cm-editor.cm-focused { outline: none; }
+      .cm-scroller { font-family: var(--mono, ui-monospace, "SF Mono", Menlo, monospace); font-size: 0.9rem; line-height: 1.55; }
+      .sx-cm-link { color: var(--link); }
+      .sx-cm-scripture { color: var(--gold-ink); }
+      .sx-cm-fn { color: var(--accent); }
 
       /* Right side */
       .sx-side { display: flex; flex-direction: column; border-left: 1px solid var(--rule); }
@@ -139,21 +145,38 @@ import '../src/styles/global.css';
       .sx-render .note { max-width: none; }
       .sx-empty { color: var(--ink-soft); font-style: italic; }
 
-      /* Note-link picker */
+      /* Pickers */
       .sx-picker { position: fixed; top: 12vh; left: 50%; transform: translateX(-50%); width: min(460px, 92vw); max-height: 60vh; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--rule); border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,0.28); z-index: 10; overflow: hidden; }
       .sx-picker[hidden] { display: none; }
-      .sx-picker input { margin: 10px; }
+      .sx-picker input, .sx-picker select { margin: 0; }
+      #sx-picker > input { margin: 10px; }
       .sx-picker ul { list-style: none; margin: 0; padding: 0 6px 8px; overflow: auto; }
       .sx-picker li { padding: 7px 9px; border-radius: 6px; cursor: pointer; display: flex; flex-direction: column; gap: 1px; }
       .sx-picker li:hover, .sx-picker li.hi { background: var(--stripe); }
       .sx-picker .pk-anchor { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-soft); }
       .sx-picker .pk-id { font-size: 0.72rem; color: var(--ink-soft); font-family: var(--mono, monospace); }
+      .sx-refpicker { padding: 12px; gap: 10px; }
+      .rp-row { display: flex; gap: 8px; }
+      .rp-row select { flex: 1; }
+      .rp-row #rp-cv { width: 42%; }
+      .rp-status { font-size: 0.85rem; min-height: 2.4em; }
+      .rp-status .ok { color: var(--ink); }
+      .rp-status .bad { color: var(--rubric); }
+      .rp-status .prev { color: var(--ink-soft); font-style: italic; display: block; margin-top: 2px; }
+      .rp-actions { display: flex; justify-content: flex-end; }
+      .rp-actions button { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
 
-      .sx-toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--pop-bg, #222); color: var(--pop-fg, #fff); border: 1px solid var(--pop-edge, #000); padding: 8px 14px; border-radius: 8px; font-family: var(--sans); font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 20; }
+      .sx-toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--pop-bg, #222); color: var(--pop-fg, #fff); border: 1px solid var(--pop-edge, #000); padding: 8px 14px; border-radius: 8px; font-family: var(--sans); font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 20; max-width: 60vw; text-align: center; }
       .sx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 
     <script>
+      import { EditorView, minimalSetup } from 'codemirror';
+      import { RangeSetBuilder } from '@codemirror/state';
+      import { markdown } from '@codemirror/lang-markdown';
+      import { linter } from '@codemirror/lint';
+      import { Decoration, ViewPlugin } from '@codemirror/view';
+
       const $ = (id) => document.getElementById(id);
       const api = {
         get: (p) => fetch(`/__studio/api${p}`).then((r) => r.json()),
@@ -172,6 +195,82 @@ import '../src/styles/global.css';
       let slugDirty = false;
       let dirty = false;
       let tags = [];
+      let programmatic = false; // suppress dirty/preview during programmatic doc changes
+
+      // --- CodeMirror editor --------------------------------------------------
+      let view;
+      const ed = {
+        get: () => view.state.doc.toString(),
+        set: (v) => { programmatic = true; view.dispatch({ changes: { from: 0, to: view.state.doc.length, insert: v || '' } }); programmatic = false; },
+        sel: () => { const s = view.state.selection.main; return { from: s.from, to: s.to, text: view.state.sliceDoc(s.from, s.to) }; },
+        replace: (from, to, insert, cursor) => view.dispatch({ changes: { from, to, insert }, selection: cursor != null ? { anchor: cursor } : undefined, scrollIntoView: true }),
+        focus: () => view.focus(),
+      };
+
+      // Highlight the shortcodes so they stand out from prose.
+      const DECO_RE = /(\[[^\]]*\]\((?:ref|note):[^)]*\))|(\{\{[^}]*\}\})|(\[\^[^\]\s]+\])/g;
+      const shortcodeDeco = ViewPlugin.fromClass(
+        class {
+          constructor(v) { this.decorations = this.build(v); }
+          update(u) { if (u.docChanged || u.viewportChanged) this.decorations = this.build(u.view); }
+          build(v) {
+            const b = new RangeSetBuilder();
+            for (const { from, to } of v.visibleRanges) {
+              const text = v.state.sliceDoc(from, to);
+              let m;
+              DECO_RE.lastIndex = 0;
+              while ((m = DECO_RE.exec(text))) {
+                const cls = m[1] ? 'sx-cm-link' : m[2] ? 'sx-cm-scripture' : 'sx-cm-fn';
+                b.add(from + m.index, from + m.index + m[0].length, Decoration.mark({ class: cls }));
+              }
+            }
+            return b.finish();
+          }
+        },
+        { decorations: (v) => v.decorations },
+      );
+
+      // Inline lint underlines, from the same validator the build uses (via /lint).
+      const lintSource = linter(
+        async () => {
+          const body = ed.get();
+          const { problems } = await api.post('/lint', { body });
+          return (problems || []).map((p) => ({
+            from: Math.min(p.index, body.length),
+            to: Math.min(p.end ?? p.index, body.length),
+            severity: p.severity === 'error' ? 'error' : 'warning',
+            message: `[${p.kind}] ${p.reason}`,
+          }));
+        },
+        { delay: 400 },
+      );
+
+      const studioTheme = EditorView.theme({
+        '&': { height: '100%', backgroundColor: 'var(--bg)', color: 'var(--ink)' },
+        '.cm-content': { caretColor: 'var(--ink)', padding: '8px 0' },
+        '.cm-cursor': { borderLeftColor: 'var(--ink)' },
+        '.cm-gutters': { backgroundColor: 'var(--panel)', color: 'var(--ink-soft)', border: 'none' },
+        '.cm-activeLine': { backgroundColor: 'transparent' },
+        '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': { backgroundColor: 'var(--accent-soft, #ccd)' },
+      });
+
+      function initEditor() {
+        view = new EditorView({
+          parent: $('sx-editor'),
+          doc: '',
+          extensions: [
+            minimalSetup,
+            markdown(),
+            EditorView.lineWrapping,
+            shortcodeDeco,
+            lintSource,
+            studioTheme,
+            EditorView.updateListener.of((u) => {
+              if (u.docChanged && !programmatic) { markEdited(); schedulePreview(); }
+            }),
+          ],
+        });
+      }
 
       function setDirty(v) { dirty = v; $('sx-dirty').style.visibility = v ? 'visible' : 'hidden'; }
       const markEdited = () => { setDirty(true); persist(); };
@@ -181,7 +280,7 @@ import '../src/styles/global.css';
       const snapshot = () => ({
         originalPath, slugDirty, dirty, tags,
         book: $('sx-book').value, cv: $('sx-cv').value, title: $('sx-title').value,
-        slug: $('sx-slug').value, body: $('sx-body').value,
+        slug: $('sx-slug').value, body: ed.get(),
       });
       const persist = () => { try { sessionStorage.setItem(STORE, JSON.stringify(snapshot())); } catch {} };
       function restore() {
@@ -195,7 +294,7 @@ import '../src/styles/global.css';
         $('sx-cv').value = s.cv || '';
         $('sx-title').value = s.title || '';
         $('sx-slug').value = s.slug || '';
-        $('sx-body').value = s.body || '';
+        ed.set(s.body || '');
         renderChips();
         syncSlugSize();
         setDirty(!!s.dirty);
@@ -206,49 +305,47 @@ import '../src/styles/global.css';
       }
       window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
-      const anchorStr = () => {
-        const code = $('sx-book').value;
-        const cv = $('sx-cv').value.trim();
-        return cv ? `${code} ${cv}` : code;
-      };
+      const anchorStr = () => { const code = $('sx-book').value; const cv = $('sx-cv').value.trim(); return cv ? `${code} ${cv}` : code; };
 
       // --- insert helpers -----------------------------------------------------
       function insertInline(makeText) {
-        const ta = $('sx-body');
-        const s = ta.selectionStart, e = ta.selectionEnd;
-        const text = makeText(ta.value.slice(s, e));
-        ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
-        ta.selectionStart = ta.selectionEnd = s + text.length;
-        ta.focus(); markEdited(); schedulePreview();
+        const { from, to, text } = ed.sel();
+        const t = makeText(text);
+        ed.replace(from, to, t, from + t.length);
+        ed.focus();
       }
       function insertBlock(text) {
-        const ta = $('sx-body');
-        const s = ta.selectionStart;
-        const before = ta.value.slice(0, s), after = ta.value.slice(s);
+        const { from } = ed.sel();
+        const doc = ed.get();
+        const before = doc.slice(0, from), after = doc.slice(from);
         const ins = (before && !before.endsWith('\n') ? '\n' : '') + text + (after && !after.startsWith('\n') ? '\n' : '');
-        ta.value = before + ins + after;
-        ta.selectionStart = ta.selectionEnd = s + ins.length;
-        ta.focus(); markEdited(); schedulePreview();
+        ed.replace(from, from, ins, from + ins.length);
+        ed.focus();
       }
       function insertFootnote() {
-        const ta = $('sx-body');
-        const used = new Set([...ta.value.matchAll(/\[\^([^\]\s]+)\]/g)].map((m) => m[1]));
+        const doc = ed.get();
+        const used = new Set([...doc.matchAll(/\[\^([^\]\s]+)\]/g)].map((m) => m[1]));
         let n = 1; while (used.has('fn' + n)) n++;
         const id = 'fn' + n;
-        const at = ta.selectionEnd;
-        const withCaller = ta.value.slice(0, at) + `[^${id}]` + ta.value.slice(at);
-        const next = withCaller.replace(/\s*$/, '') + `\n\n[^${id}]: `;
-        ta.value = next;
-        ta.selectionStart = ta.selectionEnd = next.length;
-        ta.focus(); markEdited(); schedulePreview();
+        const { to } = ed.sel();
+        const caller = `[^${id}]`;
+        const def = `\n\n[^${id}]: `;
+        const trimmed = doc.replace(/\s*$/, '').length;
+        view.dispatch({
+          changes: [
+            { from: to, to, insert: caller },
+            { from: trimmed, to: doc.length, insert: def },
+          ],
+          selection: { anchor: trimmed + caller.length + def.length },
+        });
+        ed.focus();
       }
 
       function syncSlugSize() { const el = $('sx-slug'); el.size = Math.max(8, (el.value.length || 8) + 1); }
 
-      // --- tags (chips + autocomplete) ---------------------------------------
+      // --- tags ---------------------------------------------------------------
       function renderChips() {
-        const box = $('sx-chips');
-        box.innerHTML = '';
+        const box = $('sx-chips'); box.innerHTML = '';
         for (const t of tags) {
           const chip = document.createElement('span'); chip.className = 'sx-chip';
           const label = document.createElement('span'); label.textContent = t;
@@ -256,54 +353,86 @@ import '../src/styles/global.css';
           chip.append(label, x); box.appendChild(chip);
         }
       }
-      function addTag(t) {
-        t = String(t).trim().replace(/,/g, '');
-        if (t && !tags.includes(t)) { tags.push(t); renderChips(); markEdited(); }
-      }
+      function addTag(t) { t = String(t).trim().replace(/,/g, ''); if (t && !tags.includes(t)) { tags.push(t); renderChips(); markEdited(); } }
       function removeTag(t) { tags = tags.filter((x) => x !== t); renderChips(); markEdited(); }
 
-      // --- note-link picker --------------------------------------------------
-      let pickerSel = { start: 0, end: 0, text: '' };
+      // --- note-link picker ---------------------------------------------------
+      let pickerSel = { from: 0, to: 0, text: '' };
       function openPicker() {
-        const ta = $('sx-body');
-        pickerSel = { start: ta.selectionStart, end: ta.selectionEnd, text: ta.value.slice(ta.selectionStart, ta.selectionEnd) };
+        pickerSel = ed.sel();
         $('sx-picker').hidden = false;
         $('sx-picker-input').value = '';
         renderPicker('');
         $('sx-picker-input').focus();
       }
-      function closePicker() { $('sx-picker').hidden = true; $('sx-body').focus(); }
+      function closePicker() { $('sx-picker').hidden = true; ed.focus(); }
       function renderPicker(q) {
         q = q.toLowerCase();
         const ul = $('sx-picker-list'); ul.innerHTML = '';
-        const matches = allNotes.filter((n) => !q || `${n.anchor} ${n.title} ${n.id}`.toLowerCase().includes(q)).slice(0, 60);
-        matches.forEach((n, i) => {
+        allNotes.filter((n) => !q || `${n.anchor} ${n.title} ${n.id}`.toLowerCase().includes(q)).slice(0, 60).forEach((n, i) => {
           const li = document.createElement('li'); if (i === 0) li.classList.add('hi');
           const a = document.createElement('span'); a.className = 'pk-anchor'; a.textContent = n.anchor || '—';
           const t = document.createElement('span'); t.className = 'sx-title'; t.textContent = n.title || n.id;
           const id = document.createElement('span'); id.className = 'pk-id'; id.textContent = n.id;
-          li.append(a, t, id);
-          li.onclick = () => insertNoteLink(n);
-          ul.appendChild(li);
+          li.append(a, t, id); li.onclick = () => insertNoteLink(n); ul.appendChild(li);
         });
       }
       function insertNoteLink(n) {
         const qid = dupIds.has(n.id) ? `${n.book}/${n.id}` : n.id;
         const label = pickerSel.text || n.title || n.id;
         const text = `[${label}](note:${qid})`;
-        const ta = $('sx-body');
-        ta.value = ta.value.slice(0, pickerSel.start) + text + ta.value.slice(pickerSel.end);
-        const pos = pickerSel.start + text.length;
         closePicker();
-        ta.selectionStart = ta.selectionEnd = pos;
-        ta.focus(); markEdited(); schedulePreview();
+        ed.replace(pickerSel.from, pickerSel.to, text, pickerSel.from + text.length);
+        ed.focus();
       }
 
-      // --- preview -----------------------------------------------------------
+      // --- reference picker ---------------------------------------------------
+      let refSel = { from: 0, to: 0, text: '' };
+      let refLast = null; // { ok, label, preview }
+      let refTimer;
+      function openRefPicker() {
+        refSel = ed.sel();
+        $('rp-book').value = $('sx-book').value || 'GEN';
+        $('rp-cv').value = '';
+        refLast = null;
+        $('rp-status').innerHTML = '';
+        $('rp-insert').disabled = true;
+        $('sx-refpicker').hidden = false;
+        $('rp-cv').focus();
+      }
+      function closeRefPicker() { $('sx-refpicker').hidden = true; ed.focus(); }
+      function refCheck() {
+        clearTimeout(refTimer);
+        refTimer = setTimeout(async () => {
+          const cv = $('rp-cv').value.trim();
+          if (!cv) { $('rp-status').innerHTML = ''; $('rp-insert').disabled = true; refLast = null; return; }
+          const ref = `${$('rp-book').value} ${cv}`;
+          const r = await api.get(`/refcheck?ref=${encodeURIComponent(ref)}`);
+          refLast = r;
+          if (r.ok) {
+            $('rp-status').innerHTML = `<span class="ok">✓ ${r.label}</span>` + (r.preview ? `<span class="prev">${r.preview.replace(/</g, '&lt;')}</span>` : '');
+            $('rp-insert').disabled = false;
+          } else {
+            $('rp-status').innerHTML = `<span class="bad">✗ does not resolve</span>`;
+            $('rp-insert').disabled = true;
+          }
+        }, 200);
+      }
+      function insertRef() {
+        if (!refLast || !refLast.ok) return;
+        const ref = `${$('rp-book').value} ${$('rp-cv').value.trim()}`;
+        const label = refSel.text || refLast.label || ref;
+        const text = `[${label}](ref:${ref})`;
+        closeRefPicker();
+        ed.replace(refSel.from, refSel.to, text, refSel.from + text.length);
+        ed.focus();
+      }
+
+      // --- preview ------------------------------------------------------------
       let previewTimer;
       const schedulePreview = () => { clearTimeout(previewTimer); previewTimer = setTimeout(runPreview, 250); };
       async function runPreview() {
-        const r = await api.post('/preview', { anchor: anchorStr(), body: $('sx-body').value, slug: $('sx-slug').value.trim() });
+        const r = await api.post('/preview', { anchor: anchorStr(), body: ed.get(), slug: $('sx-slug').value.trim() });
         $('sx-html').innerHTML = r.html || '<p class="sx-empty">Nothing to preview yet.</p>';
         const prefix = $('sx-prefix'), suffix = $('sx-suffix');
         if (r.prefix) { prefix.textContent = r.prefix; suffix.textContent = r.suffix || '.md'; prefix.classList.remove('muted-hint'); }
@@ -318,7 +447,7 @@ import '../src/styles/global.css';
         for (const p of problems) add(p.severity === 'error' ? 'err' : 'warn', `${p.severity === 'error' ? '✗' : '!'} [${p.kind}] ${p.reason}`);
       }
 
-      // --- load / new / save -------------------------------------------------
+      // --- load / new / save --------------------------------------------------
       function fillFields(n) {
         const [code, ...rest] = (n.anchor || '').split(' ');
         $('sx-book').value = code || 'GEN';
@@ -326,9 +455,8 @@ import '../src/styles/global.css';
         $('sx-title').value = n.title || '';
         tags = parseTags(n.tags); renderChips();
         $('sx-slug').value = n.slug || '';
-        $('sx-body').value = n.body || '';
-        slugDirty = true;
-        syncSlugSize();
+        ed.set(n.body || '');
+        slugDirty = true; syncSlugSize();
       }
       const confirmDiscard = () => !dirty || confirm('You have unsaved changes. Discard them?');
 
@@ -339,36 +467,34 @@ import '../src/styles/global.css';
         originalPath = n.path;
         fillFields(n);
         setDirty(false); persist();
-        markActive(path);
-        runPreview();
+        markActive(path); runPreview();
       }
       function newNote() {
         if (!confirmDiscard()) return;
         originalPath = ''; slugDirty = false; tags = []; renderChips();
         $('sx-book').value = 'GEN';
-        for (const id of ['sx-cv', 'sx-title', 'sx-slug', 'sx-body']) $(id).value = '';
+        for (const id of ['sx-cv', 'sx-title', 'sx-slug']) $(id).value = '';
+        ed.set('');
         try { sessionStorage.removeItem(STORE); } catch {}
         syncSlugSize(); setDirty(false);
-        markActive(null);
-        $('sx-book').focus();
-        runPreview();
+        markActive(null); $('sx-book').focus(); runPreview();
       }
       async function save() {
         const r = await api.post('/save', {
           anchor: anchorStr(), title: $('sx-title').value, tags: tags.join(', '),
-          slug: $('sx-slug').value.trim(), body: $('sx-body').value, originalPath,
+          slug: $('sx-slug').value.trim(), body: ed.get(), originalPath,
         });
         if (r.error) { toast('Save failed: ' + r.error); return; }
         originalPath = r.path;
         if (r.slug) { $('sx-slug').value = r.slug; syncSlugSize(); }
         setDirty(false); persist();
-        toast(r.moved ? `Saved · moved to ${r.path}` : `Saved · ${r.path}`);
-        await loadList();
-        await loadDoctor();
-        markActive(r.path);
+        let msg = r.moved ? `Saved · moved to ${r.path}` : `Saved · ${r.path}`;
+        if (r.refsUpdated) msg += ` · repointed ${r.refsUpdated} link${r.refsUpdated > 1 ? 's' : ''} in ${r.refFiles.length} note${r.refFiles.length > 1 ? 's' : ''}`;
+        toast(msg);
+        await loadList(); await loadDoctor(); markActive(r.path);
       }
 
-      // --- list + doctor -----------------------------------------------------
+      // --- list + doctor ------------------------------------------------------
       async function loadList() {
         allNotes = await api.get('/notes');
         const counts = {};
@@ -382,26 +508,17 @@ import '../src/styles/global.css';
         for (const n of allNotes) {
           if (doctorFilter && !doctorMap.has(n.path)) continue;
           if (q && !`${n.anchor} ${n.title} ${n.id}`.toLowerCase().includes(q)) continue;
-          const li = document.createElement('li');
-          li.dataset.path = n.path;
+          const li = document.createElement('li'); li.dataset.path = n.path;
           if (doctorMap.has(n.path)) li.classList.add('misfiled');
           const a = document.createElement('span'); a.className = 'sx-anchor'; a.textContent = n.anchor || '—';
           const t = document.createElement('span'); t.className = 'sx-title';
-          if (doctorMap.has(n.path)) {
-            const w = document.createElement('span'); w.className = 'sx-warn'; w.textContent = '⚠ ';
-            w.title = 'Misfiled — expected ' + (doctorMap.get(n.path).expected || '?');
-            t.append(w);
-          }
+          if (doctorMap.has(n.path)) { const w = document.createElement('span'); w.className = 'sx-warn'; w.textContent = '⚠ '; w.title = 'Misfiled — expected ' + (doctorMap.get(n.path).expected || '?'); t.append(w); }
           t.append(document.createTextNode(n.title || n.id));
-          li.append(a, t);
-          li.onclick = () => loadNote(n.path);
-          ul.appendChild(li);
+          li.append(a, t); li.onclick = () => loadNote(n.path); ul.appendChild(li);
         }
         markActive(originalPath);
       }
-      function markActive(path) {
-        for (const li of document.querySelectorAll('#sx-notes li')) li.classList.toggle('active', li.dataset.path === path);
-      }
+      function markActive(path) { for (const li of document.querySelectorAll('#sx-notes li')) li.classList.toggle('active', li.dataset.path === path); }
       async function loadDoctor() {
         const issues = await api.get('/doctor');
         doctorMap = new Map(issues.map((i) => [i.path, i]));
@@ -412,19 +529,25 @@ import '../src/styles/global.css';
       }
 
       let toastTimer;
-      function toast(msg) { const t = $('sx-toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200); }
+      function toast(msg) { const t = $('sx-toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3600); }
 
       async function init() {
-        // Books
+        initEditor();
+
         const books = await api.get('/canon');
-        const sel = $('sx-book');
-        let group = null, og;
+        const sel = $('sx-book'), rpsel = $('rp-book');
+        let group = null, og, rog;
         for (const b of books) {
-          if (b.testament !== group) { group = b.testament; og = document.createElement('optgroup'); og.label = group === 'ot' ? 'Old Testament' : 'New Testament'; sel.appendChild(og); }
-          const o = document.createElement('option'); o.value = b.code; o.textContent = `${b.code} — ${b.name}`; og.appendChild(o);
+          if (b.testament !== group) {
+            group = b.testament;
+            const label = group === 'ot' ? 'Old Testament' : 'New Testament';
+            og = document.createElement('optgroup'); og.label = label; sel.appendChild(og);
+            rog = document.createElement('optgroup'); rog.label = label; rpsel.appendChild(rog);
+          }
+          const mk = () => { const o = document.createElement('option'); o.value = b.code; o.textContent = `${b.code} — ${b.name}`; return o; };
+          og.appendChild(mk()); rog.appendChild(mk());
         }
 
-        // Toolbar (from the shortcode registry)
         const reg = await api.get('/registry');
         const tb = $('sx-toolbar');
         for (const s of reg) {
@@ -432,7 +555,7 @@ import '../src/styles/global.css';
           btn.onclick = () => {
             if (s.name === 'footnote') insertFootnote();
             else if (s.name === 'note') openPicker();
-            else if (s.name === 'ref') insertInline((sel) => `[${sel || 'text'}](ref:BOOK 1:1)`);
+            else if (s.name === 'ref') openRefPicker();
             else if (s.name === 'scripture') insertBlock('{{ BOOK 1:1 }}');
             else if (s.name === 'youtube') insertBlock('{{ youtube URL }}');
             else insertBlock(s.syntax);
@@ -440,7 +563,6 @@ import '../src/styles/global.css';
           tb.appendChild(btn);
         }
 
-        // Tag options
         const tagList = await api.get('/tags');
         const dl = $('sx-tagoptions');
         for (const { tag, count } of tagList) { const o = document.createElement('option'); o.value = tag; o.label = `${tag} (${count})`; dl.appendChild(o); }
@@ -451,37 +573,35 @@ import '../src/styles/global.css';
         restore();
         markActive(originalPath);
 
-        // Field events
-        for (const id of ['sx-book', 'sx-cv', 'sx-title', 'sx-slug', 'sx-body']) $(id).addEventListener('input', markEdited);
-        for (const id of ['sx-book', 'sx-cv', 'sx-body']) $(id).addEventListener('input', schedulePreview);
+        for (const id of ['sx-book', 'sx-cv', 'sx-title', 'sx-slug']) $(id).addEventListener('input', markEdited);
+        for (const id of ['sx-book', 'sx-cv']) $(id).addEventListener('input', schedulePreview);
         $('sx-slug').addEventListener('input', () => { slugDirty = true; syncSlugSize(); });
-        $('sx-title').addEventListener('input', () => {
-          if (!slugDirty) { $('sx-slug').value = slugify($('sx-title').value); syncSlugSize(); }
-          schedulePreview();
-        });
+        $('sx-title').addEventListener('input', () => { if (!slugDirty) { $('sx-slug').value = slugify($('sx-title').value); syncSlugSize(); } schedulePreview(); });
         $('sx-search').addEventListener('input', renderList);
         $('sx-new').onclick = newNote;
         $('sx-save').onclick = save;
         $('sx-doctor').onclick = () => { doctorFilter = !doctorFilter; $('sx-doctor').classList.toggle('active', doctorFilter); renderList(); };
 
-        // Tag input events
         const ti = $('sx-taginput');
         ti.addEventListener('keydown', (e) => {
           if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(ti.value); ti.value = ''; }
-          else if (e.key === 'Backspace' && !ti.value && tags.length) { removeTag(tags[tags.length - 1]); }
+          else if (e.key === 'Backspace' && !ti.value && tags.length) removeTag(tags[tags.length - 1]);
         });
         ti.addEventListener('input', () => { if (ti.value.includes(',')) { ti.value.split(',').forEach(addTag); ti.value = ''; } });
         ti.addEventListener('change', () => { if (ti.value) { addTag(ti.value); ti.value = ''; } });
 
-        // Picker events
         const pi = $('sx-picker-input');
         pi.addEventListener('input', () => renderPicker(pi.value));
-        pi.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') closePicker();
-          else if (e.key === 'Enter') { const first = $('sx-picker-list').querySelector('li'); if (first) first.click(); }
-        });
+        pi.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePicker(); else if (e.key === 'Enter') { const f = $('sx-picker-list').querySelector('li'); if (f) f.click(); } });
+
+        $('rp-book').addEventListener('change', refCheck);
+        $('rp-cv').addEventListener('input', refCheck);
+        $('rp-cv').addEventListener('keydown', (e) => { if (e.key === 'Escape') closeRefPicker(); else if (e.key === 'Enter' && !$('rp-insert').disabled) insertRef(); });
+        $('rp-insert').onclick = insertRef;
+
         document.addEventListener('mousedown', (e) => {
           if (!$('sx-picker').hidden && !$('sx-picker').contains(e.target)) closePicker();
+          if (!$('sx-refpicker').hidden && !$('sx-refpicker').contains(e.target)) closeRefPicker();
         });
 
         runPreview();
