@@ -1,7 +1,6 @@
 ---
 anchor: GEN 4:3-5
 title: Why Abel's gift?
-tags: 
 ---
 
 There is a lot of speculation amongst the Fathers and other commentators about why Abel's gift was regarded but Cain's was not. Theories include:
