@@ -1,7 +1,7 @@
 ---
-// Dev-only notes studio (Tier 1). Injected at /studio by studio/integration.mjs, never
-// built for production. Loads the site stylesheet so the live preview renders a note
-// exactly as it will appear on the real page.
+// Dev-only notes studio. Injected at /studio by studio/integration.mjs, never built for
+// production. Loads the site stylesheet so the live preview renders a note exactly as it
+// will appear on the real page.
 import '../src/styles/global.css';
 ---
 
@@ -17,8 +17,9 @@ import '../src/styles/global.css';
       <!-- Left: note browser -->
       <aside class="sx-list">
         <div class="sx-listhead">
+          <button id="sx-new" type="button" class="sx-newbtn">+ New note</button>
           <input id="sx-search" type="search" placeholder="Search notes…" autocomplete="off" />
-          <button id="sx-new" type="button">+ New</button>
+          <button id="sx-doctor" type="button" class="sx-doctor" hidden></button>
         </div>
         <ul id="sx-notes"></ul>
       </aside>
@@ -29,17 +30,25 @@ import '../src/styles/global.css';
           <label class="f-book">Book<select id="sx-book"></select></label>
           <label class="f-cv">Reference<input id="sx-cv" placeholder="5:12  ·  1:1-2:3  ·  blank = whole book" /></label>
           <label class="f-title">Title<input id="sx-title" /></label>
-          <label class="f-tags">Tags<input id="sx-tags" placeholder="comma, separated" /></label>
-          <label class="f-slug">Slug<input id="sx-slug" placeholder="from title" /></label>
+          <label class="f-tags">Tags
+            <div class="sx-tagbox" id="sx-tagbox">
+              <span id="sx-chips" class="sx-chips"></span>
+              <input id="sx-taginput" class="sx-taginput" list="sx-tagoptions" placeholder="add tag…" autocomplete="off" />
+            </div>
+          </label>
+          <datalist id="sx-tagoptions"></datalist>
         </div>
         <div class="sx-toolbar" id="sx-toolbar"></div>
         <textarea id="sx-body" spellcheck="true" placeholder="Write the note in Markdown…"></textarea>
       </main>
 
-      <!-- Right: target, save, validation, live preview -->
+      <!-- Right: filename, save, validation, live preview -->
       <section class="sx-side">
         <div class="sx-bar">
-          <code id="sx-path" class="sx-path">—</code>
+          <div class="sx-filename" title="Filename — defaults to the title, edit to override">
+            <span id="sx-prefix" class="sx-prefix"></span><input id="sx-slug" class="sx-slug-input" placeholder="filename" autocomplete="off" spellcheck="false" /><span id="sx-suffix" class="sx-suffix"></span>
+          </div>
+          <span id="sx-dirty" class="sx-dirty" title="Unsaved changes">●</span>
           <button id="sx-save" type="button">Save</button>
         </div>
         <div class="sx-problems" id="sx-problems"></div>
@@ -48,6 +57,13 @@ import '../src/styles/global.css';
         </div>
       </section>
     </div>
+
+    <!-- Note-link picker -->
+    <div id="sx-picker" class="sx-picker" hidden>
+      <input id="sx-picker-input" placeholder="Search a note to link…" autocomplete="off" />
+      <ul id="sx-picker-list"></ul>
+    </div>
+
     <div id="sx-toast" class="sx-toast"></div>
 
     <style is:global>
@@ -72,8 +88,12 @@ import '../src/styles/global.css';
 
       /* Left list */
       .sx-list { border-right: 1px solid var(--rule); background: var(--panel); }
-      .sx-listhead { display: flex; gap: 6px; padding: 10px; position: sticky; top: 0; background: var(--panel); border-bottom: 1px solid var(--rule); }
-      .sx-listhead input { flex: 1; }
+      .sx-listhead { display: flex; flex-direction: column; gap: 8px; padding: 10px; position: sticky; top: 0; background: var(--panel); border-bottom: 1px solid var(--rule); z-index: 1; }
+      .sx-listhead input { width: 100%; }
+      .sx-newbtn { width: 100%; background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; padding: 8px; }
+      .sx-newbtn:hover { filter: brightness(1.08); border-color: var(--accent); }
+      .sx-doctor { width: 100%; text-align: left; color: var(--gold-ink); border-color: var(--gold-edge, var(--rule)); background: var(--gold-soft, transparent); font-size: 0.82rem; }
+      .sx-doctor.active { outline: 2px solid var(--gold-ink); }
       #sx-notes { list-style: none; margin: 0; padding: 4px; }
       #sx-notes li { padding: 7px 9px; border-radius: 6px; cursor: pointer; display: flex; flex-direction: column; gap: 1px; }
       #sx-notes li:hover { background: var(--stripe); }
@@ -81,12 +101,21 @@ import '../src/styles/global.css';
       #sx-notes li.active .sx-anchor { color: var(--on-accent); opacity: 0.85; }
       #sx-notes .sx-anchor { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-soft); text-transform: uppercase; }
       #sx-notes .sx-title { font-size: 0.9rem; }
+      #sx-notes .sx-warn { color: var(--gold-ink); font-weight: 700; }
+      #sx-notes li.active .sx-warn { color: var(--on-accent); }
 
       /* Center editor */
       .sx-edit { display: flex; flex-direction: column; padding: 12px; gap: 10px; }
       .sx-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
       .sx-fields label { display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); }
-      .sx-fields .f-title, .sx-fields .f-slug { grid-column: 1 / -1; }
+      .sx-fields .f-title, .sx-fields .f-tags { grid-column: 1 / -1; }
+      .sx-tagbox { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; border: 1px solid var(--rule); border-radius: 6px; padding: 4px 6px; background: var(--bg); }
+      .sx-chips { display: contents; }
+      .sx-chip { display: inline-flex; align-items: center; gap: 4px; background: var(--tag-bg, var(--stripe)); color: var(--ink); border-radius: 999px; padding: 2px 4px 2px 9px; font-size: 0.82rem; text-transform: none; letter-spacing: 0; }
+      .sx-chip button { border: none; background: none; padding: 0 3px; color: var(--ink-soft); font-size: 0.9rem; line-height: 1; border-radius: 999px; }
+      .sx-chip button:hover { color: var(--rubric); border: none; }
+      .sx-taginput { flex: 1; min-width: 90px; border: none !important; padding: 3px 2px !important; background: transparent !important; text-transform: none; letter-spacing: 0; }
+      .sx-taginput:focus { outline: none; }
       .sx-toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
       .sx-toolbar button { font-size: 0.82rem; }
       #sx-body { flex: 1; min-height: 320px; resize: none; font-family: var(--mono, ui-monospace, "SF Mono", Menlo, monospace); font-size: 0.9rem; line-height: 1.55; }
@@ -94,7 +123,12 @@ import '../src/styles/global.css';
       /* Right side */
       .sx-side { display: flex; flex-direction: column; border-left: 1px solid var(--rule); }
       .sx-bar { display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: var(--bg); }
-      .sx-path { flex: 1; font-size: 0.78rem; color: var(--ink-soft); word-break: break-all; }
+      .sx-filename { flex: 1; min-width: 0; display: flex; align-items: center; font-family: var(--mono, ui-monospace, "SF Mono", Menlo, monospace); font-size: 0.78rem; overflow-x: auto; white-space: nowrap; }
+      .sx-prefix, .sx-suffix { color: var(--ink-soft); flex: none; }
+      .sx-prefix.muted-hint { font-style: italic; }
+      .sx-slug-input { flex: none; min-width: 8ch; font-family: inherit; font-size: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--rule); border-radius: 4px; padding: 2px 6px; margin: 0 2px; }
+      .sx-slug-input:focus { border-color: var(--accent); outline: none; }
+      .sx-dirty { color: var(--gold-ink); font-size: 0.9rem; flex: none; visibility: hidden; }
       .sx-bar button { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
       .sx-problems { padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid var(--rule); }
       .sx-prob { font-size: 0.8rem; }
@@ -105,7 +139,17 @@ import '../src/styles/global.css';
       .sx-render .note { max-width: none; }
       .sx-empty { color: var(--ink-soft); font-style: italic; }
 
-      .sx-toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--pop-bg, #222); color: var(--pop-fg, #fff); border: 1px solid var(--pop-edge, #000); padding: 8px 14px; border-radius: 8px; font-family: var(--sans); font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; }
+      /* Note-link picker */
+      .sx-picker { position: fixed; top: 12vh; left: 50%; transform: translateX(-50%); width: min(460px, 92vw); max-height: 60vh; display: flex; flex-direction: column; background: var(--bg); border: 1px solid var(--rule); border-radius: 10px; box-shadow: 0 12px 40px rgba(0,0,0,0.28); z-index: 10; overflow: hidden; }
+      .sx-picker[hidden] { display: none; }
+      .sx-picker input { margin: 10px; }
+      .sx-picker ul { list-style: none; margin: 0; padding: 0 6px 8px; overflow: auto; }
+      .sx-picker li { padding: 7px 9px; border-radius: 6px; cursor: pointer; display: flex; flex-direction: column; gap: 1px; }
+      .sx-picker li:hover, .sx-picker li.hi { background: var(--stripe); }
+      .sx-picker .pk-anchor { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.03em; color: var(--ink-soft); }
+      .sx-picker .pk-id { font-size: 0.72rem; color: var(--ink-soft); font-family: var(--mono, monospace); }
+
+      .sx-toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--pop-bg, #222); color: var(--pop-fg, #fff); border: 1px solid var(--pop-edge, #000); padding: 8px 14px; border-radius: 8px; font-family: var(--sans); font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 20; }
       .sx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     </style>
 
@@ -114,58 +158,53 @@ import '../src/styles/global.css';
       const api = {
         get: (p) => fetch(`/__studio/api${p}`).then((r) => r.json()),
         post: (p, data) =>
-          fetch(`/__studio/api${p}`, {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(data),
-          }).then((r) => r.json()),
+          fetch(`/__studio/api${p}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(data) }).then((r) => r.json()),
       };
       const slugify = (s) =>
         String(s).toLowerCase().trim().replace(/['’"]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const parseTags = (s) => String(s || '').split(',').map((t) => t.trim()).filter(Boolean);
 
       let originalPath = '';
       let allNotes = [];
+      let dupIds = new Set();
+      let doctorMap = new Map();
+      let doctorFilter = false;
       let slugDirty = false;
+      let dirty = false;
+      let tags = [];
 
-      // Editor state survives a page reload. The dev data-watcher fully reloads the page
-      // whenever a note file changes (i.e. every save); without this the book <select>
-      // (repopulated async) would fall back to Genesis and originalPath would be lost, so
-      // the next save would fork a new note instead of updating this one.
+      function setDirty(v) { dirty = v; $('sx-dirty').style.visibility = v ? 'visible' : 'hidden'; }
+      const markEdited = () => { setDirty(true); persist(); };
+
+      // --- state persists across reloads (the dev data-watcher reloads on every save) -----
       const STORE = 'byz-studio-state';
       const snapshot = () => ({
-        originalPath,
-        slugDirty,
-        book: $('sx-book').value,
-        cv: $('sx-cv').value,
-        title: $('sx-title').value,
-        tags: $('sx-tags').value,
-        slug: $('sx-slug').value,
-        body: $('sx-body').value,
+        originalPath, slugDirty, dirty, tags,
+        book: $('sx-book').value, cv: $('sx-cv').value, title: $('sx-title').value,
+        slug: $('sx-slug').value, body: $('sx-body').value,
       });
-      const persist = () => {
-        try { sessionStorage.setItem(STORE, JSON.stringify(snapshot())); } catch {}
-      };
+      const persist = () => { try { sessionStorage.setItem(STORE, JSON.stringify(snapshot())); } catch {} };
       function restore() {
         let s = null;
         try { s = JSON.parse(sessionStorage.getItem(STORE) || 'null'); } catch {}
         if (!s) return false;
         originalPath = s.originalPath || '';
         slugDirty = !!s.slugDirty;
+        tags = Array.isArray(s.tags) ? s.tags : [];
         $('sx-book').value = s.book || 'GEN';
         $('sx-cv').value = s.cv || '';
         $('sx-title').value = s.title || '';
-        $('sx-tags').value = s.tags || '';
         $('sx-slug').value = s.slug || '';
         $('sx-body').value = s.body || '';
+        renderChips();
+        syncSlugSize();
+        setDirty(!!s.dirty);
         return true;
       }
-      // Best case: cancel the data-watcher's full reload so the editor never even blinks.
       if (import.meta.hot) {
-        import.meta.hot.on('vite:beforeFullReload', () => {
-          persist();
-          throw new Error('studio: preserving editor state');
-        });
+        import.meta.hot.on('vite:beforeFullReload', () => { persist(); throw new Error('studio: preserving editor state'); });
       }
+      window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
       const anchorStr = () => {
         const code = $('sx-book').value;
@@ -173,145 +212,210 @@ import '../src/styles/global.css';
         return cv ? `${code} ${cv}` : code;
       };
 
-      // Wrap the current selection (or a "text" placeholder) as an inline shortcode.
+      // --- insert helpers -----------------------------------------------------
       function insertInline(makeText) {
         const ta = $('sx-body');
         const s = ta.selectionStart, e = ta.selectionEnd;
         const text = makeText(ta.value.slice(s, e));
         ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
         ta.selectionStart = ta.selectionEnd = s + text.length;
-        ta.focus();
-        persist();
-        schedulePreview();
+        ta.focus(); markEdited(); schedulePreview();
       }
-
-      // Insert a block include on its own line.
       function insertBlock(text) {
         const ta = $('sx-body');
         const s = ta.selectionStart;
         const before = ta.value.slice(0, s), after = ta.value.slice(s);
-        const ins =
-          (before && !before.endsWith('\n') ? '\n' : '') + text + (after && !after.startsWith('\n') ? '\n' : '');
+        const ins = (before && !before.endsWith('\n') ? '\n' : '') + text + (after && !after.startsWith('\n') ? '\n' : '');
         ta.value = before + ins + after;
         ta.selectionStart = ta.selectionEnd = s + ins.length;
-        ta.focus();
-        persist();
-        schedulePreview();
+        ta.focus(); markEdited(); schedulePreview();
       }
-
-      // A footnote: drop the caller [^id] in place at the cursor, and append its definition
-      // to the very bottom, so footnotes collect at the end no matter where the caller sits.
       function insertFootnote() {
         const ta = $('sx-body');
         const used = new Set([...ta.value.matchAll(/\[\^([^\]\s]+)\]/g)].map((m) => m[1]));
-        let n = 1;
-        while (used.has('fn' + n)) n++;
+        let n = 1; while (used.has('fn' + n)) n++;
         const id = 'fn' + n;
         const at = ta.selectionEnd;
         const withCaller = ta.value.slice(0, at) + `[^${id}]` + ta.value.slice(at);
         const next = withCaller.replace(/\s*$/, '') + `\n\n[^${id}]: `;
         ta.value = next;
-        ta.selectionStart = ta.selectionEnd = next.length; // land in the definition to type it
-        ta.focus();
-        persist();
-        schedulePreview();
+        ta.selectionStart = ta.selectionEnd = next.length;
+        ta.focus(); markEdited(); schedulePreview();
       }
 
+      function syncSlugSize() { const el = $('sx-slug'); el.size = Math.max(8, (el.value.length || 8) + 1); }
+
+      // --- tags (chips + autocomplete) ---------------------------------------
+      function renderChips() {
+        const box = $('sx-chips');
+        box.innerHTML = '';
+        for (const t of tags) {
+          const chip = document.createElement('span'); chip.className = 'sx-chip';
+          const label = document.createElement('span'); label.textContent = t;
+          const x = document.createElement('button'); x.type = 'button'; x.textContent = '×'; x.title = 'Remove'; x.onclick = () => removeTag(t);
+          chip.append(label, x); box.appendChild(chip);
+        }
+      }
+      function addTag(t) {
+        t = String(t).trim().replace(/,/g, '');
+        if (t && !tags.includes(t)) { tags.push(t); renderChips(); markEdited(); }
+      }
+      function removeTag(t) { tags = tags.filter((x) => x !== t); renderChips(); markEdited(); }
+
+      // --- note-link picker --------------------------------------------------
+      let pickerSel = { start: 0, end: 0, text: '' };
+      function openPicker() {
+        const ta = $('sx-body');
+        pickerSel = { start: ta.selectionStart, end: ta.selectionEnd, text: ta.value.slice(ta.selectionStart, ta.selectionEnd) };
+        $('sx-picker').hidden = false;
+        $('sx-picker-input').value = '';
+        renderPicker('');
+        $('sx-picker-input').focus();
+      }
+      function closePicker() { $('sx-picker').hidden = true; $('sx-body').focus(); }
+      function renderPicker(q) {
+        q = q.toLowerCase();
+        const ul = $('sx-picker-list'); ul.innerHTML = '';
+        const matches = allNotes.filter((n) => !q || `${n.anchor} ${n.title} ${n.id}`.toLowerCase().includes(q)).slice(0, 60);
+        matches.forEach((n, i) => {
+          const li = document.createElement('li'); if (i === 0) li.classList.add('hi');
+          const a = document.createElement('span'); a.className = 'pk-anchor'; a.textContent = n.anchor || '—';
+          const t = document.createElement('span'); t.className = 'sx-title'; t.textContent = n.title || n.id;
+          const id = document.createElement('span'); id.className = 'pk-id'; id.textContent = n.id;
+          li.append(a, t, id);
+          li.onclick = () => insertNoteLink(n);
+          ul.appendChild(li);
+        });
+      }
+      function insertNoteLink(n) {
+        const qid = dupIds.has(n.id) ? `${n.book}/${n.id}` : n.id;
+        const label = pickerSel.text || n.title || n.id;
+        const text = `[${label}](note:${qid})`;
+        const ta = $('sx-body');
+        ta.value = ta.value.slice(0, pickerSel.start) + text + ta.value.slice(pickerSel.end);
+        const pos = pickerSel.start + text.length;
+        closePicker();
+        ta.selectionStart = ta.selectionEnd = pos;
+        ta.focus(); markEdited(); schedulePreview();
+      }
+
+      // --- preview -----------------------------------------------------------
       let previewTimer;
       const schedulePreview = () => { clearTimeout(previewTimer); previewTimer = setTimeout(runPreview, 250); };
-
       async function runPreview() {
         const r = await api.post('/preview', { anchor: anchorStr(), body: $('sx-body').value, slug: $('sx-slug').value.trim() });
         $('sx-html').innerHTML = r.html || '<p class="sx-empty">Nothing to preview yet.</p>';
-        $('sx-path').textContent = r.path || '(anchor does not resolve)';
+        const prefix = $('sx-prefix'), suffix = $('sx-suffix');
+        if (r.prefix) { prefix.textContent = r.prefix; suffix.textContent = r.suffix || '.md'; prefix.classList.remove('muted-hint'); }
+        else { prefix.textContent = 'choose a book and reference'; suffix.textContent = ''; prefix.classList.add('muted-hint'); }
         renderProblems(r.problems, r.error);
       }
-
       function renderProblems(problems, error) {
-        const box = $('sx-problems');
-        box.innerHTML = '';
+        const box = $('sx-problems'); box.innerHTML = '';
         const add = (cls, text) => { const d = document.createElement('div'); d.className = 'sx-prob ' + cls; d.textContent = text; box.appendChild(d); };
         if (error) add('err', 'Render error: ' + error);
         if (!problems || !problems.length) { if (!error) add('ok', 'No reference problems.'); return; }
         for (const p of problems) add(p.severity === 'error' ? 'err' : 'warn', `${p.severity === 'error' ? '✗' : '!'} [${p.kind}] ${p.reason}`);
       }
 
+      // --- load / new / save -------------------------------------------------
       function fillFields(n) {
         const [code, ...rest] = (n.anchor || '').split(' ');
-        $('sx-book').value = code || '';
+        $('sx-book').value = code || 'GEN';
         $('sx-cv').value = rest.join(' ');
         $('sx-title').value = n.title || '';
-        $('sx-tags').value = n.tags || '';
+        tags = parseTags(n.tags); renderChips();
         $('sx-slug').value = n.slug || '';
         $('sx-body').value = n.body || '';
         slugDirty = true;
+        syncSlugSize();
       }
+      const confirmDiscard = () => !dirty || confirm('You have unsaved changes. Discard them?');
 
       async function loadNote(path) {
+        if (!confirmDiscard()) return;
         const n = await api.get(`/note?path=${encodeURIComponent(path)}`);
         if (n.error) return;
         originalPath = n.path;
         fillFields(n);
+        setDirty(false); persist();
         markActive(path);
-        persist();
         runPreview();
       }
-
       function newNote() {
-        originalPath = '';
-        slugDirty = false;
+        if (!confirmDiscard()) return;
+        originalPath = ''; slugDirty = false; tags = []; renderChips();
         $('sx-book').value = 'GEN';
-        for (const id of ['sx-cv', 'sx-title', 'sx-tags', 'sx-slug', 'sx-body']) $(id).value = '';
+        for (const id of ['sx-cv', 'sx-title', 'sx-slug', 'sx-body']) $(id).value = '';
         try { sessionStorage.removeItem(STORE); } catch {}
+        syncSlugSize(); setDirty(false);
         markActive(null);
         $('sx-book').focus();
         runPreview();
       }
-
       async function save() {
         const r = await api.post('/save', {
-          anchor: anchorStr(),
-          title: $('sx-title').value,
-          tags: $('sx-tags').value,
-          slug: $('sx-slug').value.trim(),
-          body: $('sx-body').value,
-          originalPath,
+          anchor: anchorStr(), title: $('sx-title').value, tags: tags.join(', '),
+          slug: $('sx-slug').value.trim(), body: $('sx-body').value, originalPath,
         });
         if (r.error) { toast('Save failed: ' + r.error); return; }
         originalPath = r.path;
-        if (r.slug) $('sx-slug').value = r.slug; // keep the field on the saved file's slug
-        persist();
+        if (r.slug) { $('sx-slug').value = r.slug; syncSlugSize(); }
+        setDirty(false); persist();
         toast(r.moved ? `Saved · moved to ${r.path}` : `Saved · ${r.path}`);
         await loadList();
+        await loadDoctor();
         markActive(r.path);
       }
 
-      async function loadList() { allNotes = await api.get('/notes'); renderList(); }
-
+      // --- list + doctor -----------------------------------------------------
+      async function loadList() {
+        allNotes = await api.get('/notes');
+        const counts = {};
+        for (const n of allNotes) counts[n.id] = (counts[n.id] || 0) + 1;
+        dupIds = new Set(Object.keys(counts).filter((id) => counts[id] > 1));
+        renderList();
+      }
       function renderList() {
         const q = $('sx-search').value.toLowerCase();
-        const ul = $('sx-notes');
-        ul.innerHTML = '';
+        const ul = $('sx-notes'); ul.innerHTML = '';
         for (const n of allNotes) {
+          if (doctorFilter && !doctorMap.has(n.path)) continue;
           if (q && !`${n.anchor} ${n.title} ${n.id}`.toLowerCase().includes(q)) continue;
           const li = document.createElement('li');
           li.dataset.path = n.path;
+          if (doctorMap.has(n.path)) li.classList.add('misfiled');
           const a = document.createElement('span'); a.className = 'sx-anchor'; a.textContent = n.anchor || '—';
-          const t = document.createElement('span'); t.className = 'sx-title'; t.textContent = n.title || n.id;
+          const t = document.createElement('span'); t.className = 'sx-title';
+          if (doctorMap.has(n.path)) {
+            const w = document.createElement('span'); w.className = 'sx-warn'; w.textContent = '⚠ ';
+            w.title = 'Misfiled — expected ' + (doctorMap.get(n.path).expected || '?');
+            t.append(w);
+          }
+          t.append(document.createTextNode(n.title || n.id));
           li.append(a, t);
           li.onclick = () => loadNote(n.path);
           ul.appendChild(li);
         }
+        markActive(originalPath);
       }
-
       function markActive(path) {
         for (const li of document.querySelectorAll('#sx-notes li')) li.classList.toggle('active', li.dataset.path === path);
+      }
+      async function loadDoctor() {
+        const issues = await api.get('/doctor');
+        doctorMap = new Map(issues.map((i) => [i.path, i]));
+        const btn = $('sx-doctor');
+        if (issues.length) { btn.hidden = false; btn.textContent = `⚠ ${issues.length} filing issue${issues.length > 1 ? 's' : ''}`; }
+        else { btn.hidden = true; doctorFilter = false; btn.classList.remove('active'); }
+        renderList();
       }
 
       let toastTimer;
       function toast(msg) { const t = $('sx-toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200); }
 
       async function init() {
+        // Books
         const books = await api.get('/canon');
         const sel = $('sx-book');
         let group = null, og;
@@ -320,14 +424,15 @@ import '../src/styles/global.css';
           const o = document.createElement('option'); o.value = b.code; o.textContent = `${b.code} — ${b.name}`; og.appendChild(o);
         }
 
+        // Toolbar (from the shortcode registry)
         const reg = await api.get('/registry');
         const tb = $('sx-toolbar');
         for (const s of reg) {
           const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = s.title; btn.title = `${s.description}\n${s.syntax}`;
           btn.onclick = () => {
             if (s.name === 'footnote') insertFootnote();
+            else if (s.name === 'note') openPicker();
             else if (s.name === 'ref') insertInline((sel) => `[${sel || 'text'}](ref:BOOK 1:1)`);
-            else if (s.name === 'note') insertInline((sel) => `[${sel || 'text'}](note:ID)`);
             else if (s.name === 'scripture') insertBlock('{{ BOOK 1:1 }}');
             else if (s.name === 'youtube') insertBlock('{{ youtube URL }}');
             else insertBlock(s.syntax);
@@ -335,21 +440,49 @@ import '../src/styles/global.css';
           tb.appendChild(btn);
         }
 
-        await loadList();
+        // Tag options
+        const tagList = await api.get('/tags');
+        const dl = $('sx-tagoptions');
+        for (const { tag, count } of tagList) { const o = document.createElement('option'); o.value = tag; o.label = `${tag} (${count})`; dl.appendChild(o); }
 
-        restore(); // bring back an in-progress note if the page reloaded
+        await loadList();
+        await loadDoctor();
+
+        restore();
         markActive(originalPath);
 
-        for (const id of ['sx-book', 'sx-cv', 'sx-title', 'sx-tags', 'sx-slug', 'sx-body']) $(id).addEventListener('input', persist);
-        for (const id of ['sx-book', 'sx-cv', 'sx-body', 'sx-slug']) $(id).addEventListener('input', schedulePreview);
-        $('sx-slug').addEventListener('input', () => { slugDirty = true; });
+        // Field events
+        for (const id of ['sx-book', 'sx-cv', 'sx-title', 'sx-slug', 'sx-body']) $(id).addEventListener('input', markEdited);
+        for (const id of ['sx-book', 'sx-cv', 'sx-body']) $(id).addEventListener('input', schedulePreview);
+        $('sx-slug').addEventListener('input', () => { slugDirty = true; syncSlugSize(); });
         $('sx-title').addEventListener('input', () => {
-          if (!slugDirty) $('sx-slug').value = slugify($('sx-title').value);
+          if (!slugDirty) { $('sx-slug').value = slugify($('sx-title').value); syncSlugSize(); }
           schedulePreview();
         });
         $('sx-search').addEventListener('input', renderList);
         $('sx-new').onclick = newNote;
         $('sx-save').onclick = save;
+        $('sx-doctor').onclick = () => { doctorFilter = !doctorFilter; $('sx-doctor').classList.toggle('active', doctorFilter); renderList(); };
+
+        // Tag input events
+        const ti = $('sx-taginput');
+        ti.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(ti.value); ti.value = ''; }
+          else if (e.key === 'Backspace' && !ti.value && tags.length) { removeTag(tags[tags.length - 1]); }
+        });
+        ti.addEventListener('input', () => { if (ti.value.includes(',')) { ti.value.split(',').forEach(addTag); ti.value = ''; } });
+        ti.addEventListener('change', () => { if (ti.value) { addTag(ti.value); ti.value = ''; } });
+
+        // Picker events
+        const pi = $('sx-picker-input');
+        pi.addEventListener('input', () => renderPicker(pi.value));
+        pi.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') closePicker();
+          else if (e.key === 'Enter') { const first = $('sx-picker-list').querySelector('li'); if (first) first.click(); }
+        });
+        document.addEventListener('mousedown', (e) => {
+          if (!$('sx-picker').hidden && !$('sx-picker').contains(e.target)) closePicker();
+        });
 
         runPreview();
       }
