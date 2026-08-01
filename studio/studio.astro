@@ -1,0 +1,276 @@
+---
+// Dev-only notes studio (Tier 1). Injected at /studio by studio/integration.mjs, never
+// built for production. Loads the site stylesheet so the live preview renders a note
+// exactly as it will appear on the real page.
+import '../src/styles/global.css';
+---
+
+<html lang="en" data-pagefind-ignore>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Notes Studio</title>
+  </head>
+  <body>
+    <div class="studio">
+      <!-- Left: note browser -->
+      <aside class="sx-list">
+        <div class="sx-listhead">
+          <input id="sx-search" type="search" placeholder="Search notes…" autocomplete="off" />
+          <button id="sx-new" type="button">+ New</button>
+        </div>
+        <ul id="sx-notes"></ul>
+      </aside>
+
+      <!-- Center: editor -->
+      <main class="sx-edit">
+        <div class="sx-fields">
+          <label class="f-book">Book<select id="sx-book"></select></label>
+          <label class="f-cv">Reference<input id="sx-cv" placeholder="5:12  ·  1:1-2:3  ·  blank = whole book" /></label>
+          <label class="f-title">Title<input id="sx-title" /></label>
+          <label class="f-tags">Tags<input id="sx-tags" placeholder="comma, separated" /></label>
+          <label class="f-slug">Slug<input id="sx-slug" placeholder="from title" /></label>
+        </div>
+        <div class="sx-toolbar" id="sx-toolbar"></div>
+        <textarea id="sx-body" spellcheck="true" placeholder="Write the note in Markdown…"></textarea>
+      </main>
+
+      <!-- Right: target, save, validation, live preview -->
+      <section class="sx-side">
+        <div class="sx-bar">
+          <code id="sx-path" class="sx-path">—</code>
+          <button id="sx-save" type="button">Save</button>
+        </div>
+        <div class="sx-problems" id="sx-problems"></div>
+        <div class="sx-render">
+          <article class="note"><div class="note-body" id="sx-html"></div></article>
+        </div>
+      </section>
+    </div>
+    <div id="sx-toast" class="sx-toast"></div>
+
+    <style is:global>
+      .studio {
+        display: grid;
+        grid-template-columns: 260px minmax(0, 1fr) minmax(0, 1fr);
+        height: 100vh;
+        font-family: var(--sans);
+        color: var(--ink);
+        background: var(--bg);
+      }
+      .studio > * { overflow: auto; min-width: 0; }
+      .studio input, .studio select, .studio textarea {
+        font: inherit; color: var(--ink); background: var(--bg);
+        border: 1px solid var(--rule); border-radius: 6px; padding: 6px 8px;
+      }
+      .studio button {
+        font: inherit; cursor: pointer; border: 1px solid var(--rule);
+        background: var(--panel); color: var(--ink); border-radius: 6px; padding: 5px 10px;
+      }
+      .studio button:hover { border-color: var(--accent); }
+
+      /* Left list */
+      .sx-list { border-right: 1px solid var(--rule); background: var(--panel); }
+      .sx-listhead { display: flex; gap: 6px; padding: 10px; position: sticky; top: 0; background: var(--panel); border-bottom: 1px solid var(--rule); }
+      .sx-listhead input { flex: 1; }
+      #sx-notes { list-style: none; margin: 0; padding: 4px; }
+      #sx-notes li { padding: 7px 9px; border-radius: 6px; cursor: pointer; display: flex; flex-direction: column; gap: 1px; }
+      #sx-notes li:hover { background: var(--stripe); }
+      #sx-notes li.active { background: var(--accent); color: var(--on-accent); }
+      #sx-notes li.active .sx-anchor { color: var(--on-accent); opacity: 0.85; }
+      #sx-notes .sx-anchor { font-size: 0.72rem; letter-spacing: 0.03em; color: var(--ink-soft); text-transform: uppercase; }
+      #sx-notes .sx-title { font-size: 0.9rem; }
+
+      /* Center editor */
+      .sx-edit { display: flex; flex-direction: column; padding: 12px; gap: 10px; }
+      .sx-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+      .sx-fields label { display: flex; flex-direction: column; gap: 3px; font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); }
+      .sx-fields .f-title, .sx-fields .f-slug { grid-column: 1 / -1; }
+      .sx-toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
+      .sx-toolbar button { font-size: 0.82rem; }
+      #sx-body { flex: 1; min-height: 320px; resize: none; font-family: var(--mono, ui-monospace, "SF Mono", Menlo, monospace); font-size: 0.9rem; line-height: 1.55; }
+
+      /* Right side */
+      .sx-side { display: flex; flex-direction: column; border-left: 1px solid var(--rule); }
+      .sx-bar { display: flex; gap: 8px; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--rule); position: sticky; top: 0; background: var(--bg); }
+      .sx-path { flex: 1; font-size: 0.78rem; color: var(--ink-soft); word-break: break-all; }
+      .sx-bar button { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
+      .sx-problems { padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; border-bottom: 1px solid var(--rule); }
+      .sx-prob { font-size: 0.8rem; }
+      .sx-prob.err { color: var(--rubric); }
+      .sx-prob.warn { color: var(--gold-ink); }
+      .sx-prob.ok { color: var(--ink-soft); }
+      .sx-render { padding: 16px 18px; }
+      .sx-render .note { max-width: none; }
+      .sx-empty { color: var(--ink-soft); font-style: italic; }
+
+      .sx-toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--pop-bg, #222); color: var(--pop-fg, #fff); border: 1px solid var(--pop-edge, #000); padding: 8px 14px; border-radius: 8px; font-family: var(--sans); font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; }
+      .sx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    </style>
+
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const api = {
+        get: (p) => fetch(`/__studio/api${p}`).then((r) => r.json()),
+        post: (p, data) =>
+          fetch(`/__studio/api${p}`, {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(data),
+          }).then((r) => r.json()),
+      };
+      const slugify = (s) =>
+        String(s).toLowerCase().trim().replace(/['’"]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+      let originalPath = '';
+      let allNotes = [];
+      let slugDirty = false;
+
+      const anchorStr = () => {
+        const code = $('sx-book').value;
+        const cv = $('sx-cv').value.trim();
+        return cv ? `${code} ${cv}` : code;
+      };
+
+      function insertAtCursor(text) {
+        const ta = $('sx-body');
+        const s = ta.selectionStart, e = ta.selectionEnd;
+        ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
+        ta.selectionStart = ta.selectionEnd = s + text.length;
+        ta.focus();
+        schedulePreview();
+      }
+
+      let previewTimer;
+      const schedulePreview = () => { clearTimeout(previewTimer); previewTimer = setTimeout(runPreview, 250); };
+
+      async function runPreview() {
+        const r = await api.post('/preview', { anchor: anchorStr(), body: $('sx-body').value, slug: $('sx-slug').value.trim() });
+        $('sx-html').innerHTML = r.html || '<p class="sx-empty">Nothing to preview yet.</p>';
+        $('sx-path').textContent = r.path || '(anchor does not resolve)';
+        renderProblems(r.problems, r.error);
+      }
+
+      function renderProblems(problems, error) {
+        const box = $('sx-problems');
+        box.innerHTML = '';
+        const add = (cls, text) => { const d = document.createElement('div'); d.className = 'sx-prob ' + cls; d.textContent = text; box.appendChild(d); };
+        if (error) add('err', 'Render error: ' + error);
+        if (!problems || !problems.length) { if (!error) add('ok', 'No reference problems.'); return; }
+        for (const p of problems) add(p.severity === 'error' ? 'err' : 'warn', `${p.severity === 'error' ? '✗' : '!'} [${p.kind}] ${p.reason}`);
+      }
+
+      function fillFields(n) {
+        const [code, ...rest] = (n.anchor || '').split(' ');
+        $('sx-book').value = code || '';
+        $('sx-cv').value = rest.join(' ');
+        $('sx-title').value = n.title || '';
+        $('sx-tags').value = n.tags || '';
+        $('sx-slug').value = n.slug || '';
+        $('sx-body').value = n.body || '';
+        slugDirty = true;
+      }
+
+      async function loadNote(path) {
+        const n = await api.get(`/note?path=${encodeURIComponent(path)}`);
+        if (n.error) return;
+        originalPath = n.path;
+        fillFields(n);
+        markActive(path);
+        runPreview();
+      }
+
+      function newNote() {
+        originalPath = '';
+        slugDirty = false;
+        for (const id of ['sx-cv', 'sx-title', 'sx-tags', 'sx-slug', 'sx-body']) $(id).value = '';
+        markActive(null);
+        $('sx-book').focus();
+        runPreview();
+      }
+
+      async function save() {
+        const r = await api.post('/save', {
+          anchor: anchorStr(),
+          title: $('sx-title').value,
+          tags: $('sx-tags').value,
+          slug: $('sx-slug').value.trim(),
+          body: $('sx-body').value,
+          originalPath,
+        });
+        if (r.error) { toast('Save failed: ' + r.error); return; }
+        originalPath = r.path;
+        toast(r.moved ? `Saved · moved to ${r.path}` : `Saved · ${r.path}`);
+        await loadList();
+        markActive(r.path);
+      }
+
+      async function loadList() { allNotes = await api.get('/notes'); renderList(); }
+
+      function renderList() {
+        const q = $('sx-search').value.toLowerCase();
+        const ul = $('sx-notes');
+        ul.innerHTML = '';
+        for (const n of allNotes) {
+          if (q && !`${n.anchor} ${n.title} ${n.id}`.toLowerCase().includes(q)) continue;
+          const li = document.createElement('li');
+          li.dataset.path = n.path;
+          const a = document.createElement('span'); a.className = 'sx-anchor'; a.textContent = n.anchor || '—';
+          const t = document.createElement('span'); t.className = 'sx-title'; t.textContent = n.title || n.id;
+          li.append(a, t);
+          li.onclick = () => loadNote(n.path);
+          ul.appendChild(li);
+        }
+      }
+
+      function markActive(path) {
+        for (const li of document.querySelectorAll('#sx-notes li')) li.classList.toggle('active', li.dataset.path === path);
+      }
+
+      let toastTimer;
+      function toast(msg) { const t = $('sx-toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 3200); }
+
+      async function init() {
+        const books = await api.get('/canon');
+        const sel = $('sx-book');
+        let group = null, og;
+        for (const b of books) {
+          if (b.testament !== group) { group = b.testament; og = document.createElement('optgroup'); og.label = group === 'ot' ? 'Old Testament' : 'New Testament'; sel.appendChild(og); }
+          const o = document.createElement('option'); o.value = b.code; o.textContent = `${b.code} — ${b.name}`; og.appendChild(o);
+        }
+
+        const reg = await api.get('/registry');
+        const snippets = {
+          ref: '[text](ref:BOOK 1:1)',
+          note: '[text](note:ID)',
+          scripture: '{{ BOOK 1:1 }}\n',
+          youtube: '{{ youtube URL }}\n',
+          footnote: 'text[^id]\n\n[^id]: ',
+        };
+        const tb = $('sx-toolbar');
+        for (const s of reg) {
+          const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = s.title; btn.title = `${s.description}\n${s.syntax}`;
+          btn.onclick = () => insertAtCursor(snippets[s.name] ?? s.syntax);
+          tb.appendChild(btn);
+        }
+
+        await loadList();
+
+        for (const id of ['sx-book', 'sx-cv', 'sx-body', 'sx-slug']) $(id).addEventListener('input', schedulePreview);
+        $('sx-slug').addEventListener('input', () => { slugDirty = true; });
+        $('sx-title').addEventListener('input', () => {
+          if (!slugDirty) $('sx-slug').value = slugify($('sx-title').value);
+          schedulePreview();
+        });
+        $('sx-search').addEventListener('input', renderList);
+        $('sx-new').onclick = newNote;
+        $('sx-save').onclick = save;
+
+        runPreview();
+      }
+
+      init();
+    </script>
+  </body>
+</html>

@@ -4,6 +4,7 @@ import sitemap from '@astrojs/sitemap';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import studio from './studio/integration.mjs';
 
 // Dev-only: watch data/ and re-run the matching data build when a source file changes,
 // then invalidate the SSR module cache and reload the browser. Without this, `astro dev`
@@ -66,6 +67,7 @@ export default defineConfig({
   // Keep the search UI and the (private) prayer pages out of the sitemap.
   integrations: [
     dataWatch(),
+    studio(), // dev-only notes editor at /studio; a no-op under `astro build`
     sitemap({ filter: (page) => !page.includes('/search') && !page.includes('/prayers') }),
   ],
 });

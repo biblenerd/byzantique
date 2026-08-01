@@ -135,3 +135,54 @@ export function resolveNoteRef(
   if (matches.length > 1) return 'ambiguous';
   return matches[0];
 }
+
+// Kebab-case a title into a filename slug.
+export function slugify(s: string): string {
+  return String(s)
+    .toLowerCase()
+    .trim()
+    .replace(/['’"]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/**
+ * The repo-relative path where a note with this anchor and slug belongs, following the
+ * filing convention:
+ *   - book folder  = the canon slug with hyphens turned to underscores (song_of_songs)
+ *   - a whole-book anchor (bare code) files in the book folder as CODE_00-slug.md
+ *   - otherwise the note files under a chapter folder, padded to the book's chapter width
+ *     (Psalms 3 digits, every other book 2); the filename pads chapter and verse to 2
+ * `chapterCount(code)` supplies the book's chapter total for the folder width (pass one
+ * backed by the text index; the default yields width 2, correct for every book but Psalms).
+ * Returns null if the anchor or its book cannot be parsed.
+ */
+export function notePathFor(
+  anchorStr: string,
+  slug: string,
+  chapterCount: (code: string) => number = () => 0,
+): string | null {
+  const a = parseAnchor(anchorStr);
+  if (!a) return null;
+  const meta = bookByCode(a.book);
+  if (!meta) return null;
+  const folder = meta.slug.replace(/-/g, '_');
+  const dir = `data/commentary/${meta.testament}/${folder}`;
+  const p2 = (n: number) => String(n).padStart(2, '0');
+
+  if (a.scope === 'book') return `${dir}/${a.book}_00-${slug}.md`;
+
+  const width = Math.max(2, String(chapterCount(a.book) || 0).length);
+  const chapDir = `${dir}/${String(a.sc).padStart(width, '0')}`;
+
+  let stem: string;
+  if (a.ev === WHOLE_CHAPTER_END && a.sc === a.ec)
+    stem = `${a.book}_${p2(a.sc)}`; // whole chapter
+  else if (a.sc !== a.ec)
+    stem = `${a.book}_${p2(a.sc)}_${p2(a.sv)}-${p2(a.ec)}_${p2(a.ev)}`; // range across chapters
+  else if (a.sv !== a.ev)
+    stem = `${a.book}_${p2(a.sc)}_${p2(a.sv)}-${p2(a.ev)}`; // range within a chapter
+  else stem = `${a.book}_${p2(a.sc)}_${p2(a.sv)}`; // single verse
+
+  return `${chapDir}/${stem}-${slug}.md`;
+}
