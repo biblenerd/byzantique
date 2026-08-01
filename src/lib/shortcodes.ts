@@ -19,18 +19,8 @@
 
 import { marked } from 'marked';
 import { scriptureQuote, refLink, refPreview } from './scripture.ts';
-import { expandYouTube } from './media.ts';
-
-// One resolved note in the build's registry (see build-commentary.mjs).
-export interface NoteEntry {
-  id: string;
-  book: string;
-  testament: string;
-  slug: string;
-  type: string; // 'book' | 'chapter' | 'range' | 'verse'
-  sc: number;
-  sv: number;
-}
+import { expandYouTube, youTubeId } from './media.ts';
+import type { NoteEntry } from './notes.ts';
 
 // Everything a shortcode's expander may need from its caller. All optional so book intros
 // (which use only youtube + scripture) can pass a bare context.
@@ -227,4 +217,92 @@ export function renderAuthorHtml(
   if (opts.footnotes) md = footnote.expand(md, c);
   md = expandInline(md, c, inline);
   return (marked.parse(md) as string) + appended.join('');
+}
+
+// One thing wrong with a reference in a note, located for an editor to underline.
+export interface RefProblem {
+  kind: 'ref' | 'note' | 'scripture' | 'youtube';
+  severity: 'error' | 'warning';
+  target: string; // the raw reference text
+  text?: string; // the link text (for ref: and note:)
+  index: number; // character offset in the body
+  reason: string; // a human explanation
+}
+
+/**
+ * Scan author Markdown and report EVERY unresolved reference at once, instead of throwing
+ * on the first the way the build does. `ref:` and `note:` failures are errors (they fail
+ * the build); unresolved `{{ }}` scripture and youtube includes are warnings (the build
+ * only warns). The verdicts come from the same resolvers as expansion — refLink for ref:,
+ * ctx.resolveNote for note:, scriptureQuote / youTubeId for `{{ }}` — so the editor's lint
+ * and the build never disagree.
+ */
+export function validateReferences(body: string, ctx: ShortcodeCtx): RefProblem[] {
+  const problems: RefProblem[] = [];
+
+  for (const m of body.matchAll(new RegExp(REF_PATTERN, 'g'))) {
+    const target = m[2].trim();
+    if (!refLink(target))
+      problems.push({
+        kind: 'ref',
+        severity: 'error',
+        target,
+        text: m[1],
+        index: m.index ?? 0,
+        reason: `Unresolved scripture reference "${target}".`,
+      });
+  }
+
+  for (const m of body.matchAll(new RegExp(NOTE_PATTERN, 'g'))) {
+    const target = m[2].trim();
+    const slash = target.indexOf('/');
+    const book = slash === -1 ? null : target.slice(0, slash).toUpperCase();
+    const id = slash === -1 ? target : target.slice(slash + 1);
+    const res = ctx.resolveNote?.(id, book) ?? null;
+    if (res === null)
+      problems.push({
+        kind: 'note',
+        severity: 'error',
+        target,
+        text: m[1],
+        index: m.index ?? 0,
+        reason: `No note with id "${id}"${book ? ` in ${book}` : ''}.`,
+      });
+    else if (res === 'ambiguous')
+      problems.push({
+        kind: 'note',
+        severity: 'error',
+        target,
+        text: m[1],
+        index: m.index ?? 0,
+        reason: `Ambiguous note id "${id}" — qualify as CODE/${id}.`,
+      });
+  }
+
+  // `{{ }}` lines are either a youtube embed or a scripture quote; the expander tries
+  // youtube first, so branch the same way here.
+  for (const m of body.matchAll(new RegExp(SCRIPTURE_PATTERN, 'gm'))) {
+    const inner = m[1].trim();
+    const yt = inner.match(/^(?:youtube|yt)\s+(.+)$/i);
+    if (yt) {
+      if (!youTubeId(yt[1]))
+        problems.push({
+          kind: 'youtube',
+          severity: 'warning',
+          target: inner,
+          index: m.index ?? 0,
+          reason: `Could not extract a YouTube id from "${yt[1].trim()}".`,
+        });
+    } else if (!scriptureQuote(inner)) {
+      problems.push({
+        kind: 'scripture',
+        severity: 'warning',
+        target: inner,
+        index: m.index ?? 0,
+        reason: `Unresolved scripture include "${inner}".`,
+      });
+    }
+  }
+
+  return problems.sort((a, b) => a.index - b.index);
 }

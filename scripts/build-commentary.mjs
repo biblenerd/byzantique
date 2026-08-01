@@ -8,72 +8,28 @@ import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
 import { bookByCode } from '../src/lib/canon.ts'; // .ts imports: Node ≥22.18 strips types natively
+import { WHOLE_CHAPTER_END } from '../src/lib/scripture.ts';
 import { renderAuthorHtml } from '../src/lib/shortcodes.ts';
+import {
+  parseAnchor,
+  anchorType,
+  parseFrontmatter,
+  walkMarkdown,
+  buildNoteRegistry,
+  resolveNoteRef,
+} from '../src/lib/notes.ts';
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'data/commentary');
 const OUT = path.join(ROOT, 'public/data/commentary');
 
-const WHOLE_CHAPTER_END = 999;
-
 // id → [{ id, book, testament, slug, type, sc }] for resolving note: cross-references.
 // Populated by a first pass over all note files (see build()).
-const NOTE_REGISTRY = new Map();
+let NOTE_REGISTRY = new Map();
 
 // Inverted "referenced elsewhere" index: targetBook → { targetChapter → [backlink] }.
 // A backlink records that some note (its source anchor) references a verse in this chapter.
 const BACKLINKS = {};
-
-function walk(dir) {
-  const out = [];
-  if (!fs.existsSync(dir)) return out;
-  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    const p = path.join(dir, e.name);
-    if (e.isDirectory()) out.push(...walk(p));
-    else if (e.name.endsWith('.md')) out.push(p);
-  }
-  return out;
-}
-
-function parseFrontmatter(raw) {
-  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
-  if (!m) return { data: {}, body: raw };
-  const data = {};
-  for (const line of m[1].split(/\r?\n/)) {
-    const idx = line.indexOf(':');
-    if (idx === -1) continue;
-    const key = line.slice(0, idx).trim();
-    let val = line.slice(idx + 1).trim().replace(/^["']|["']$/g, '');
-    data[key] = val;
-  }
-  return { data, body: m[2] };
-}
-
-// Parse "GEN" (whole book), "GEN 1" (whole chapter), "GEN 1:1", "GEN 1:1-13",
-// "GEN 1:1-2:3".
-function parseRef(str) {
-  str = String(str).trim();
-  if (/^[0-9A-Za-z]+$/.test(str)) {
-    // bare book code → whole book
-    return { book: str.toUpperCase(), sc: 1, sv: 1, ec: 999, ev: WHOLE_CHAPTER_END, scope: 'book' };
-  }
-  const m = str.match(/^([0-9A-Za-z]+)\s+(\d+)(?::(\d+))?(?:[-–](?:(\d+):)?(\d+))?$/);
-  if (!m) return null;
-  const [, book, c1, v1, c2, v2] = m;
-  const sc = +c1;
-  const sv = v1 ? +v1 : 1;
-  let ec = sc, ev = v1 ? +v1 : WHOLE_CHAPTER_END;
-  if (v2 && c2) { ec = +c2; ev = +v2; }
-  else if (v2) { ec = sc; ev = +v2; }
-  return { book: book.toUpperCase(), sc, sv, ec, ev };
-}
-
-function anchorType(a) {
-  if (a.scope === 'book') return 'book';
-  if (a.ev === WHOLE_CHAPTER_END) return a.sc === a.ec ? 'chapter' : 'range';
-  if (a.sc !== a.ec) return 'range';
-  return a.sv === a.ev ? 'verse' : 'range';
-}
 
 // Human label for a note's source anchor, e.g. "Genesis 1:26", "Psalms 73:13–14", "Genesis".
 function anchorLabel(ref, type, name) {
@@ -133,7 +89,7 @@ function collectBacklinks(srcRef, srcType, id, title, body) {
   };
   // scripture references ({{ }} quoted, ref: cited)
   for (const { ref: targetStr, kind } of refTargets(body)) {
-    const tr = parseRef(targetStr);
+    const tr = parseAnchor(targetStr);
     if (tr) add(tr.book, tr.sc, tr.sv, kind);
   }
   // note→note references resolve to the referenced note's own anchor (its own reference)
@@ -147,27 +103,16 @@ function build() {
   fs.rmSync(OUT, { recursive: true, force: true }); // start clean (drop stale books)
   fs.mkdirSync(OUT, { recursive: true });
   const byBook = new Map();
-  const files = walk(SRC);
+  const files = walkMarkdown(SRC);
 
-  // Pass 1: register every note id so note: cross-references can resolve (and validate).
-  for (const file of files) {
-    const { data } = parseFrontmatter(fs.readFileSync(file, 'utf8'));
-    if (!data.anchor) continue;
-    const ref = parseRef(data.anchor);
-    if (!ref) continue;
-    const meta = bookByCode(ref.book);
-    if (!meta) continue;
-    const id = path.basename(file, '.md');
-    const entry = { id, book: ref.book, testament: meta.testament, slug: meta.slug, type: anchorType(ref), sc: ref.sc, sv: ref.sv };
-    if (!NOTE_REGISTRY.has(id)) NOTE_REGISTRY.set(id, []);
-    NOTE_REGISTRY.get(id).push(entry);
-  }
+  // Pass 1: index every note id so note: cross-references can resolve (and validate).
+  NOTE_REGISTRY = buildNoteRegistry(SRC);
 
   // Pass 2: build each note's HTML (now note: refs can resolve against the registry).
   for (const file of files) {
     const { data, body } = parseFrontmatter(fs.readFileSync(file, 'utf8'));
     if (!data.anchor) { console.warn(`  ! ${path.relative(ROOT, file)}: no anchor`); continue; }
-    const ref = parseRef(data.anchor);
+    const ref = parseAnchor(data.anchor);
     if (!ref) { console.warn(`  ! ${path.relative(ROOT, file)}: bad anchor "${data.anchor}"`); continue; }
 
     // Context for the shortcode registry: error labels use the repo-relative path, and
@@ -175,13 +120,7 @@ function build() {
     const ctx = {
       file: path.relative(ROOT, file),
       warn: (msg) => console.warn(msg),
-      resolveNote: (id, book) => {
-        let matches = NOTE_REGISTRY.get(id) ?? [];
-        if (book) matches = matches.filter((m) => m.book === book);
-        if (matches.length === 0) return null;
-        if (matches.length > 1) return 'ambiguous';
-        return matches[0];
-      },
+      resolveNote: (id, book) => resolveNoteRef(NOTE_REGISTRY, id, book),
     };
     const note = {
       id: path.basename(file, '.md'),

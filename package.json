@@ -8,6 +8,7 @@
   },
   "scripts": {
     "data": "node scripts/build-texts.mjs && node scripts/build-commentary.mjs && node scripts/build-intro.mjs && node scripts/build-lectionary.mjs",
+    "validate": "node scripts/validate-commentary.mjs",
     "dev": "npm run data && astro dev",
     "build": "npm run data && astro build && pagefind --site dist",
     "preview": "astro preview",
