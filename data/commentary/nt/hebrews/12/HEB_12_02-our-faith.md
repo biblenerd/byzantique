@@ -1,6 +1,6 @@
 ---
 anchor: HEB 12:2
-title: Our" faith?
+title: Is it "our" faith?
 tags: translation
 ---
 
