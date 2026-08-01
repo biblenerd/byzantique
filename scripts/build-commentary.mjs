@@ -7,10 +7,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import url from 'node:url';
-import { marked } from 'marked';
-import { scriptureQuote, refLink, refPreview } from '../src/lib/scripture.ts'; // .ts imports: Node ≥22.18 strips types natively
-import { bookByCode } from '../src/lib/canon.ts';
-import { expandYouTube } from '../src/lib/media.ts';
+import { bookByCode } from '../src/lib/canon.ts'; // .ts imports: Node ≥22.18 strips types natively
+import { renderAuthorHtml } from '../src/lib/shortcodes.ts';
 
 const ROOT = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)), '..');
 const SRC = path.join(ROOT, 'data/commentary');
@@ -25,58 +23,6 @@ const NOTE_REGISTRY = new Map();
 // Inverted "referenced elsewhere" index: targetBook → { targetChapter → [backlink] }.
 // A backlink records that some note (its source anchor) references a verse in this chapter.
 const BACKLINKS = {};
-
-// Replace standalone `{{ REF }}` lines with the resolved scripture blockquote (before Markdown parse).
-function expandScripture(md) {
-  return md.replace(/^[ \t]*\{\{\s*([^}\n]+?)\s*\}\}[ \t]*$/gm, (m, refStr) => {
-    const html = scriptureQuote(refStr.trim());
-    if (!html) console.warn(`  ! unresolved scripture include: {{ ${refStr.trim()} }}`);
-    return html ?? m;
-  });
-}
-
-
-const attrEsc = (s) =>
-  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-
-// Resolve inline cross-references `[text](ref:JHN 1:1)` → an internal link (with a
-// precompiled first-verse hover preview). A bad ref fails the build (REQUIREMENTS §5.7).
-function expandRefs(md, file) {
-  return md.replace(/\[([^\]]+)\]\(ref:([^)]+)\)/g, (_, text, ref) => {
-    const r = ref.trim();
-    const link = refLink(r);
-    if (!link) throw new Error(`${path.relative(ROOT, file)}: unresolved cross-reference [${text}](ref:${r})`);
-    const prev = refPreview(r);
-    const attr = prev ? ` data-ref-preview="${attrEsc(prev)}"` : '';
-    return `<a class="xref" href="${link.href}"${attr}>${text}</a>`;
-  });
-}
-
-// Resolve note cross-references `[text](note:ID)` (or `[text](note:CODE/ID)` to
-// disambiguate) → a link to that note's anchor on its page. Book-level notes live on the
-// book landing page; chapter/range notes on their starting chapter page. Unknown or
-// ambiguous ids fail the build, like ref: cross-references. ID is the note's filename
-// (without .md).
-function expandNoteRefs(md, file) {
-  return md.replace(/\[([^\]]+)\]\(note:([^)]+)\)/g, (_, text, target) => {
-    const t = target.trim();
-    const slash = t.indexOf('/');
-    const book = slash === -1 ? null : t.slice(0, slash).toUpperCase();
-    const id = slash === -1 ? t : t.slice(slash + 1);
-    let matches = NOTE_REGISTRY.get(id) ?? [];
-    if (book) matches = matches.filter((m) => m.book === book);
-    if (matches.length === 0)
-      throw new Error(`${path.relative(ROOT, file)}: unresolved note reference [${text}](note:${t})`);
-    if (matches.length > 1)
-      throw new Error(
-        `${path.relative(ROOT, file)}: ambiguous note reference [${text}](note:${t}) — qualify as note:CODE/${id}`,
-      );
-    const m = matches[0];
-    const base = `/${m.testament}/${m.slug}/`;
-    const href = m.type === 'book' ? `${base}#note-${id}` : `${base}${m.sc}#note-${id}`;
-    return `<a class="xref" href="${href}">${text}</a>`;
-  });
-}
 
 function walk(dir) {
   const out = [];
@@ -197,51 +143,6 @@ function collectBacklinks(srcRef, srcType, id, title, body) {
   }
 }
 
-// Numbered author footnotes: `text[^id]` callers + `[^id]: …` definitions. Numbered in
-// order of first reference; ids are namespaced per note so they never collide on a page.
-// Reuses the .tn-list / .fn-ref structure so the footnote tooltip island works as-is.
-function processFootnotes(md, noteId, file) {
-  // Extract definitions line-by-line so indented continuation lines are consumed
-  // (otherwise a 4-space wrap would be left behind and render as a code block).
-  const lines = md.split('\n');
-  const defs = new Map();
-  const kept = [];
-  for (let i = 0; i < lines.length; i++) {
-    const m = lines[i].match(/^\[\^([^\]\s]+)\]:[ \t]*(.*)$/);
-    if (!m) { kept.push(lines[i]); continue; }
-    let text = m[2];
-    while (i + 1 < lines.length && /^(\s{2,}|\t)\S/.test(lines[i + 1])) {
-      text += ' ' + lines[i + 1].trim();
-      i++;
-    }
-    defs.set(m[1], text.trim());
-  }
-  md = kept.join('\n');
-  if (!defs.size) return { md, footnotesHtml: '' };
-
-  const order = [];
-  md = md.replace(/\[\^([^\]\s]+)\]/g, (m, id) => {
-    if (!defs.has(id)) return m;
-    let n = order.indexOf(id);
-    if (n === -1) { order.push(id); n = order.length - 1; }
-    const num = n + 1;
-    return `<sup class="fn-ref"><a id="fnref-${noteId}-${num}" href="#fn-${noteId}-${num}">${num}</a></sup>`;
-  });
-
-  let footnotesHtml = '';
-  if (order.length) {
-    const items = order
-      .map((id, i) => {
-        const num = i + 1;
-        const body = marked.parseInline(expandRefs(expandNoteRefs(defs.get(id), file), file));
-        return `<li id="fn-${noteId}-${num}"><a class="tn-letter" href="#fnref-${noteId}-${num}">${num}</a><span class="tn-body">${body}</span></li>`;
-      })
-      .join('');
-    footnotesHtml = `<section class="note-fn ui"><ul class="tn-list">${items}</ul></section>`;
-  }
-  return { md, footnotesHtml };
-}
-
 function build() {
   fs.rmSync(OUT, { recursive: true, force: true }); // start clean (drop stale books)
   fs.mkdirSync(OUT, { recursive: true });
@@ -269,16 +170,26 @@ function build() {
     const ref = parseRef(data.anchor);
     if (!ref) { console.warn(`  ! ${path.relative(ROOT, file)}: bad anchor "${data.anchor}"`); continue; }
 
+    // Context for the shortcode registry: error labels use the repo-relative path, and
+    // note: cross-references resolve against the id registry built in pass 1.
+    const ctx = {
+      file: path.relative(ROOT, file),
+      warn: (msg) => console.warn(msg),
+      resolveNote: (id, book) => {
+        let matches = NOTE_REGISTRY.get(id) ?? [];
+        if (book) matches = matches.filter((m) => m.book === book);
+        if (matches.length === 0) return null;
+        if (matches.length > 1) return 'ambiguous';
+        return matches[0];
+      },
+    };
     const note = {
       id: path.basename(file, '.md'),
       title: data.title ?? '',
       tags: data.tags ? data.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
       anchor: { ...ref, type: anchorType(ref), ref: data.anchor },
       span: (ref.ec - ref.sc) * 1000 + (ref.ev - ref.sv),
-      html: (() => {
-        const fn = processFootnotes(body.trim(), path.basename(file, '.md'), file);
-        return marked.parse(expandRefs(expandNoteRefs(expandScripture(expandYouTube(fn.md)), file), file)) + fn.footnotesHtml;
-      })(),
+      html: renderAuthorHtml(body.trim(), ctx, { footnotes: true }),
     };
     if (!byBook.has(ref.book)) byBook.set(ref.book, []);
     byBook.get(ref.book).push(note);

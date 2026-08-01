@@ -5,16 +5,10 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { marked } from 'marked';
-import { scriptureQuote } from './scripture.ts';
-import { expandYouTube } from './media.ts';
+import { renderAuthorHtml } from './shortcodes.ts';
 
 const DIR = path.join(process.cwd(), 'data/book-intros');
 const cache = new Map<string, string | null>();
-
-function expandScripture(md: string): string {
-  return md.replace(/^[ \t]*\{\{\s*([^}\n]+?)\s*\}\}[ \t]*$/gm, (m, ref) => scriptureQuote(String(ref).trim()) ?? m);
-}
 
 /** Rendered HTML for a book's introduction, or null if there is no intro file. */
 export function loadBookIntro(code: string): string | null {
@@ -24,7 +18,9 @@ export function loadBookIntro(code: string): string | null {
   if (fs.existsSync(file)) {
     let md = fs.readFileSync(file, 'utf8');
     md = md.replace(/^---\n[\s\S]*?\n---\n/, ''); // drop optional frontmatter
-    html = marked.parse(expandScripture(expandYouTube(md.trim()))) as string;
+    // Book intros support only the two `{{ }}` shorthands (scripture + youtube); no
+    // cross-references, note links, or footnotes. Unresolved scripture stays silent.
+    html = renderAuthorHtml(md.trim(), {}, { inline: ['youtube', 'scripture'] });
   }
   cache.set(code, html);
   return html;
