@@ -1,0 +1,8 @@
+# Keep Node and build artifacts out of Dropbox sync. Dropbox's virtual
+# filesystem races with npm and Vite 8's dev-time file operations, which
+# hangs `astro dev` and breaks `npm ci`. Everything here is gitignored and
+# regenerated, so excluding it from Dropbox is safe.
+node_modules
+dist
+.astro
+public/data
