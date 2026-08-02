@@ -1,8 +1,16 @@
-# Adding commentary
+# Adding commentary (by hand)
 
 Commentary notes are plain Markdown files with a small frontmatter header that says
 **which passage the note is about**. The build turns them into JSON that the chapter pages
 render. You never touch code to add a note.
+
+> **The preferred way to add a note is the [Studio](./STUDIO.md)** (`npm run dev` →
+> `/studio`): it fills the frontmatter, files the note to the right path, previews it live,
+> and validates references as you type. This doc describes the **underlying format** — what
+> the Studio writes — which is still fully hand-editable if you'd rather. The Studio's
+> path/filename conventions are in [`STUDIO.md`](./STUDIO.md#conventions-the-studio-locks-in);
+> the build itself only reads a note's `anchor`, so a hand-authored file may live anywhere,
+> but matching the convention keeps the tree tidy and the Studio's filing linter quiet.
 
 > See also: [`DEVELOPMENT.md`](./DEVELOPMENT.md) (how to build/preview) and
 > [`USFM-BOOK-NAMES.md`](./USFM-BOOK-NAMES.md) (the book codes to use in anchors).

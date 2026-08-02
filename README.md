@@ -15,8 +15,9 @@ Dan's **commentary / notes** on the biblical text. A static site (Astro) over th
 reader, cross-references, light/dark themes, self-hosted Greek/Hebrew fonts, and the
 lectionary are all in place. The remaining work is **writing the commentary**.
 
-**Docs:** see [`docs/`](./docs/) — editing pages & commentary, local development, and
-USFM book codes. (Start at the [docs index](./docs/README.md).)
+**Docs:** see [`docs/`](./docs/) — the **[Studio](./docs/STUDIO.md)** (the local editor,
+and the preferred way to add commentary), editing pages & commentary by hand, local
+development, and USFM book codes. (Start at the [docs index](./docs/README.md).)
 
 ## Quick start
 
@@ -72,8 +73,9 @@ src/pages/**.astro                      static pages read the JSON at build time
   or a bare book code) via frontmatter, compiled by `build-commentary.mjs`. Notes support
   a `{{ REF }}` scripture-inclusion convention, **cross-references** to passages
   (`[text](ref:JHN 1:1)`) and to other notes (`[text](note:ID)`), and numbered footnotes —
-  all validated at build (a bad reference fails the build). See
-  [`docs/ADDING-COMMENTARY.md`](./docs/ADDING-COMMENTARY.md).
+  all validated at build (a bad reference fails the build). Notes are written with the
+  **[Studio](./docs/STUDIO.md)** — a dev-only `/studio` editor with live preview, validation,
+  and automatic filing — or by hand ([`docs/ADDING-COMMENTARY.md`](./docs/ADDING-COMMENTARY.md)).
 - **Lectionary:** the Orthodox daily lectionary (New/Revised-Julian calendar, 1950–2100),
   precomputed from [`orthocal-python`](https://github.com/brianglass/orthocal-python)'s own
   engine — no runtime API dependency. `build-lectionary.mjs` produces a date→readings map
@@ -95,7 +97,8 @@ The site is a static Astro build (`dist/`). To deploy:
    - Build output directory: **`dist`**
    - Node version: pinned to **24** (LTS) via [`.nvmrc`](./.nvmrc), which Cloudflare Pages
      reads automatically. **A `NODE_VERSION` environment variable in the dashboard overrides
-     `.nvmrc`** — so remove that variable (preferred) or set it to `24`. (Astro 6 needs Node ≥ 22.12.)
+     `.nvmrc`** — so remove that variable (preferred) or set it to `24`. (Astro 7 needs Node ≥ 22.12;
+     an older pinned `NODE_VERSION` would fail the build.)
 3. **Custom domain** — Pages project → *Custom domains* → add **`byzantique.com`**
    (and `www`). If the domain's DNS is on Cloudflare, records are added automatically.
 
@@ -114,7 +117,7 @@ This repo mixes several licenses — see [`LICENSING.md`](./LICENSING.md) for de
 
 ## Colophon
 
-Byzantique is built with [Astro](https://astro.build). Much of the engineering —
+Byzantique is built with [Astro](https://astro.build) **7** (Vite 8) on Node 24. Much of the engineering —
 the build pipeline, components, and styling — was done in collaboration with
 [Claude Code](https://claude.com/claude-code), Anthropic's agentic coding tool.
 The biblical scholarship, commentary, notes, and editorial judgments represent Dan's research.

@@ -5,10 +5,23 @@ How to build and preview the site on your machine. (Deploying to Cloudflare Page
 
 ## Prerequisites
 
-- **Node.js ≥ 22.18** (Astro 6 needs ≥ 22.12; the data scripts import `.ts` directly, which
+- **Node.js ≥ 22.18** (Astro 7 needs ≥ 22.12; the data scripts import `.ts` directly, which
   needs ≥ 22.18 for native type-stripping). Pinned to **24 (LTS)** in [`.nvmrc`](../.nvmrc) —
-  run `nvm use` first if you use nvm. And **npm**.
+  run `nvm use` first if you use nvm. And **npm ≥ 9.6.5** (any recent Node ships this).
 - `python3` is only needed if you want to serve the `prototypes/` mockups.
+
+> **Stack:** Astro **7** on Vite **8** (static output); a custom data build (our `.mjs`
+> scripts) feeds it JSON. Pagefind for search. See the [tech-stack table](../README.md) in
+> the top-level README.
+
+> **⚠️ Don't run this project from inside a cloud-synced folder (Dropbox, iCloud, OneDrive).**
+> Their virtual filesystems race with npm and Vite 8's dev-time file operations badly enough
+> to **hang `astro dev`** and break `npm ci`. If the repo must live in one (this one is under
+> Dropbox), exclude the generated/dependency dirs from sync — a committed
+> [`.dropboxignore`](../.dropboxignore) covers `node_modules`, `dist`, `.astro`, and
+> `public/data`, and they're additionally marked with the `com.dropbox.ignored` attribute.
+> If `node_modules` is ever deleted and recreated, re-apply:
+> `xattr -w com.dropbox.ignored 1 node_modules`.
 
 ## One-time setup
 
@@ -79,16 +92,19 @@ deployable site. (REQUIREMENTS.md §9 — static-first.)
 
 1. Drop the source USFM file into `data/texts/englxxup/` (OT) or `data/texts/engtcent/` (NT).
    Get it from the ebible.org ZIPs (`englxxup_usfm.zip`, `engtcent_usfm.zip`).
-2. In `src/lib/canon.ts`, find the book and set `built: true` (and reconcile its `code` with
-   the source `\id` — see [`USFM-BOOK-NAMES.md`](./USFM-BOOK-NAMES.md), e.g. Esther `ESG`,
-   Daniel `DAG`).
+2. Reconcile the book's `code` in `src/lib/canon.ts` with the source `\id` if they differ
+   (see [`USFM-BOOK-NAMES.md`](./USFM-BOOK-NAMES.md), e.g. Esther `ESG`, Daniel `DAG`). Which
+   books have text is derived from the generated text manifest at build time — there is no
+   `built` flag to set.
 3. `npm run dev` and open `/ot/<slug>/1`.
 
 (Full-canon vendoring is Phase 1.)
 
 ## Adding commentary & structure
 
-See [`ADDING-COMMENTARY.md`](./ADDING-COMMENTARY.md). In short:
+The **[Studio](./STUDIO.md)** (`npm run dev` → `/studio`) is the preferred way to write
+notes — form-driven, with live preview and validation, and it files each note correctly.
+For the hand-authored format see [`ADDING-COMMENTARY.md`](./ADDING-COMMENTARY.md). In short:
 
 - **Notes** — a Markdown file under `data/commentary/` with an `anchor:` in its frontmatter.
 - **Book introductions** — `data/book-intros/<CODE>.md` (renders atop the book page).
@@ -106,8 +122,9 @@ data/commentary/                  your notes (Markdown + anchor frontmatter)
 data/book-intros/<CODE>.md        per-book introductions
 data/pericopes/<CODE>.json        author section/pericope titles
 data/intro/engtcent.usfm          the TCENT translator's introduction
-scripts/         build-{texts,commentary,intro,lectionary}.mjs  (the data build)
-src/lib/         canon registry + loaders (texts, commentary, pericopes, bookintro, chips, nav)
+scripts/         build-{texts,commentary,intro,lectionary}.mjs  (the data build) + validate-commentary.mjs
+studio/          dev-only notes editor (Astro integration + API + /studio page) — never built for production
+src/lib/         canon registry + loaders (texts, commentary, pericopes, bookintro, chips, nav) + notes/shortcodes
 src/pages/       Astro routes (home, [testament]/[book]/[chapter], about/, search, license, privacy)
 src/layouts/ , src/components/ , src/styles/
 public/          static assets (favicon, fonts) + generated public/data/ (git-ignored)

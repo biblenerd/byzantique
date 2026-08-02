@@ -7,8 +7,9 @@ deployment, see the [top-level `README`](../README.md).
 
 | Doc | What it covers |
 |---|---|
+| [**STUDIO.md**](./STUDIO.md) | **The preferred way to add commentary** — the local `/studio` editor: form-driven notes with live preview, live validation, reference/note pickers, tag autocomplete, and automatic filing. Documents the path/filename conventions it locks in. |
 | [**EDITING-CONTENT.md**](./EDITING-CONTENT.md) | Edit pages (`.astro`) and commentary (`.md`): the `<Scripture>`, `<Ref>`, `<Fn>`/`<FnList>`, and `<Faq>` components, the `{{ ref }}` scripture-quote convention, and adding a new page. |
-| [**ADDING-COMMENTARY.md**](./ADDING-COMMENTARY.md) | Write a commentary note end to end: where notes live, the frontmatter format, the `anchor` (verse → whole book), quoting scripture, plus **book introductions** and **section/pericope titles**. |
+| [**ADDING-COMMENTARY.md**](./ADDING-COMMENTARY.md) | Write a commentary note **by hand** (the underlying format the Studio writes): where notes live, the frontmatter format, the `anchor` (verse → whole book), quoting scripture, plus **book introductions** and **section/pericope titles**. |
 | [**DEVELOPMENT.md**](./DEVELOPMENT.md) | Run it locally: prerequisites, one-time setup, the everyday commands, and what "compiling" (the data build → static site) actually does. |
 | [**USFM-BOOK-NAMES.md**](./USFM-BOOK-NAMES.md) | The stable USFM book codes ↔ source `.usfm` files, plus the decided source mappings (e.g. Esther/Daniel Greek, Esdras A/B). |
 
@@ -45,7 +46,7 @@ Ranges and cross-chapter spans are allowed: `GEN 1:1-3`, `GEN 1:1-2:3`.
 
 | I want to… | How |
 |---|---|
-| Add a commentary note | `data/commentary/**/*.md` with `anchor: GEN 1:1` (verse / range / chapter) |
+| Add a commentary note | **Preferred:** the [Studio](./STUDIO.md) — `npm run dev` → `/studio`. By hand: `data/commentary/**/*.md` with `anchor: GEN 1:1` (verse / range / chapter) |
 | Whole-book commentary | a note with a bare book code: `anchor: GEN` (shows on the book page) |
 | Book introduction | `data/book-intros/<CODE>.md` (Markdown, supports `{{ }}`) |
 | Section / pericope title | `data/pericopes/<CODE>.json` → `[{ "start": "C:V", "title": "…" }]` |
