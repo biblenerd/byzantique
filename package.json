@@ -25,7 +25,7 @@
     "@codemirror/state": "^6.7.1",
     "@codemirror/view": "^6.43.7",
     "codemirror": "^6.0.2",
-    "marked": "^18.0.5",
+    "marked": "^18.0.7",
     "pagefind": "^1.5.2"
   }
 }
