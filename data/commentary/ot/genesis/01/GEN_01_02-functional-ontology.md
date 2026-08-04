@@ -6,7 +6,7 @@ tags: ontology
 
 >To modern people, the opposite of the created order is "nothing," that is, a vacuum. To the ancients, the opposite of the created order was something much worse than "nothing." It was an active, malevolent force we can best term "chaos." In this verse, chaos is envisioned as a dark, undifferentiated mass of water.[^chaos]
 
-The Genesis account assumes the Mesopotamian worldview that consisted of primordial chaos prior to the functional ontological formation of the cosmic order. This was envisioned as chaotic waters and explains why the Spirit hovered upon the surface (literally "face" in the Hebrew) of such waters (עַל־פְּנֵ֥י הַמָּֽיִם / ʿal-pənê hammāyīm) in the creation narrative.
+The Genesis account assumes the Mesopotamian worldview that consisted of primordial chaos prior to the functional ontological formation of the cosmic order. This was envisioned as chaotic waters and explains why the Spirit hovered upon the surface (literally "face" in the Hebrew) of such waters (עַל־פְּנֵ֥י הַמָּֽיִם / *ʿal-pənê hammāyīm*) in the creation narrative.
 
 >In Egyptian views of origins there is the concept of the "nonexistent" that may be very close to what is expressed here in Genesis. It is viewed as that which has not yet been differentiated and assigned function. No boundaries or definitions have been established. The Egyptian concept, however, also carries with it the idea of potentiality and a quality of being absolute.[^egypt]
 

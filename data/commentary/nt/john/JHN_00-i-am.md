@@ -13,7 +13,7 @@ Bultmann created a classification system for the ἐγώ εἰμι (*egō eimi*)
 1. *Präsentationsformel:* Introduction as a response to "Who are you?"
 2. *Qualifikationsformel:* Description of the subject in response to "What are you?"
 3. *Identifikationsformel:* The speaker self-identifies as another thing or person ("The predicate sums up the identity of the subject"[^fn2]).
-4. *Rekognitionsformel:* Distinguishes the subject from others in response to "Who is the one who?" ("I" is here truly a predicate).
+4. *Rekognitionsformel:* Distinguishes the subject from others in response to "Who is the one who ...?" ("I" is here truly a predicate).
 
 Bultmann further distinguishes between three grammatical uses:[^fn3]
 
