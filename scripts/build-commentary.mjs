@@ -73,11 +73,14 @@ function collectBacklinks(srcRef, srcType, id, title, body) {
   const href = `/${meta.testament}/${meta.slug}/${srcType === 'book' ? '' : srcRef.sc}#note-${id}`;
   const add = (book, sc, sv, kind) => {
     if (!bookByCode(book)) return;
-    if (book === srcRef.book && srcRef.sc <= sc && sc <= srcRef.ec) return; // same-page
+    // Same-page: a verse/range/chapter note already renders on the chapter it cites, so no
+    // backlink there. A book-level note does NOT render on the chapter, so its own-book
+    // references DO cross-reference (surfacing the whole-book note on the chapters it discusses).
+    if (srcType !== 'book' && book === srcRef.book && srcRef.sc <= sc && sc <= srcRef.ec) return;
     const list = ((BACKLINKS[book] ??= {})[sc] ??= []);
     const dup = list.find((e) => e.sid === id && e.tv === sv);
     if (dup) { if (kind === 'quote') dup.kind = 'quote'; return; }
-    list.push({ tv: sv, kind, title: title || '', src, href, sid: id });
+    list.push({ tv: sv, kind, title: title || '', src, href, sid: id, bookNote: srcType === 'book' || undefined });
   };
   // book-level target (a whole-book note lives on the book landing page, keyed "book")
   const addBook = (book) => {
@@ -140,7 +143,9 @@ function build() {
   let blCount = 0;
   for (const code of Object.keys(BACKLINKS))
     for (const ch of Object.keys(BACKLINKS[code])) {
-      BACKLINKS[code][ch].sort((a, b) => a.tv - b.tv || a.src.localeCompare(b.src));
+      BACKLINKS[code][ch].sort(
+        (a, b) => a.tv - b.tv || (a.bookNote ? 1 : 0) - (b.bookNote ? 1 : 0) || a.src.localeCompare(b.src),
+      );
       blCount += BACKLINKS[code][ch].length;
     }
   fs.writeFileSync(path.join(OUT, 'backlinks.json'), JSON.stringify(BACKLINKS, (k, v) => (k === 'sid' ? undefined : v)));

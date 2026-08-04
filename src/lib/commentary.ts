@@ -47,10 +47,19 @@ export interface Backlink {
   title: string; // source note title ('' → "Note on <src>")
   src: string; // human label of the source note's anchor, e.g. "Genesis 1:26"
   href: string; // link to the source note
+  bookNote?: boolean; // source is a whole-book note (lives on the book page)
 }
 export interface BacklinkGroup {
   verse: number;
   entries: Backlink[];
+}
+// A whole-book note that discusses this chapter, collapsed to one row that lists the verses
+// it touches (rather than one backlink row per verse).
+export interface BookNoteBacklink {
+  title: string;
+  href: string;
+  kind: 'quote' | 'link';
+  verses: number[];
 }
 
 let _backlinks: Record<string, Record<string, Backlink[]>> | null = null;
@@ -62,15 +71,37 @@ function loadBacklinks(): Record<string, Record<string, Backlink[]>> {
 }
 
 /** Notes elsewhere that reference this chapter, grouped by the target verse. */
-export function backlinksForChapter(code: string, chapter: number): { groups: BacklinkGroup[]; total: number } {
+export function backlinksForChapter(
+  code: string,
+  chapter: number,
+): { groups: BacklinkGroup[]; bookNotes: BookNoteBacklink[]; total: number } {
   const list = loadBacklinks()[code]?.[String(chapter)] ?? [];
+
+  // Verse/range notes: one backlink row per target verse (grouped).
   const byVerse = new Map<number, Backlink[]>();
   for (const b of list) {
+    if (b.bookNote) continue;
     if (!byVerse.has(b.tv)) byVerse.set(b.tv, []);
     byVerse.get(b.tv)!.push(b);
   }
   const groups = [...byVerse.entries()].sort((a, b) => a[0] - b[0]).map(([verse, entries]) => ({ verse, entries }));
-  return { groups, total: list.length };
+
+  // Whole-book notes: collapse to one row per note, listing the verses it touches here.
+  const byNote = new Map<string, BookNoteBacklink>();
+  for (const b of list) {
+    if (!b.bookNote) continue;
+    let e = byNote.get(b.href);
+    if (!e) {
+      e = { title: b.title, href: b.href, kind: b.kind, verses: [] };
+      byNote.set(b.href, e);
+    }
+    if (!e.verses.includes(b.tv)) e.verses.push(b.tv);
+  }
+  const bookNotes = [...byNote.values()];
+  for (const e of bookNotes) e.verses.sort((a, b) => a - b);
+
+  const verseCount = groups.reduce((n, g) => n + g.entries.length, 0);
+  return { groups, bookNotes, total: verseCount + bookNotes.length };
 }
 
 /** Notes elsewhere that reference this book's whole-book notes (via note:), for the book page. */

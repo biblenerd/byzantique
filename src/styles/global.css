@@ -587,6 +587,7 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .backlinks li { padding: 5px 0; border-bottom: 1px dotted var(--rule); }
 .backlinks li:last-child { border-bottom: 0; }
 .backlinks .bl-v { color: var(--accent); font-weight: 700; }
+.backlinks .bl-book { color: var(--ink-soft); font-style: italic; }
 .backlinks a { color: var(--link); text-decoration: none; }
 .backlinks a:hover { text-decoration: underline; color: var(--accent); }
 .note-body blockquote {
