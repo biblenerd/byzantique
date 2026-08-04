@@ -6,7 +6,7 @@ tags: christology
 
 The Gospel of John features several prominent instances where Jesus says "ἐγώ εἰμι" (*egō eimi*) which commentators have understood beyond the plain grammatical sense (e.g., "I am" or "It is I"), understanding it as a translation of the Hebrew name of God: I AM.
 
-I've repeatedly heard there are seven such statements in the Gospel of John (e.g., [6:48](ref:JHN 6:48); [9:5](ref:JHN 9:5); [10:7](ref:JHN 10:7), [11](ref:JHN 10:11); [11:25-26](ref:JHN 11:25-26); [14:6](ref:JHN 14:6); [15:1](ref:JHN 15:1)),[^fn0] but there are more.
+I've repeatedly heard there are seven such statements in the Gospel of John (e.g., [6:48](ref:JHN 6:48); [9:5](ref:JHN 9:5); [10:7](ref:JHN 10:7), [11](ref:JHN 10:11); [11:25](ref:JHN 11:25); [14:6](ref:JHN 14:6); [15:1](ref:JHN 15:1)),[^fn0] but there are more.
 
 Bultmann created a classification system for the ἐγώ εἰμι (*egō eimi*) statements:[^fn1]
 
@@ -18,7 +18,7 @@ Bultmann created a classification system for the ἐγώ εἰμι (*egō eimi*)
 Bultmann further distinguishes between three grammatical uses:[^fn3]
 
 - Absolute with no predicate ([John 8:24](ref:JHN 8:24), [28](ref:JHN 8:28), [58](ref:JHN 8:58); [13:19](ref:JHN 13:19)). These can most clearly be optimally translated as "I AM" (and the sentences often feel incomplete due to the missing predicate, which sometimes leads translators to say "I am *he*," supplying the pronoun).
-- Predicate is not explicitly stated but is understood (e.g., [John 6:20](ref:JHN 6:20); perhaps [18:5](ref:JHN 18:5)[^fn4]).
+- Predicate is not explicitly stated but is understood (e.g., [John 4:26](ref:JHN 4:26); [6:20](ref:JHN 6:20); [18:5](ref:JHN 18:5)[^fn4]).
 - With a predicate nominative, which are the classic seven instances where Jesus speaks figuratively concerning Himself, which Brown lists as follows:[^fn5]
    1. "I am the bread of life" ([6:35](ref:JHN 6:35), [48](ref:JHN 6:48), [51](ref:JHN 6:51))
    2. "I am the light of the world" ([8:12](ref:JHN 8:12); [9:5](ref:JHN 9:5))
