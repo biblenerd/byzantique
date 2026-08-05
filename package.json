@@ -7,7 +7,7 @@
     "node": ">=22.18.0"
   },
   "scripts": {
-    "data": "node scripts/build-texts.mjs && node scripts/build-commentary.mjs && node scripts/build-intro.mjs && node scripts/build-lectionary.mjs",
+    "data": "node scripts/build-texts.mjs && node scripts/build-commentary.mjs && node scripts/build-intro.mjs && node scripts/build-lectionary.mjs && node scripts/build-parallels.mjs",
     "validate": "node scripts/validate-commentary.mjs",
     "dev": "npm run data && astro dev",
     "build": "npm run data && astro build && pagefind --site dist",
