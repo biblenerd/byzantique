@@ -11,6 +11,7 @@ deployment, see the [top-level `README`](../README.md).
 | [**EDITING-CONTENT.md**](./EDITING-CONTENT.md) | Edit pages (`.astro`) and commentary (`.md`): the `<Scripture>`, `<Ref>`, `<Fn>`/`<FnList>`, and `<Faq>` components, the `{{ ref }}` scripture-quote convention, and adding a new page. |
 | [**ADDING-COMMENTARY.md**](./ADDING-COMMENTARY.md) | Write a commentary note **by hand** (the underlying format the Studio writes): where notes live, the frontmatter format, the `anchor` (verse → whole book), quoting scripture, plus **book introductions** and **section/pericope titles**. |
 | [**DEVELOPMENT.md**](./DEVELOPMENT.md) | Run it locally: prerequisites, one-time setup, the everyday commands, and what "compiling" (the data build → static site) actually does. |
+| [**DATA-SOURCES.md**](./DATA-SOURCES.md) | Where every dataset comes from: the vendored scripture (ebible.org), lectionary (orthocal-python), and parallels, with download instructions, formats, and licenses. What's committed (`data/`) vs generated and git-ignored (`public/data/`), and how to rebuild either. |
 | [**USFM-BOOK-NAMES.md**](./USFM-BOOK-NAMES.md) | The stable USFM book codes ↔ source `.usfm` files, plus the decided source mappings (e.g. Esther/Daniel Greek, Esdras A/B). |
 | [**GOSPEL-PARALLELS.md**](./GOSPEL-PARALLELS.md) | The Gospel synopsis dataset (`data/parallels/`): a harmony of Matthew/Mark/Luke/John, its schema, provenance (public-domain harmonies, not Aland), QC, and how it drives the Synoptic parallels panel on Gospel chapter pages. |
 

@@ -122,7 +122,7 @@ data/commentary/                  your notes (Markdown + anchor frontmatter)
 data/book-intros/<CODE>.md        per-book introductions
 data/pericopes/<CODE>.json        author section/pericope titles
 data/intro/engtcent.usfm          the TCENT translator's introduction
-scripts/         build-{texts,commentary,intro,lectionary}.mjs  (the data build) + validate-commentary.mjs
+scripts/         build-{texts,commentary,intro,lectionary,parallels}.mjs  (the data build) + validate-commentary.mjs
 studio/          dev-only notes editor (Astro integration + API + /studio page) — never built for production
 src/lib/         canon registry + loaders (texts, commentary, pericopes, bookintro, chips, nav) + notes/shortcodes
 src/pages/       Astro routes (home, [testament]/[book]/[chapter], about/, search, license, privacy)
