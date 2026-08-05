@@ -1,10 +1,10 @@
 ---
 anchor: MAT
-title: Prostration or adoration
+title: Prostration / adoration
 tags: translation
 ---
 
-Prostration or adoration (προσκυνέω / *proskyneō*) is an important theme in St. Matthew's Gospel (typically translated as "worship" in [TCENT](/about/texts-and-translations/#tcent)). The EOB generally translates προσκυνέω (*proskyneō*) as "express adoration."
+Prostration / adoration (προσκυνέω / *proskyneō*) is an important theme in St. Matthew's Gospel (typically translated as "worship" in [TCENT](/about/texts-and-translations/#tcent)). The EOB generally translates προσκυνέω (*proskyneō*) as to "express adoration."
 
 >... in Matthew, prostration is a supreme expression of the Christological faith....
 >
@@ -28,7 +28,7 @@ Instances of προσκυνέω (*proskyneō*) in Matthew:
 - **[28:9](ref:MAT 28:9) &mdash;** Mary Magdalene and "the other Mary" experienced an earthquake and encountered an angel at Jesus' empty tomb who proclaimed His resurrection to them. As they went to tell His disciples about this, they encountered the risen Lord Himself and prostrated and *adored* Him (taking hold of His feet).
 - **[28:17](ref:MAT 28:17) &mdash;** The disciples *adored* / *prostrated* before Jesus prior to being given the Great Commission.
 
-This abundance of examples led Fr. Pat Reardon to conclude that:
+This abundance of examples[^fn3] led Fr. Pat Reardon to conclude that:
 
 >In Matthew’s presentation the whole life of Jesus is framed, as it were, in adoration.[^fn2]
 
@@ -36,3 +36,5 @@ This abundance of examples led Fr. Pat Reardon to conclude that:
 [^fn1]: Patrick Henry Reardon, *Reclaiming the Atonement: An Orthodox Theology of Redemption: The Incarnate Word*, vol. 1 (Chesterton, IN: Ancient Faith Publishing, 2015), 232–233.
 
 [^fn2]: *Ibid.,* 233.
+
+[^fn3]: It's also helpful to compare how St. Matthew uses προσκυνέω (*proskyneō*) where other Gospel writers do not, or vice versa. For example, St. Mark indicates that the demonized man from the region of the Gadarenes adored / prostrated (προσεκύνησεν / *prosekynēsen*) before Jesus ([Mark 5:6](ref:MRK 5:6)). However, St. Matthew does *not* use this term in the parallel account (*cf.* [Matthew 8:28](ref:MAT 8:28)), as he reserves this for Christian worship acts. *Cf. Ibid.,* 233–234 for additional comparisons.
