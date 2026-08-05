@@ -30,7 +30,7 @@ npm run dev        # runs the data build, then the Astro dev server
 Other scripts:
 
 ```bash
-npm run data       # texts + commentary + intro + lectionary builds → public/data/
+npm run data       # texts + commentary + intro + lectionary + parallels builds → public/data/
 npm run build      # data build + static site → dist/
 npm run preview    # serve the built dist/ locally
 ```
@@ -43,10 +43,10 @@ data/intro/engtcent.usfm                the TCENT translator's introduction
 data/commentary/**/*.md                 author notes (Markdown + frontmatter anchors)
 data/book-intros/<CODE>.md              per-book introductions
 data/pericopes/<CODE>.json              author section/pericope headings
-data/parallels/synopsis.json            Gospel synopsis (a harmony; data only, not yet in the UI)
+data/parallels/synopsis.json            Gospel synopsis (a harmony; drives the Synoptic parallels panel)
 data/lectionary/                        vendored orthocal data (fixtures + date dumps)
         │
-        │   npm run data  →  scripts/build-{texts,commentary,intro,lectionary}.mjs
+        │   npm run data  →  scripts/build-{texts,commentary,intro,lectionary,parallels}.mjs
         ▼
 public/data/**                          generated JSON (texts, commentary, lectionary; gitignored)
 src/lib/canon.ts                        canon registry (names, order, slugs, USFM codes)
