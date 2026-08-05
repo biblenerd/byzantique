@@ -2,8 +2,9 @@
 
 A **harmony of the four Gospels** — a dataset that groups the parallel passages of Matthew,
 Mark, Luke, and John into sections (pericopes), so the same event or teaching can be found
-across the Gospels. It is data only: **not yet surfaced in the UI** (how it will be used is
-a separate design step).
+across the Gospels. It ships in the reader: each Gospel chapter page shows a **Synoptic
+parallels** panel in the right column, listing the parallel passages in the other Gospels for
+every pericope that has one (see [In the UI](#in-the-ui)).
 
 ## Where it lives
 
@@ -13,8 +14,18 @@ scripts/build-parallels.mjs         the build: validates every ref, inverts into
 public/data/parallels/<CODE>.json   generated verse→parallels index, per Gospel (git-ignored)
 ```
 
-Run it: `node scripts/build-parallels.mjs`. (Not yet wired into `npm run data` — it will be
-when the feature is used.)
+Run it: `node scripts/build-parallels.mjs`, or via `npm run data` (which includes it). Editing
+`data/parallels/` while `npm run dev` is running rebuilds the index and hot-reloads.
+
+## In the UI
+
+Each Gospel chapter page renders a **Synoptic parallels** panel in the reader's right column
+(`src/components/Parallels.astro`, fed by `parallelsForChapter()` in `src/lib/parallels.ts`),
+sitting alongside the commentary notes and the "Referenced elsewhere" backlinks. One row per
+pericope that touches the chapter and has a parallel elsewhere: the passage's own verse range
+and title, then a chip linking to the parallel passage in each of the other Gospels. Pericopes
+unique to one Gospel (much of John) are omitted. The panel appears on Gospel chapters only, and
+a chapter that has parallels but no commentary still opens the two-column reader for it.
 
 ## Schema
 
