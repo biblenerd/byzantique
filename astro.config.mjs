@@ -18,6 +18,7 @@ function dataWatch() {
     commentary: ['--experimental-strip-types', 'scripts/build-commentary.mjs'],
     intro: ['scripts/build-intro.mjs'],
     lectionary: ['--experimental-strip-types', 'scripts/build-lectionary.mjs'],
+    parallels: ['--experimental-strip-types', 'scripts/build-parallels.mjs'],
   };
   return {
     name: 'byz-data-watch',

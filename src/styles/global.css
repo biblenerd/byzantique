@@ -590,6 +590,25 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .backlinks .bl-book { color: var(--ink-soft); font-style: italic; }
 .backlinks a { color: var(--link); text-decoration: none; }
 .backlinks a:hover { text-decoration: underline; color: var(--accent); }
+
+/* "Synoptic parallels" — Gospel-only right-column panel: each pericope's own range + title,
+   then a chip linking to the parallel passage in each other Gospel. Mirrors .backlinks. §5.8. */
+.parallels { margin: 22px 0 0; border-top: 1px solid var(--rule); padding-top: 12px;
+  font-family: var(--sans); font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+.parallels .pl-head {
+  font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft);
+}
+.parallels ul { list-style: none; margin: 8px 0 0; padding: 0; }
+.parallels li { padding: 9px 0; border-bottom: 1px dotted var(--rule); }
+.parallels li:last-child { border-bottom: 0; }
+.parallels .pl-title { font-size: 13.5px; color: var(--ink); }
+.parallels .pl-self { color: var(--accent); font-weight: 700; margin-right: 5px; }
+.parallels .pl-par { margin-top: 5px; }
+.parallels .pl-chip { display: inline-block; background: var(--stripe); border: 1px solid var(--rule);
+  border-radius: 5px; padding: 1px 7px; margin: 3px 5px 0 0; font-size: 12px; white-space: nowrap; }
+.parallels .pl-code { color: var(--gold-ink); font-weight: 700; font-size: 11px; }
+.parallels .pl-chip a { color: var(--link); text-decoration: none; }
+.parallels .pl-chip a:hover { text-decoration: underline; color: var(--accent); }
 .note-body blockquote {
   margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--gold);
   background: var(--gold-soft); border-radius: 0 6px 6px 0; color: var(--ink-soft);
@@ -778,7 +797,8 @@ blockquote.scripture-quote cite a:hover { color: var(--accent); text-decoration:
   .reader.xref-only .reader-grid { grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr); }
 }
 .reader.xref-only .col-text-inner { position: static; max-height: none; overflow: visible; padding-right: 0; }
-.reader.xref-only .backlinks { border-top: 0; margin-top: 6px; padding-top: 0; }
+/* first right-column panel (parallels or backlinks) sits close to the top; later panels keep their rule */
+.reader.xref-only .col-notes > section:first-child { border-top: 0; margin-top: 6px; padding-top: 0; }
 
 /* note ↔ verse linking (side-by-side reader only) */
 .reader .scripture .v { border-radius: 3px; transition: background .12s; }

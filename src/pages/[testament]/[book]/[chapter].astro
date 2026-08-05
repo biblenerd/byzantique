@@ -2,9 +2,11 @@
 import Base from '../../../layouts/Base.astro';
 import ChapterText from '../../../components/ChapterText.astro';
 import Backlinks from '../../../components/Backlinks.astro';
+import Parallels from '../../../components/Parallels.astro';
 import { BOOKS, bookLabel } from '../../../lib/canon';
 import { builtCodes, loadBook, isVerse, inlinePlain } from '../../../lib/texts';
 import { notesForChapter, refRange, anchorBadge, backlinksForChapter } from '../../../lib/commentary';
+import { parallelsForChapter } from '../../../lib/parallels';
 import { chapterChipGroups } from '../../../lib/lectionary';
 
 export function getStaticPaths() {
@@ -41,10 +43,13 @@ const snippet = chapter.blocks
 const notes = notesForChapter(book.code, chapterNumber);
 const hasNotes = notes.length > 0;
 const back = backlinksForChapter(book.code, chapterNumber);
+// Gospel synopsis: parallel passages in the other Gospels for this chapter's pericopes
+// (empty for non-Gospel books). REQUIREMENTS.md §5.8.
+const parallels = parallelsForChapter(book.code, chapterNumber);
 // Use the two-column reader whenever there's anything for the right column — authored
-// notes OR cross-reference backlinks. Backlinks-only chapters keep scripture as the main
-// (wider) column via `.reader.xref-only`.
-const hasReader = hasNotes || back.total > 0;
+// notes OR cross-reference backlinks OR synoptic parallels. Right-column-only chapters keep
+// scripture as the main (wider) column via `.reader.xref-only`.
+const hasReader = hasNotes || back.total > 0 || parallels.length > 0;
 const lectGroups = chapterChipGroups(book.code, chapterNumber);
 const vnum = (c: number, v: number) => c * 1000 + v;
 
@@ -123,6 +128,7 @@ const credit =
               <div class="note-body" set:html={n.html} />
             </article>
           ))}
+          <Parallels entries={parallels} />
           <Backlinks groups={back.groups} bookNotes={back.bookNotes} total={back.total} />
         </section>
       </div>

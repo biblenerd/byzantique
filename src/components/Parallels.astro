@@ -1,0 +1,33 @@
+---
+// "Synoptic parallels" — for each pericope in this Gospel chapter that also appears in
+// another Gospel, the passage's own range + title, then a chip linking to the parallel
+// passage in each other Gospel. Sits in the right column beside the reader, mirroring
+// <Backlinks>. Data from public/data/parallels/<CODE>.json. REQUIREMENTS.md §5.8.
+import type { ParallelEntry } from '../lib/parallels';
+
+interface Props {
+  entries: ParallelEntry[];
+}
+const { entries } = Astro.props;
+const SHORT: Record<string, string> = { MAT: 'Matt', MRK: 'Mark', LUK: 'Luke', JHN: 'John' };
+// Refs are stored with a plain hyphen range separator; render as an en dash to match the site.
+const dash = (r: string) => r.replace(/-/g, '–');
+---
+
+{entries.length > 0 && (
+  <section class="parallels ui" data-pagefind-ignore>
+    <div class="col-label pl-head">Synoptic parallels</div>
+    <ul>
+      {entries.map((e) => (
+        <li>
+          <span class="pl-title"><span class="pl-self">{dash(e.ref)}</span> {e.title}</span>
+          <div class="pl-par">
+            {e.parallels.map((p) => (
+              <span class="pl-chip"><span class="pl-code">{SHORT[p.code] ?? p.code}</span>{' '}<a href={p.href}>{dash(p.ref)}</a></span>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}
