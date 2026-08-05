@@ -128,7 +128,7 @@ const credit =
               <div class="note-body" set:html={n.html} />
             </article>
           ))}
-          <Parallels entries={parallels} />
+          <Parallels code={book.code} entries={parallels} />
           <Backlinks groups={back.groups} bookNotes={back.bookNotes} total={back.total} />
         </section>
       </div>
