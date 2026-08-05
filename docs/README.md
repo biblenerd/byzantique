@@ -12,6 +12,7 @@ deployment, see the [top-level `README`](../README.md).
 | [**ADDING-COMMENTARY.md**](./ADDING-COMMENTARY.md) | Write a commentary note **by hand** (the underlying format the Studio writes): where notes live, the frontmatter format, the `anchor` (verse → whole book), quoting scripture, plus **book introductions** and **section/pericope titles**. |
 | [**DEVELOPMENT.md**](./DEVELOPMENT.md) | Run it locally: prerequisites, one-time setup, the everyday commands, and what "compiling" (the data build → static site) actually does. |
 | [**USFM-BOOK-NAMES.md**](./USFM-BOOK-NAMES.md) | The stable USFM book codes ↔ source `.usfm` files, plus the decided source mappings (e.g. Esther/Daniel Greek, Esdras A/B). |
+| [**GOSPEL-PARALLELS.md**](./GOSPEL-PARALLELS.md) | The Gospel synopsis dataset (`data/parallels/`): a harmony of Matthew/Mark/Luke/John, its schema, provenance (public-domain harmonies, not Aland), and QC. Data only — not yet in the UI. |
 
 ## Quick reference
 

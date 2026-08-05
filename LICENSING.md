@@ -31,6 +31,15 @@ with the authoritative statement.
 > Robert Adam Boyd. We do this on the **Texts and Translations** page and in each
 > directory's `copr.htm`.
 
+## Gospel-parallels dataset — CC BY-SA 4.0
+
+The Gospel synopsis in `data/parallels/` (a harmony mapping parallel passages across Matthew,
+Mark, Luke, and John) is Byzantique's own compilation, licensed **CC BY-SA 4.0** like the
+commentary. Its section order and titles follow the **public-domain** harmonies of
+A. T. Robertson (1922) and J. A. Broadus (1893), and the parallels themselves are textual
+facts. It is **not** derived from Kurt Aland's copyrighted *Synopsis Quattuor Evangeliorum*
+(© Deutsche Bibelgesellschaft). Full provenance and method: [`docs/GOSPEL-PARALLELS.md`](./docs/GOSPEL-PARALLELS.md).
+
 ## Lectionary data (when added)
 
 Orthodox calendar/lectionary data is derived from

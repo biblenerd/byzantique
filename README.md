@@ -43,6 +43,7 @@ data/intro/engtcent.usfm                the TCENT translator's introduction
 data/commentary/**/*.md                 author notes (Markdown + frontmatter anchors)
 data/book-intros/<CODE>.md              per-book introductions
 data/pericopes/<CODE>.json              author section/pericope headings
+data/parallels/synopsis.json            Gospel synopsis (a harmony; data only, not yet in the UI)
 data/lectionary/                        vendored orthocal data (fixtures + date dumps)
         │
         │   npm run data  →  scripts/build-{texts,commentary,intro,lectionary}.mjs
@@ -107,7 +108,9 @@ The site is a static Astro build (`dist/`). To deploy:
 This repo mixes several licenses — see [`LICENSING.md`](./LICENSING.md) for details.
 
 - **Code** (Astro, build scripts, styles) — **MIT** (see [`LICENSE`](./LICENSE)).
-- **Commentary & notes** — © Byzantique, **CC BY-SA 4.0**.
+- **Commentary & notes** — © Byzantique, **CC BY-SA 4.0**. (Same for the **Gospel-parallels**
+  dataset in `data/parallels/`, a compilation over public-domain harmonies — see
+  [`docs/GOSPEL-PARALLELS.md`](./docs/GOSPEL-PARALLELS.md).)
 - **Bundled texts** — their own licenses: Updated Brenton LXX (OT) — CC0;
   TCENT / Byzantine Text Version (NT) — CC BY 4.0, © Robert Adam Boyd.
 - **Bundled fonts** — Noto Serif and Ezra SIL, both **SIL Open Font License 1.1**
