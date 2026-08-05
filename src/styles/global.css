@@ -599,8 +599,10 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
   font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft);
 }
 .parallels ul { list-style: none; margin: 8px 0 0; padding: 0; }
-.parallels li { padding: 9px 0; border-bottom: 1px dotted var(--rule); }
+.parallels li { padding: 9px 0; border-bottom: 1px dotted var(--rule);
+  display: flex; gap: 8px; align-items: flex-start; }
 .parallels li:last-child { border-bottom: 0; }
+.parallels .pl-main { flex: 1; min-width: 0; }
 .parallels .pl-title { font-size: 13.5px; color: var(--ink); }
 .parallels .pl-self { color: var(--accent); font-weight: 700; margin-right: 5px; }
 .parallels .pl-par { margin-top: 5px; }
@@ -609,6 +611,50 @@ ol ol, ol ul, ul ul, ul ol { padding-left: 1.25em; }
 .parallels .pl-code { color: var(--gold-ink); font-weight: 700; font-size: 11px; }
 .parallels .pl-chip a { color: var(--link); text-decoration: none; }
 .parallels .pl-chip a:hover { text-decoration: underline; color: var(--accent); }
+/* compare button — opens the synopsis modal for this pericope */
+.parallels .pl-cmp { flex: none; margin-top: 1px; width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--rule); border-radius: 6px; background: var(--bg); color: var(--accent);
+  cursor: pointer; transition: background .12s, border-color .12s; }
+.parallels .pl-cmp:hover { background: var(--accent-soft); border-color: var(--accent); }
+.parallels .pl-cmp svg { width: 15px; height: 15px; display: block; }
+
+/* ---- synopsis comparison modal (launched from a parallels row) ---- */
+dialog.syn-modal { width: min(1000px, 94vw); max-height: 88vh; padding: 0;
+  border: 1px solid var(--rule); border-radius: 14px; background: var(--panel); color: var(--ink);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .35); font-family: var(--sans); }
+dialog.syn-modal::backdrop { background: rgba(20, 17, 12, .55); }
+.syn-modal .syn-mhead { position: sticky; top: 0; z-index: 1; background: var(--panel);
+  border-bottom: 1px solid var(--rule); border-radius: 14px 14px 0 0;
+  display: flex; align-items: flex-start; gap: 12px; padding: 13px 16px; }
+.syn-modal .syn-mtitle { margin: 0; font-size: 16px; color: var(--accent); font-family: var(--serif); }
+.syn-modal .syn-mref { font-size: 12px; color: var(--ink-soft); }
+.syn-modal .syn-mhead > div { flex: 1; }
+.syn-modal .syn-x { flex: none; border: 1px solid var(--rule); background: var(--bg); border-radius: 7px;
+  width: 30px; height: 30px; cursor: pointer; color: var(--ink-soft); font-size: 15px; line-height: 1; }
+.syn-modal .syn-x:hover { border-color: var(--accent); color: var(--accent); }
+.syn-modal .syn-scroll { overflow: auto; max-height: calc(88vh - 96px); }
+.syn-modal .syn-cols { display: grid; grid-template-columns: repeat(var(--n), minmax(230px, 1fr));
+  gap: 1px; background: var(--rule); }
+.syn-modal .syn-col { background: var(--panel); padding: 12px 15px 16px; min-width: 0; }
+.syn-modal .syn-col.self { background: var(--stripe); }
+.syn-modal .syn-chead { border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 9px; }
+.syn-modal .syn-cg { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--accent); }
+.syn-modal .syn-cref { color: var(--ink-soft); font-weight: 400; }
+.syn-modal .syn-here { color: var(--ink-soft); font-weight: 400; text-transform: none; letter-spacing: 0; }
+.syn-modal .syn-back { display: inline-block; margin-top: 5px; font-size: 12px; font-weight: 600;
+  text-decoration: none; color: var(--link); }
+.syn-modal .syn-back:hover { text-decoration: underline; }
+.syn-modal .syn-cnotes { display: inline-block; margin-left: 8px; font-size: 10.5px; font-weight: 700;
+  color: var(--gold-ink); background: var(--gold-soft); border: 1px solid var(--gold-edge); border-radius: 4px; padding: 0 5px; }
+.syn-modal .syn-ctext { font-family: var(--serif); font-size: 15px; line-height: 1.6; color: var(--ink); }
+.syn-modal .syn-vn { font-size: .62em; color: var(--accent); font-weight: 700; vertical-align: super; margin-right: 2px; }
+.syn-modal .syn-empty { color: var(--ink-soft); font-style: italic; }
+.syn-modal .syn-mfoot { border-top: 1px solid var(--rule); padding: 9px 16px; font-size: 12px; color: var(--ink-soft); }
+.syn-modal kbd { font-family: var(--sans); font-size: 11px; border: 1px solid var(--rule); border-radius: 4px; padding: 0 5px; background: var(--bg); }
+@media (max-width: 560px) {
+  .syn-modal .syn-cols { grid-template-columns: repeat(var(--n), minmax(200px, 1fr)); }
+}
 .note-body blockquote {
   margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--gold);
   background: var(--gold-soft); border-radius: 0 6px 6px 0; color: var(--ink-soft);

@@ -1,33 +1,99 @@
 ---
 // "Synoptic parallels" — for each pericope in this Gospel chapter that also appears in
 // another Gospel, the passage's own range + title, then a chip linking to the parallel
-// passage in each other Gospel. Sits in the right column beside the reader, mirroring
-// <Backlinks>. Data from public/data/parallels/<CODE>.json. REQUIREMENTS.md §5.8.
+// passage in each other Gospel. Each row also carries a "compare" button that opens a
+// modal showing the pericope across the Gospels side by side (the synopsis browser).
+// Sits in the right column beside the reader, mirroring <Backlinks>. REQUIREMENTS.md §5.8.
 import type { ParallelEntry } from '../lib/parallels';
+import { synopsisColumns } from '../lib/synopsis';
 
 interface Props {
+  code: string; // this chapter's Gospel (USFM code)
   entries: ParallelEntry[];
 }
-const { entries } = Astro.props;
+const { code, entries } = Astro.props;
 const SHORT: Record<string, string> = { MAT: 'Matt', MRK: 'Mark', LUK: 'Luke', JHN: 'John' };
 // Refs are stored with a plain hyphen range separator; render as an en dash to match the site.
 const dash = (r: string) => r.replace(/-/g, '–');
+const rows = entries.map((e) => ({ e, cols: synopsisColumns(code, e), dlg: `syn-${code}-${e.id}` }));
 ---
 
 {entries.length > 0 && (
   <section class="parallels ui" data-pagefind-ignore>
     <div class="col-label pl-head">Synoptic parallels</div>
     <ul>
-      {entries.map((e) => (
+      {rows.map(({ e, cols, dlg }) => (
         <li>
-          <span class="pl-title"><span class="pl-self">{dash(e.ref)}</span> {e.title}</span>
-          <div class="pl-par">
-            {e.parallels.map((p) => (
-              <span class="pl-chip"><span class="pl-code">{SHORT[p.code] ?? p.code}</span>{' '}<a href={p.href}>{dash(p.ref)}</a></span>
-            ))}
+          <div class="pl-main">
+            <span class="pl-title"><span class="pl-self">{dash(e.ref)}</span> {e.title}</span>
+            <div class="pl-par">
+              {e.parallels.map((p) => (
+                <span class="pl-chip"><span class="pl-code">{SHORT[p.code] ?? p.code}</span>{' '}<a href={p.href}>{dash(p.ref)}</a></span>
+              ))}
+            </div>
           </div>
+          <button
+            type="button"
+            class="pl-cmp"
+            data-syn={dlg}
+            aria-haspopup="dialog"
+            title="Compare across the Gospels"
+            aria-label={`Compare "${e.title}" across the Gospels`}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="3" y="4" width="5" height="16" rx="1.2" />
+              <rect x="9.5" y="4" width="5" height="16" rx="1.2" />
+              <rect x="16" y="4" width="5" height="16" rx="1.2" />
+            </svg>
+          </button>
+
+          <dialog class="syn-modal" id={dlg} aria-labelledby={`${dlg}-t`}>
+            <form method="dialog" class="syn-mhead">
+              <div>
+                <h2 class="syn-mtitle" id={`${dlg}-t`}>{e.title}</h2>
+                <span class="syn-mref">{cols.length} Gospels · read side by side</span>
+              </div>
+              <button class="syn-x" value="close" aria-label="Close">✕</button>
+            </form>
+            <div class="syn-scroll">
+              <div class="syn-cols" style={`--n:${cols.length}`}>
+                {cols.map((c) => (
+                  <div class={`syn-col${c.self ? ' self' : ''}`}>
+                    <div class="syn-chead">
+                      <div class="syn-cg">{c.name} <span class="syn-cref">{dash(c.ref)}</span>{c.self && <span class="syn-here"> · this chapter</span>}</div>
+                      <a class="syn-back" href={c.href}>Read with commentary →</a>
+                      {c.notes > 0 && <span class="syn-cnotes">✎ {c.notes} note{c.notes === 1 ? '' : 's'}</span>}
+                    </div>
+                    <div class="syn-ctext">
+                      {c.verses.length === 0
+                        ? <span class="syn-empty">—</span>
+                        : c.verses.map((vv) => (
+                            <><span class="syn-vn">{vv.v}</span><Fragment set:html={vv.html} />{' '}</>
+                          ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="syn-mfoot"><kbd>Esc</kbd> or click outside to close</div>
+          </dialog>
         </li>
       ))}
     </ul>
   </section>
 )}
+
+<script>
+  // Open a pericope's synopsis dialog; close on backdrop click (native form/Esc handle the rest).
+  document.querySelectorAll<HTMLButtonElement>('.pl-cmp[data-syn]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const d = document.getElementById(btn.dataset.syn!) as HTMLDialogElement | null;
+      if (d?.showModal) d.showModal();
+    });
+  });
+  document.querySelectorAll<HTMLDialogElement>('dialog.syn-modal').forEach((d) => {
+    d.addEventListener('click', (e) => {
+      if (e.target === d) d.close(); // click landed on the backdrop, not the content
+    });
+  });
+</script>

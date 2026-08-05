@@ -1,7 +1,8 @@
 // Build-time Gospel-parallels pipeline: data/parallels/synopsis.json (pericopes with
 // per-Gospel refs) → public/data/parallels/<CODE>.json (a verse→parallels index, keyed by
 // book then chapter). Every reference is validated against the vendored text; a bad one is
-// reported. Proof of concept — not yet wired into `npm run data` or any page.
+// reported. Runs as part of `npm run data`; feeds the Synoptic parallels panel and the
+// synopsis comparison modal on Gospel chapter pages.
 //
 //   node scripts/build-parallels.mjs
 
@@ -69,7 +70,13 @@ function build() {
         from: { sc: c.span.sc, sv: c.span.sv, ec: c.span.ec, ev: c.span.ev },
         parallels: cols
           .filter((o) => o.code !== c.code)
-          .map((o) => ({ code: o.code, ref: o.ref, label: o.label, href: o.href })),
+          .map((o) => ({
+            code: o.code,
+            ref: o.ref,
+            label: o.label,
+            href: o.href,
+            from: { sc: o.span.sc, sv: o.span.sv, ec: o.span.ec, ev: o.span.ev },
+          })),
       });
     }
   }

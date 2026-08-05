@@ -95,6 +95,59 @@ export function loadBook(code: string): BookText | null {
   return JSON.parse(fs.readFileSync(p, 'utf8'));
 }
 
+/** A verse-numbered range within a book, e.g. { sc:1, sv:2, ec:1, ev:6 }. */
+export interface VerseRange {
+  sc: number;
+  sv: number;
+  ec: number;
+  ev: number;
+}
+/** One rendered verse of a passage. */
+export interface PassageVerse {
+  v: number; // verse number
+  html: string; // inline HTML (italic runs preserved, footnote markers dropped)
+}
+
+const vkey = (c: number, v: number) => c * 1000 + v;
+
+/**
+ * The text of a verse range, one entry per verse, as inline HTML. Walks the book's block
+ * model tracking the running verse number and collects the text segments that fall inside
+ * [sc:sv … ec:ev]. Footnote markers are dropped; italic (translator-addition) runs are kept.
+ * Used to render synopsis comparison columns at build time.
+ */
+export function passageText(code: string, range: VerseRange): PassageVerse[] {
+  const book = loadBook(code);
+  if (!book) return [];
+  const lo = vkey(range.sc, range.sv);
+  const hi = vkey(range.ec, range.ev);
+  const order: number[] = [];
+  const acc = new Map<number, string>();
+  for (const chap of book.chapters) {
+    if (chap.number < range.sc || chap.number > range.ec) continue;
+    let cur: number | null = null;
+    for (const blk of chap.blocks) {
+      if (!blk.segments) continue;
+      for (const seg of blk.segments) {
+        if (isVerse(seg)) {
+          cur = seg.n;
+        } else if (!isFootnote(seg) && cur != null) {
+          const k = vkey(chap.number, cur);
+          if (k < lo || k > hi) continue;
+          if (!acc.has(k)) {
+            acc.set(k, '');
+            order.push(k);
+          }
+          // Trailing space per segment mirrors ChapterText, so text reads correctly across
+          // dropped footnote markers (e.g. "Jesus" + \f + "Christ" → "Jesus Christ").
+          acc.set(k, acc.get(k)! + inlineHtml((seg as TextSeg).t) + ' ');
+        }
+      }
+    }
+  }
+  return order.map((k) => ({ v: k % 1000, html: (acc.get(k) ?? '').replace(/\s+/g, ' ').trim() }));
+}
+
 export interface Intro {
   title: string;
   html: string;

@@ -40,6 +40,22 @@ export function notesForChapter(code: string, chapter: number): Note[] {
     .sort((a, b) => startIn(a) - startIn(b) || b.span - a.span);
 }
 
+/** How many authored (non-book) notes overlap a verse range — for the synopsis "✎ notes"
+ *  badge, telling the reader which Gospel columns carry commentary on the pericope. */
+export function notesInRange(
+  code: string,
+  range: { sc: number; sv: number; ec: number; ev: number },
+): number {
+  const lo = range.sc * 1000 + range.sv;
+  const hi = range.ec * 1000 + range.ev;
+  return loadNotes(code).filter(
+    (n) =>
+      n.anchor.type !== 'book' &&
+      n.anchor.sc * 1000 + n.anchor.sv <= hi &&
+      n.anchor.ec * 1000 + n.anchor.ev >= lo,
+  ).length;
+}
+
 /** A note elsewhere that references a verse in some chapter ("referenced elsewhere"). */
 export interface Backlink {
   tv: number; // target verse in this chapter

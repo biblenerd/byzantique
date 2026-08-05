@@ -5,11 +5,14 @@ import path from 'node:path';
 
 const DIR = path.join(process.cwd(), 'public/data/parallels');
 
+import type { VerseRange } from './texts';
+
 export interface ParallelRef {
   code: string; // USFM code of the parallel Gospel (MAT/MRK/LUK/JHN)
   ref: string; // reference within that Gospel, e.g. "3:1-6"
   label: string; // full label, e.g. "Matthew 3:1-6"
   href: string; // link to the passage, e.g. "/nt/matthew/3#v1"
+  from: VerseRange; // parsed verse span, for pulling the passage text
 }
 
 export interface ParallelEntry {
