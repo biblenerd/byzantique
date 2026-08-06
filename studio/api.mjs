@@ -124,6 +124,20 @@ export async function handle(req, res, { root, load }) {
     );
   }
 
+  // GET /images — image files available under public/images/, for the image picker.
+  if (route === '/images' && req.method === 'GET') {
+    const dir = path.join(root, 'public/images');
+    let files = [];
+    if (fs.existsSync(dir)) {
+      files = fs
+        .readdirSync(dir)
+        .filter((f) => /\.(png|jpe?g|gif|svg|webp|avif)$/i.test(f))
+        .sort((a, b) => a.localeCompare(b))
+        .map((f) => ({ name: f, url: '/images/' + f }));
+    }
+    return json(res, 200, files);
+  }
+
   // GET /tags — every tag in use, most common first, for tag autocomplete.
   if (route === '/tags' && req.method === 'GET') {
     const counts = new Map();

@@ -74,6 +74,13 @@ import '../src/styles/global.css';
       <div class="rp-actions"><button id="rp-insert" type="button" disabled>Insert</button></div>
     </div>
 
+    <!-- Image picker -->
+    <div id="sx-imgpicker" class="sx-picker sx-imgpicker" hidden>
+      <input id="ip-alt" placeholder="alt text — describe the image" autocomplete="off" />
+      <ul id="ip-list" class="ip-grid"></ul>
+      <div id="ip-empty" class="ip-empty" hidden>No images yet. Drop files into <code>public/images/</code>, then reopen.</div>
+    </div>
+
     <div id="sx-toast" class="sx-toast"></div>
 
     <style is:global>
@@ -165,6 +172,17 @@ import '../src/styles/global.css';
       .rp-status .prev { color: var(--ink-soft); font-style: italic; display: block; margin-top: 2px; }
       .rp-actions { display: flex; justify-content: flex-end; }
       .rp-actions button { background: var(--accent); color: var(--on-accent); border-color: var(--accent); font-weight: 600; }
+
+      /* Image picker */
+      .sx-imgpicker { padding: 10px; gap: 8px; width: min(560px, 94vw); }
+      .sx-imgpicker > input { margin: 0 0 2px; }
+      .ip-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; overflow: auto; padding: 2px; }
+      .ip-grid li { border: 1px solid var(--rule); border-radius: 8px; padding: 6px; cursor: pointer; display: flex; flex-direction: column; gap: 5px; align-items: center; text-align: center; }
+      .ip-grid li:hover, .ip-grid li.hi { border-color: var(--accent); background: var(--stripe); }
+      .ip-grid img { width: 100%; height: 74px; object-fit: contain; background: var(--panel); border-radius: 4px; }
+      .ip-grid .ip-name { font-size: 0.68rem; color: var(--ink-soft); word-break: break-all; line-height: 1.25; }
+      .ip-empty { color: var(--ink-soft); font-style: italic; font-size: 0.85rem; padding: 8px 2px; }
+      .ip-empty code { font-family: var(--mono, monospace); }
 
       .sx-toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(20px); background: var(--pop-bg, #222); color: var(--pop-fg, #fff); border: 1px solid var(--pop-edge, #000); padding: 8px 14px; border-radius: 8px; font-family: var(--sans); font-size: 0.85rem; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 20; max-width: 60vw; text-align: center; }
       .sx-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -428,6 +446,39 @@ import '../src/styles/global.css';
         ed.focus();
       }
 
+      // --- image picker -------------------------------------------------------
+      let imgSel = { from: 0, to: 0, text: '' };
+      async function openImagePicker() {
+        imgSel = ed.sel();
+        $('ip-alt').value = imgSel.text || '';
+        $('sx-imgpicker').hidden = false;
+        const res = await api.get('/images');
+        const list = Array.isArray(res) ? res : [];
+        const ul = $('ip-list'); ul.innerHTML = '';
+        $('ip-empty').hidden = list.length > 0;
+        for (const f of list) {
+          const li = document.createElement('li'); li.title = f.url;
+          const img = document.createElement('img'); img.src = f.url; img.alt = f.name; img.loading = 'lazy';
+          const name = document.createElement('span'); name.className = 'ip-name'; name.textContent = f.name;
+          li.append(img, name); li.onclick = () => insertImage(f);
+          ul.appendChild(li);
+        }
+        $('ip-alt').focus();
+      }
+      function closeImagePicker() { $('sx-imgpicker').hidden = true; ed.focus(); }
+      function insertImage(f) {
+        const alt = ($('ip-alt').value || '').trim();
+        const md = `![${alt}](${f.url})`;
+        closeImagePicker();
+        // Insert as its own block (own line), like the scripture/youtube inserts.
+        const { from, to } = imgSel;
+        const doc = ed.get();
+        const before = doc.slice(0, from), after = doc.slice(to);
+        const ins = (before && !before.endsWith('\n') ? '\n' : '') + md + (after && !after.startsWith('\n') ? '\n' : '');
+        ed.replace(from, to, ins, from + ins.length);
+        ed.focus();
+      }
+
       // --- preview ------------------------------------------------------------
       let previewTimer;
       const schedulePreview = () => { clearTimeout(previewTimer); previewTimer = setTimeout(runPreview, 250); };
@@ -562,6 +613,12 @@ import '../src/styles/global.css';
           };
           tb.appendChild(btn);
         }
+        // Image insert isn't a shortcode — add its own button after the registry ones.
+        const imgBtn = document.createElement('button');
+        imgBtn.type = 'button'; imgBtn.textContent = 'Image';
+        imgBtn.title = 'Insert an image from public/images/';
+        imgBtn.onclick = openImagePicker;
+        tb.appendChild(imgBtn);
 
         const tagList = await api.get('/tags');
         const dl = $('sx-tagoptions');
@@ -599,9 +656,12 @@ import '../src/styles/global.css';
         $('rp-cv').addEventListener('keydown', (e) => { if (e.key === 'Escape') closeRefPicker(); else if (e.key === 'Enter' && !$('rp-insert').disabled) insertRef(); });
         $('rp-insert').onclick = insertRef;
 
+        $('ip-alt').addEventListener('keydown', (e) => { if (e.key === 'Escape') closeImagePicker(); });
+
         document.addEventListener('mousedown', (e) => {
           if (!$('sx-picker').hidden && !$('sx-picker').contains(e.target)) closePicker();
           if (!$('sx-refpicker').hidden && !$('sx-refpicker').contains(e.target)) closeRefPicker();
+          if (!$('sx-imgpicker').hidden && !$('sx-imgpicker').contains(e.target)) closeImagePicker();
         });
 
         runPreview();

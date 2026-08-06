@@ -37,6 +37,9 @@ tags, and the Markdown body), and **filename + Save + live preview** (right).
   - **Quote passage** — inserts a `{{ REF }}` scripture block.
   - **Footnote** — drops `[^id]` at the cursor and its definition at the bottom of the note.
   - **YouTube** — inserts a `{{ youtube … }}` embed.
+  - **Image** — pick a file from `public/images/` (thumbnail grid) and give it alt text;
+    inserts `![alt](/images/…)`. Images shrink to fit the note column and open in a lightbox
+    on the site. Drop image files into `public/images/` first.
 - **Tag autocomplete** — the Tags field is chips with suggestions drawn from tags already in
   the corpus (keeps the vocabulary consistent).
 - **Unsaved-changes guard** — warns before switching notes or reloading would lose edits.
