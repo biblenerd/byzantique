@@ -8,7 +8,7 @@ Jesus and His disciples are in the region of Caesarea Philippi (*cf.* [8:27](ref
 
 ![Map of northern Israel showing Caesarea Philippi at the base of Mt. Hermon and Mt. Tabor can be seen west of the Sea of Galilee](/images/caesarea_philippi_hermon.jpg)
 
-However, the early Church associated the Transfiguration with Mt. Tabor in Palestine as early as the fourth century[^fn1] (look towards the bottom left of the above map), and the Orthodox Church continues to maintain this association in its hymnography for the feast.
+However, the early Church in Palestine associated the Transfiguration with Mt. Tabor as early as the fourth century[^fn1] (look towards the bottom left of the above map), and the Orthodox Church continues to maintain this association in its hymnography for the feast.
 
 The Festal Menaion interestingly includes [Psalm 88(89):13](ref:PSA 88:13) in  various places, including as the prokeimenon before the Matins Gospel reading for the feast of Transfiguration: "Tabor and Hermon shall rejoice in Thy Name!"[^fn2]
 
