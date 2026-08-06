@@ -1,10 +1,10 @@
 ---
 anchor: MRK 9:1-13
 title: Emphasis on Elijah
-tags: source-criticism
+tags: source-criticism, transfiguration
 ---
 
-Among the parallel accounts of the Transfiguration ([Matthew 17:1-9](ref:MAT 17:1-9); [Luke 9:28-36](ref:LUK 9:28-36)), St. Mark emphasizes the appearance of Elijah, responding to the disciples' expectations from the prophecy in [Malachi 3:22–23](ref:MAL 3:22-23).[^fn3]
+Among the parallel accounts of the Transfiguration ([Matthew 17:1-9](ref:MAT 17:1-9); [Luke 9:28-36](ref:LUK 9:28-36)), St. Mark emphasizes the appearance of Elijah, responding to the disciples' expectations from the prophecy in [Malachi 3:22–23](ref:MAL 3:22-23).[^fn3] This follows from questions such as in [8:27-28](ref:MRK 8:27-28).
 
 Fr. Pat Reardon suggested that the Transfiguration account was interpolated into St. Mark's Gospel amidst a section about Elijah's return.[^fn1] However, other commentators suggest the opposite (i.e., the Transfiguration account is original but the surrounding discussion of Elijah was interpolated), and beginning with Wellhausen, others such as Bultmann have even suggested that this was originally an account of the resurrection (which has largely been discredited).[^fn2]
 

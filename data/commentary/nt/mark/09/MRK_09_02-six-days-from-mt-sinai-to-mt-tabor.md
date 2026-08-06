@@ -1,7 +1,7 @@
 ---
 anchor: MRK 9:2
 title: Six days: From Mt. Sinai to Mt. Tabor
-tags: typology
+tags: typology, transfiguration
 ---
 
 The "six days" likely ties this account to Moses' ascent of Mt. Sinai in [Exodus 24](ref:EXO 24) (*cf.* especially [24:16](ref:EXO 24:16)).
