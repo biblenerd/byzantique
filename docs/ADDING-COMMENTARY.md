@@ -166,6 +166,22 @@ Put a colon in the separator to align a column: `:---` left, `:--:` center, `---
 Tables are styled automatically (header rule, zebra striping, padded cells) to match the
 site's other tables — no classes or extra markup needed. Same in book intros.
 
+## Images — `![alt](/images/…)`
+
+Put image files under **`public/images/`** (create it if it does not exist). Everything in
+`public/` is served from the site root, so a file at `public/images/tabor.jpg` is reached at
+`/images/tabor.jpg`. Reference it with standard Markdown, using a **root-absolute path** (leading
+`/`) so it resolves on any chapter page:
+
+```markdown
+![Icon of the Transfiguration, Mt. Tabor](/images/tabor.jpg)
+```
+
+Always give real **alt text** (it doubles as the caption for screen readers). `.png`, `.jpg`,
+`.svg`, and `.webp` all work. There is no thumbnailing: an image is served as-is but **shrunk
+with CSS to fit** the notes column, and **clicking it opens a full-size lightbox** (Esc, the
+backdrop, or the ✕ closes). Same in book intros. Commit the image file along with the note.
+
 ## Embedding a YouTube video — `{{ youtube … }}`
 
 Put a `{{ youtube … }}` (or `{{ yt … }}`) on its **own line**. Pass the video id or any

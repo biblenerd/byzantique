@@ -255,6 +255,38 @@ const section = path.startsWith('/ot/')
       })();
     </script>
 
+    <script>
+      // Click-to-enlarge for images in prose (notes, book intros). One lightbox per page,
+      // built lazily only when the page actually has content images. Esc / backdrop / the
+      // image / the ✕ all close (native <dialog>).
+      (() => {
+        const imgs = document.querySelectorAll('.note-body img, .book-intro img');
+        if (!imgs.length) return;
+        const dlg = document.createElement('dialog');
+        dlg.className = 'lightbox';
+        dlg.innerHTML = '<button class="lightbox-x" aria-label="Close">✕</button><img alt="">';
+        document.body.appendChild(dlg);
+        const big = dlg.querySelector('img');
+        const open = (src, alt) => {
+          big.src = src;
+          big.alt = alt || '';
+          if (dlg.showModal) dlg.showModal();
+        };
+        imgs.forEach((im) => {
+          im.tabIndex = 0;
+          im.setAttribute('role', 'button');
+          const src = () => im.currentSrc || im.src;
+          im.addEventListener('click', () => open(src(), im.alt));
+          im.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(src(), im.alt); }
+          });
+        });
+        dlg.querySelector('.lightbox-x').addEventListener('click', () => dlg.close());
+        big.addEventListener('click', () => dlg.close());
+        dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+      })();
+    </script>
+
     <script is:inline>
       // Header search: live dropdown of top results via the Pagefind JS API.
       // Enter submits the form to /search/?q=… (also the no-JS fallback).

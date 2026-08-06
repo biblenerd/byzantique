@@ -655,6 +655,23 @@ dialog.syn-modal::backdrop { background: rgba(20, 17, 12, .55); }
 @media (max-width: 560px) {
   .syn-modal .syn-cols { grid-template-columns: repeat(var(--n), minmax(200px, 1fr)); }
 }
+
+/* ---- images in prose (notes, book intros) ---- */
+/* Shrink to fit the column (no thumbnails — just CSS sizing), and click to enlarge. */
+.note-body img, .book-intro img {
+  display: block; max-width: 100%; height: auto; margin: 16px auto;
+  border: 1px solid var(--rule); border-radius: 8px; cursor: zoom-in;
+}
+/* click-to-enlarge lightbox (built once per page in Base.astro) */
+dialog.lightbox { padding: 0; border: 0; background: transparent; max-width: 96vw; max-height: 96vh; overflow: visible; }
+dialog.lightbox::backdrop { background: rgba(10, 8, 6, .82); }
+dialog.lightbox img { display: block; max-width: 96vw; max-height: 92vh; width: auto; height: auto;
+  border-radius: 8px; box-shadow: 0 20px 70px rgba(0, 0, 0, .5); cursor: zoom-out; }
+dialog.lightbox .lightbox-x { position: fixed; top: 14px; right: 16px; width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center; border: 0; border-radius: 50%;
+  background: rgba(0, 0, 0, .5); color: #fff; font-size: 17px; line-height: 1; cursor: pointer; }
+dialog.lightbox .lightbox-x:hover { background: rgba(0, 0, 0, .78); }
+
 .note-body blockquote {
   margin: 12px 0; padding: 10px 16px; border-left: 3px solid var(--gold);
   background: var(--gold-soft); border-radius: 0 6px 6px 0; color: var(--ink-soft);
