@@ -601,6 +601,12 @@ import '../src/styles/global.css';
 
         const reg = await api.get('/registry');
         const tb = $('sx-toolbar');
+        // Image insert isn't a shortcode; it gets its own button, placed right after Footnote.
+        const imgBtn = document.createElement('button');
+        imgBtn.type = 'button'; imgBtn.textContent = 'Image';
+        imgBtn.title = 'Insert an image from public/images/';
+        imgBtn.onclick = openImagePicker;
+        let imgPlaced = false;
         for (const s of reg) {
           const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = s.title; btn.title = `${s.description}\n${s.syntax}`;
           btn.onclick = () => {
@@ -612,13 +618,9 @@ import '../src/styles/global.css';
             else insertBlock(s.syntax);
           };
           tb.appendChild(btn);
+          if (s.name === 'footnote') { tb.appendChild(imgBtn); imgPlaced = true; }
         }
-        // Image insert isn't a shortcode — add its own button after the registry ones.
-        const imgBtn = document.createElement('button');
-        imgBtn.type = 'button'; imgBtn.textContent = 'Image';
-        imgBtn.title = 'Insert an image from public/images/';
-        imgBtn.onclick = openImagePicker;
-        tb.appendChild(imgBtn);
+        if (!imgPlaced) tb.appendChild(imgBtn);
 
         const tagList = await api.get('/tags');
         const dl = $('sx-tagoptions');
