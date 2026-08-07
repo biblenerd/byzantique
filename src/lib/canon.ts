@@ -135,6 +135,7 @@ const GROUPS: Record<string, string[]> = {
   'Letter / Epistle': ['ROM', '1CO', '2CO', 'GAL', 'EPH', 'PHP', 'COL', '1TH', '2TH', '1TI', '2TI', 'TIT', 'PHM', 'HEB', 'JAS', '1PE', '2PE', '1JN', '2JN', '3JN', 'JUD'],
   Pauline: ['ROM', '1CO', '2CO', 'GAL', 'EPH', 'PHP', 'COL', '1TH', '2TH', '1TI', '2TI', 'TIT', 'PHM', 'HEB'],
   'General (Catholic)': ['HEB', 'JAS', '1PE', '2PE', '1JN', '2JN', '3JN', 'JUD'],
+  Pastoral: ['1TI', '2TI', 'TIT'],
   Petrine: ['1PE', '2PE'],
   Johannine: ['JHN', '1JN', '2JN', '3JN', 'REV'],
 };
@@ -144,7 +145,7 @@ const CHIP_ORDER = [
   'History',
   'Prophecy', 'Former Prophet', 'Latter Prophet', '12 Prophets',
   'Writing', 'Poetic', '5 Scrolls (Megillot)',
-  'Gospel', 'Letter / Epistle', 'Pauline', 'General (Catholic)', 'Petrine', 'Johannine',
+  'Gospel', 'Letter / Epistle', 'Pauline', 'General (Catholic)', 'Pastoral', 'Petrine', 'Johannine',
 ];
 
 // Canonical-status chips (colored, rendered last): the OT Anagignoskomena and the
