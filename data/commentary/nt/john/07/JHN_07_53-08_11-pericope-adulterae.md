@@ -4,7 +4,7 @@ title: Pericope Adulterae
 tags: source-criticism
 ---
 
-The *pericope adulterae* (7:53–8:11) is the interpolated story of the woman caught in adultery. Most scholars agree it was not part of the original text of John: it is absent from our earliest and best Greek manuscripts, appears in different places in later manuscripts (sometimes in Luke), and its vocabulary and style differ from St. John's usual patterns.[^fn2] For that reason, many modern Bibles bracket it or footnote it as a later addition. It may have been part of the (now-lost) Gospel according to the Hebrews.[^fn1]
+The *pericope adulterae* (7:53–8:11) is the interpolated story of the woman caught in adultery. Most scholars agree it was not part of the original text of John: it is absent from our earliest and best Greek manuscripts, appears in different places in later manuscripts (sometimes in Luke), and its vocabulary and style differ from St. John's usual patterns.[^fn2] For that reason, many modern Bibles bracket it or footnote it as a later addition. It may have been part of the (now-lost) *Gospel according to the Hebrews*.[^fn1]
 
 At the same time, the story itself is very early and was widely known in the Church. Patristic and later Christian writers treat it as a true and fitting story about Jesus, consistent with his character and teaching and it is part of the *1904 Patriarchal Greek New Testament of the Ecumenical Patriarchate* ([GRCBYZ](/about/texts-and-translations/#grcbyz)), but is enclosed in brackets. 
 
