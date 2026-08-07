@@ -190,11 +190,15 @@ normal YouTube URL — `watch?v=`, `youtu.be/`, `/embed/`, `/shorts/` all work:
 ```markdown
 {{ youtube dQw4w9WgXcQ }}
 {{ youtube https://youtu.be/dQw4w9WgXcQ }}
+{{ youtube https://youtu.be/dQw4w9WgXcQ?t=395 }}   <!-- starts at 6:35 -->
 ```
 
-It renders a responsive 16:9 player that never exceeds the note's width (so it fits on
-mobile), loads lazily, and uses the privacy-friendly `youtube-nocookie` domain. A bad id
-warns at build time. Works the same in **commentary notes and book intros**.
+The `youtube` (or `yt`) keyword is required; without it the `{{ … }}` is read as a scripture
+reference and fails to resolve. A `?t=` / `&t=` start time in the URL (plain seconds like
+`t=395`, or `t=6m35s`) is honored — the player begins there. It renders a responsive 16:9
+player that never exceeds the note's width (so it fits on mobile), loads lazily, and uses the
+privacy-friendly `youtube-nocookie` domain. A bad id warns at build time. Works the same in
+**commentary notes and book intros**.
 
 ## 4. See it
 
