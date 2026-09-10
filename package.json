@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
-    "astro": "^7.2.4"
+    "astro": "^7.2.8"
   },
   "devDependencies": {
     "@codemirror/lang-markdown": "^6.5.2",
